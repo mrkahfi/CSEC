@@ -11,7 +11,7 @@ export function Card({ className, padded, ...props }: CardProps) {
     <div
       className={cn(
         'rounded-lg border border-line-subtle bg-surface shadow-xs',
-        padded && 'p-4',
+        padded && 'p-5',
         className,
       )}
       {...props}
@@ -33,11 +33,11 @@ export function CardHeader({
   className?: string
 }) {
   return (
-    <div className={cn('flex items-start justify-between gap-3 px-4 pt-3.5 pb-3', className)}>
+    <div className={cn('flex items-start justify-between gap-3 px-5 pt-4 pb-3', className)}>
       <div className="flex min-w-0 items-start gap-2.5">
         {HeaderIcon && (
-          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sunken text-ink-secondary">
-            <HeaderIcon className="h-4 w-4" strokeWidth={1.8} />
+          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-sunken text-ink-secondary">
+            <HeaderIcon className="h-4.5 w-4.5" strokeWidth={1.8} />
           </span>
         )}
         <div className="min-w-0">
@@ -51,13 +51,13 @@ export function CardHeader({
 }
 
 export function CardBody({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('px-4 pb-4', className)} {...props} />
+  return <div className={cn('px-5 pb-5', className)} {...props} />
 }
 
 export function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('flex items-center justify-between gap-3 border-t border-line-subtle px-4 py-3', className)}
+      className={cn('flex items-center justify-between gap-3 border-t border-line-subtle px-5 py-3.5', className)}
       {...props}
     />
   )

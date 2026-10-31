@@ -92,8 +92,8 @@ export function Foundations() {
       <PageHeader
         breadcrumbs={[{ label: 'Design System' }]}
         title="Foundations"
-        meta={<Badge tone="brand" dot>v0.1 — Foundation</Badge>}
-        description="Fondasi visual Site Operations Dashboard: token warna, tipografi, ikonografi, kosakata status domain, dan komponen umum. Halaman ini hidup — setiap komponen baru wajib terdaftar di sini sebelum dipakai di layar."
+        meta={<Badge tone="brand" dot>v0.1 · Foundation</Badge>}
+        description="Fondasi visual Site Operations Dashboard: token warna, tipografi, ikonografi, kosakata status domain, dan komponen umum. Halaman ini hidup: setiap komponen baru wajib terdaftar di sini sebelum dipakai di layar."
         className="rounded-xl border border-line-subtle pr-5 pb-4 shadow-xs"
       />
 
@@ -116,7 +116,7 @@ export function Foundations() {
             ====================================================== */}
         <Section
           id="prinsip"
-          eyebrow="01 — Prinsip"
+          eyebrow="01 · Prinsip"
           title="Keputusan desain yang mengikat"
           description="Enam aturan ini diturunkan dari prinsip produk (PRD §5) dan berlaku untuk setiap layar."
         >
@@ -124,8 +124,8 @@ export function Foundations() {
             {[
               { icon: ShieldCheck, t: 'Status bukan otorisasi', d: '“Diterima” ≠ “Dirilis”. Rilis hold point selalu tampil terpisah dengan otoritasnya.' },
               { icon: Eye, t: 'Bukan warna saja', d: 'Setiap status wajib membawa label teks + ikon. Warna hanya penguat (FR-IN-07).' },
-              { icon: MessageSquare, t: 'Kosakata tunggal', d: 'Satu katalog status untuk dashboard, register, dan detail — tanpa sinonim.' },
-              { icon: TriangleAlert, t: 'Pengecualian kelas satu', d: 'Ditolak, terblokir, terlambat, diperkarakan dirancang sejak awal — bukan selain happy path.' },
+              { icon: MessageSquare, t: 'Kosakata tunggal', d: 'Satu katalog status untuk dashboard, register, dan detail, tanpa sinonim.' },
+              { icon: TriangleAlert, t: 'Pengecualian kelas satu', d: 'Ditolak, terblokir, terlambat, diperkarakan dirancang sejak awal, bukan selain happy path.' },
               { icon: CircleHelp, t: 'Kosong ≠ sehat', d: 'Empty state menjelaskan konteks dan menawarkan reset filter, bukan mengesankan aman.' },
               { icon: Sparkles, t: 'Demo selalu berlabel', d: 'Setiap data, notifikasi, dan keputusan diberi label simulasi secara eksplisit.' },
             ].map((p) => (
@@ -145,17 +145,17 @@ export function Foundations() {
             ====================================================== */}
         <Section
           id="warna"
-          eyebrow="02 — Warna"
+          eyebrow="02 · Warna"
           title="Primitif → semantik → tone status"
-          description="Netral sejuk sebagai kanvas, kobalt untuk aksi, dan lima tone status. Nilai dirujuk lewat peran semantik (bg-surface, text-ink-secondary) — bukan warna mentah."
+          description="Netral sejuk sebagai kanvas, kobalt untuk aksi, dan lima tone status. Nilai dirujuk lewat peran semantik (bg-surface, text-ink-secondary), bukan warna mentah."
         >
           <div className="flex flex-col gap-6">
             <div>
-              <SubTitle>Brand — aksi primer, tautan, fokus papan ketik</SubTitle>
+              <SubTitle>Brand · aksi primer, tautan, fokus papan ketik</SubTitle>
               <ScaleStrip name="brand" steps={BRAND_STEPS} values={BRAND} />
             </div>
             <div>
-              <SubTitle>Netral — kanvas, permukaan, teks, garis</SubTitle>
+              <SubTitle>Netral · kanvas, permukaan, teks, garis</SubTitle>
               <ScaleStrip name="gray" steps={GRAY_STEPS} values={GRAY} />
             </div>
             <div>
@@ -199,19 +199,19 @@ export function Foundations() {
             ====================================================== */}
         <Section
           id="tipografi"
-          eyebrow="03 — Tipografi"
+          eyebrow="03 · Tipografi"
           title="Inter Variable + JetBrains Mono"
-          description="Inter untuk seluruh UI (base 14 px — aplikasi operasional padat data), JetBrains Mono untuk ID permintaan, revisi dokumen, chainage, dan waktu pada jejak audit. Angka di tabel memakai tabular figures (.tnum)."
+          description="Inter untuk seluruh UI (base 14 px, aplikasi operasional padat data), JetBrains Mono untuk ID permintaan, revisi dokumen, chainage, dan waktu pada jejak audit. Angka di tabel memakai tabular figures (.tnum)."
         >
           <Card className="divide-y divide-line-subtle">
             {[
               { cls: 'text-display', name: 'Display', spec: '28 / 34 · Bold 700 · -2%', sample: 'Rilis Hold Point' },
-              { cls: 'text-2xl', name: 'Judul Halaman', spec: '22 / 30 · SemiBold 650 · -1.5%', sample: 'Register Inspeksi — Gedung Aruna' },
+              { cls: 'text-2xl', name: 'Judul Halaman', spec: '22 / 30 · SemiBold 650 · -1.5%', sample: 'Register Inspeksi · Gedung Aruna' },
               { cls: 'text-xl', name: 'Judul Seksi', spec: '18 / 28 · SemiBold · -1%', sample: 'Ringkasan Workflow Proyek' },
               { cls: 'text-lg', name: 'Judul Kartu', spec: '16 / 24 · SemiBold', sample: 'Temuan Terbuka' },
               { cls: 'text-md', name: 'Body Besar', spec: '15 / 24 · Regular', sample: 'Paket pekerjaan menunggu persetujuan konsultan.' },
               { cls: 'text-base', name: 'Body (default)', spec: '14 / 20 · Regular', sample: 'Permintaan inspeksi diajukan dengan 6 foto bukti dan checklist terisi.' },
-              { cls: 'text-sm', name: 'Tabel / Label', spec: '13 / 20 · Regular', sample: 'Perkakas tulangan Lantai 7 — Grid C/4-7' },
+              { cls: 'text-sm', name: 'Tabel / Label', spec: '13 / 20 · Regular', sample: 'Perkakas tulangan Lantai 7, Grid C/4-7' },
               { cls: 'text-xs', name: 'Caption', spec: '12 / 18 · Regular', sample: 'Definisi: kalender, bukan jam kerja.' },
               { cls: 'text-2xs uppercase tracking-wider', name: 'Overline', spec: '11 / 16 · SemiBold · uppercase', sample: 'Kotak Tindakan' },
               { cls: 'font-mono text-sm', name: 'Mono', spec: '13 / 20 · JetBrains Mono', sample: 'WIR-AR-2026-0142 · Sta 1+200 · R2' },
@@ -231,9 +231,9 @@ export function Foundations() {
             ====================================================== */}
         <Section
           id="ikonografi"
-          eyebrow="04 — Ikonografi"
+          eyebrow="04 · Ikonografi"
           title="Stroke monokrom, satu keluarga"
-          description="Seluruh ikon menggambar dengan stroke dan mewarisi currentColor — tidak ada ikon simbol berwarna. Ketebalan mengikuti ukuran (16→1.9, 18→1.8, 20→1.7) agar bobot optik konsisten. Sumber path: Lucide (MIT) dengan wrapper sizing sendiri."
+          description="Seluruh ikon menggambar dengan stroke dan mewarisi currentColor, tidak ada ikon simbol berwarna. Ketebalan mengikuti ukuran (16→1.9, 18→1.8, 20→1.7) agar bobot optik konsisten. Sumber path: Lucide (MIT) dengan wrapper sizing sendiri."
         >
           <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border border-line-subtle bg-surface px-4 py-3 text-sm text-ink-secondary">
             <span className="flex items-center gap-1.5"><Ban {...iconProps(15)} className="text-red-500" /> Tanpa warna tetap</span>
@@ -259,14 +259,14 @@ export function Foundations() {
             ====================================================== */}
         <Section
           id="status"
-          eyebrow="05 — Status Domain"
+          eyebrow="05 · Status Domain"
           title="Katalog status tunggal"
-          description="Kosakata status dari PRD §10 — dipetakan ke lima tone + ikon. Label Bahasa Indonesia dapat dikonfigurasi per proyek; yang tidak berubah adalah struktur label + ikon + tone."
+          description="Kosakata status dari PRD §10, dipetakan ke lima tone + ikon. Label Bahasa Indonesia dapat dikonfigurasi per proyek; yang tidak berubah adalah struktur label + ikon + tone."
         >
           <div className="flex flex-col gap-4">
             <StatusCatalog
               title="Permintaan Inspeksi (WIR/RFI)"
-              desc="Siklus hidup permintaan — termasuk loop perbaikan & klarifikasi (PRD §10.1)"
+              desc="Siklus hidup permintaan, termasuk loop perbaikan & klarifikasi (PRD §10.1)"
               items={Object.values(INSPECTION_STATUS)}
             />
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -290,7 +290,7 @@ export function Foundations() {
             />
             <StatusCatalog
               title="Hold Point"
-              desc="“Diterima” tidak merilis hold point — rilis butuh otoritas terpisah (PRD §10.3). Hold point memakai emphasis kuat."
+              desc="“Diterima” tidak merilis hold point, rilis butuh otoritas terpisah (PRD §10.3). Hold point memakai emphasis kuat."
               items={Object.values(HOLD_POINT_STATUS)}
               strong
             />
@@ -302,9 +302,9 @@ export function Foundations() {
             ====================================================== */}
         <Section
           id="komponen"
-          eyebrow="06 — Komponen"
+          eyebrow="06 · Komponen"
           title="Komponen umum"
-          description="Blok bangunan seluruh layar. Setiap state (hover, aktif, disabled, fokus, loading, error) dirancang — bukan ditambahkan belakangan."
+          description="Blok bangunan seluruh layar. Setiap state (hover, aktif, disabled, fokus, loading, error) dirancang, bukan ditambahkan belakangan."
         >
           <div className="flex flex-col gap-6">
             {/* Tombol */}
@@ -341,19 +341,19 @@ export function Foundations() {
                   <Input id="f-id" defaultValue="WIR-AR-2026-0142" readOnly className="font-mono" />
                 </Field>
                 <Field label="Lokasi Pekerjaan" htmlFor="f-loc" required hint="Bangun · lantai · grid, atau chainage (SC-42).">
-                  <Input id="f-loc" placeholder="mis. Lantai 7 — Grid C/4-7" />
+                  <Input id="f-loc" placeholder="mis. Lantai 7, Grid C/4-7" />
                 </Field>
                 <Field label="Reviewer" htmlFor="f-rev" required error="Pilih reviewer yang berwenang untuk hold point ini.">
                   <Select id="f-rev" defaultValue="" invalid>
                     <option value="" disabled>Pilih reviewer…</option>
-                    <option>Sari Wulandari — QA/QC</option>
-                    <option>Ratna Dewi — Quality Manager</option>
+                    <option>Sari Wulandari · QA/QC</option>
+                    <option>Ratna Dewi · Quality Manager</option>
                   </Select>
                 </Field>
                 <Field label="Cari catatan" htmlFor="f-search">
                   <SearchInput id="f-search" placeholder="Cari dalam riwayat…" />
                 </Field>
-                <Field label="Alasan (wajib untuk keputusan)" htmlFor="f-note" hint="Direkam pada riwayat — tidak dapat disunting senyap (FR-RV-05).">
+                <Field label="Alasan (wajib untuk keputusan)" htmlFor="f-note" hint="Direkam pada riwayat, tidak dapat disunting senyap (FR-RV-05).">
                   <Textarea id="f-note" placeholder="Jelaskan alasan keputusan…" />
                 </Field>
                 <div className="flex flex-col justify-center gap-3.5">
@@ -429,13 +429,13 @@ export function Foundations() {
                     menunggu rilis dari Quality Manager. <em>Accepted ≠ Released.</em>
                   </Callout>
                   <Callout tone="info" icon={Sparkles} title="Lingkungan demo">
-                    Seluruh data, notifikasi, dan keputusan pada layar ini adalah simulasi —
+                    Seluruh data, notifikasi, dan keputusan pada layar ini adalah simulasi:
                     tidak ada persistensi atau integrasi nyata.
                   </Callout>
                 </div>
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   <div className="rounded-lg border border-line-subtle p-4">
-                    <SubTitle>Skeleton — pemuatan</SubTitle>
+                    <SubTitle>Skeleton (pemuatan)</SubTitle>
                     <div className="flex items-start gap-3">
                       <Skeleton className="h-9 w-9 rounded-full" />
                       <div className="flex-1 pt-1">
@@ -448,7 +448,7 @@ export function Foundations() {
                       size="sm"
                       icon={Search}
                       title="Tidak ada catatan yang cocok"
-                      description="Filter Anda: status “Diterima” + lokasi “Lantai 8”. Tidak berarti pekerjaan sehat — coba longgarkan filter."
+                      description="Filter Anda: status “Diterima” + lokasi “Lantai 8”. Tidak berarti pekerjaan sehat, coba longgarkan filter."
                       actions={
                         <>
                           <Button size="sm" variant="secondary">Reset filter</Button>
@@ -495,7 +495,7 @@ export function Foundations() {
             <Card>
               <CardHeader
                 title="Riwayat Aktivitas"
-                description="Jejak kronologis: aktor, peran, waktu, dan alasan. Demo — bukan log audit formal (FR-AU-04)."
+                description="Jejak kronologis: aktor, peran, waktu, dan alasan. Demo, bukan log audit formal (FR-AU-04)."
                 actions={<Badge icon={History}>Simulasi</Badge>}
               />
               <CardBody className="max-w-3xl">
@@ -510,8 +510,8 @@ export function Foundations() {
             ====================================================== */}
         <Section
           id="tabel"
-          eyebrow="07 — Tabel Register"
-          title="Register inspeksi — pola tabel inti"
+          eyebrow="07 · Tabel Register"
+          title="Register inspeksi · pola tabel inti"
           description="Pola tabel terpadat: referensi mono, lokasi granular, jenis titik, status berikon, pemilik aksi berikutnya, dan umur. Hover menunjukkan baris dapat dibuka; hold point ditekankan tanpa hanya mengandalkan warna."
         >
           <Card className="overflow-hidden">
@@ -594,7 +594,7 @@ export function Foundations() {
             ====================================================== */}
         <Section
           id="pola"
-          eyebrow="08 — Pola & Aturan"
+          eyebrow="08 · Pola & Aturan"
           title="Aturan pemakaian"
           description="Ringkasan keputusan yang menjaga konsistensi antar layar."
         >
@@ -606,7 +606,7 @@ export function Foundations() {
                   'Tampilkan status berikutnya + pemiliknya, bukan hanya status kini (FR §14.1).',
                   'Sertakan definisi pada setiap metrik portofolio (PRD §12).',
                   'Gunakan mono untuk referensi: WIR-…, R2, Sta 1+200.',
-                  'Waktu eksplisit: 13 Okt 2026 09:00 WIB — tanpa format ambigu (SC-42).',
+                  'Waktu eksplisit: 13 Okt 2026 09:00 WIB, tanpa format ambigu (SC-42).',
                   'Konfirmasi dialog untuk penolakan, pembatalan, dan rilis (§14.3).',
                   'Empty state + reset filter di semua register (SC-44).',
                 ].map((t) => (
@@ -622,10 +622,10 @@ export function Foundations() {
               <ul className="flex flex-col gap-2 text-sm text-ink-secondary">
                 {[
                   'Mengartikan status “Diterima” sebagai izin lanjut kerja (Prinsip §5.2).',
-                  'Ikon berwarna-warni / Material Symbols — ikon mengikuti currentColor.',
+                  'Ikon berwarna-warni / Material Symbols: ikon mengikuti currentColor.',
                   'Warna sebagai satu-satunya isyarat status (FR-IN-07).',
                   'Menyamakan penolakan administratif dengan NCR (FR-RV-03).',
-                  'Grafik dekoratif — dashboard utamakan pengecualian yang butuh tindakan (§14.2).',
+                  'Grafik dekoratif; dashboard utamakan pengecualian yang butuh tindakan (§14.2).',
                   'Menyembunyikan riwayat keputusan lama saat koreksi (FR-RV-05).',
                 ].map((t) => (
                   <li key={t} className="flex gap-2">
@@ -687,7 +687,7 @@ export function Foundations() {
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         title="Catat Rilis Hold Point"
-        description="WIR-AR-2026-0142 · Perkakas tulangan Lantai 7 — Gedung Aruna"
+        description="WIR-AR-2026-0142 · Perkakas tulangan Lantai 7 · Gedung Aruna"
         footer={
           <>
             <Button variant="ghost" onClick={() => setDialogOpen(false)}>Batal</Button>
@@ -699,12 +699,12 @@ export function Foundations() {
       >
         <div className="flex flex-col gap-4">
           <Callout tone="warning" icon={OctagonAlert} title="Periksa syarat rilis">
-            Aksi ini merekam <strong>rilis otoritas</strong> — berbeda dari keputusan inspeksi.
+            Aksi ini merekam <strong>rilis otoritas</strong>, berbeda dari keputusan inspeksi.
             Syarat berikut wajib terpenuhi (SC-23):
           </Callout>
           <div className="flex flex-col gap-2.5">
             {[
-              { ok: true, t: 'Inspeksi diterima — Sari Wulandari, 13 Okt 10:20' },
+              { ok: true, t: 'Inspeksi diterima · Sari Wulandari, 13 Okt 10:20' },
               { ok: true, t: 'Hasil uji bahan terlampir ( slump & kuat tekan )' },
               { ok: false, t: 'Verifikasi tindakan perbaikan oleh QA/QC' },
             ].map((c) => (
@@ -754,11 +754,11 @@ function ScaleStrip({ name, steps, values }: { name: string; steps: string[]; va
 }
 
 const STATUS_TONES: { name: string; cls: string; dot: string; usage: string; sample: StatusDef }[] = [
-  { name: 'Neutral', cls: 'bg-tone-neutral-bg text-tone-neutral-text border-tone-neutral-border', dot: 'bg-gray-400', usage: 'Draf, ditarik, ditutup — bukan masalah.', sample: INSPECTION_STATUS.draft },
+  { name: 'Neutral', cls: 'bg-tone-neutral-bg text-tone-neutral-text border-tone-neutral-border', dot: 'bg-gray-400', usage: 'Draf, ditarik, ditutup, bukan masalah.', sample: INSPECTION_STATUS.draft },
   { name: 'Info', cls: 'bg-tone-info-bg text-tone-info-text border-tone-info-border', dot: 'bg-sky-500', usage: 'Menunggu pihak lain / terjadwal.', sample: INSPECTION_STATUS.scheduled },
   { name: 'Active', cls: 'bg-tone-active-bg text-tone-active-text border-tone-active-border', dot: 'bg-violet-500', usage: 'Sedang berjalan.', sample: INSPECTION_STATUS.internal_review },
   { name: 'Success', cls: 'bg-tone-success-bg text-tone-success-text border-tone-success-border', dot: 'bg-green-500', usage: 'Diterima, terverifikasi, dirilis.', sample: INSPECTION_STATUS.accepted },
-  { name: 'Warning', cls: 'bg-tone-warning-bg text-tone-warning-text border-tone-warning-border', dot: 'bg-amber-500', usage: 'Perlu tindakan — bukan gagal teknis.', sample: INSPECTION_STATUS.correction_required },
+  { name: 'Warning', cls: 'bg-tone-warning-bg text-tone-warning-text border-tone-warning-border', dot: 'bg-amber-500', usage: 'Perlu tindakan, bukan gagal teknis.', sample: INSPECTION_STATUS.correction_required },
   { name: 'Danger', cls: 'bg-tone-danger-bg text-tone-danger-text border-tone-danger-border', dot: 'bg-red-500', usage: 'Ditolak, terblokir, terlambat.', sample: HOLD_POINT_STATUS.blocked_prerequisites },
 ]
 
@@ -869,7 +869,7 @@ const ICON_SHOWCASE: { name: string; cmp: LucideIcon }[] = [
 const DEMO_REGISTER = [
   {
     ref: 'WIR-AR-2026-0142',
-    activity: 'Perkakas tulangan & formwork — pra-pengecoran',
+    activity: 'Perkakas tulangan & formwork (pra-pengecoran)',
     location: 'Tower A · Lt. 7 · Grid C/4-7',
     project: 'Gedung Aruna',
     type: POINT_TYPE.hold,
@@ -883,7 +883,7 @@ const DEMO_REGISTER = [
   },
   {
     ref: 'WIR-KS-2026-0088',
-    activity: 'Instalasi ducting HVAC — area rawat',
+    activity: 'Instalasi ducting HVAC, area rawat',
     location: 'Lt. 2 · R-204',
     project: 'Klinik Sentosa',
     type: POINT_TYPE.review,
@@ -939,13 +939,13 @@ const DEMO_REGISTER = [
   },
   {
     ref: 'WIR-AR-2026-0139',
-    activity: 'Perkakas tulangan & formwork — pra-pengecoran',
+    activity: 'Perkakas tulangan & formwork (pra-pengecoran)',
     location: 'Tower A · Lt. 6 · Grid A/1-4',
     project: 'Gedung Aruna',
     type: POINT_TYPE.hold,
     status: HOLD_POINT_STATUS.released,
     emphasis: false,
-    nextAction: 'Pengecoran berjalan — tidak ada aksi',
+    nextAction: 'Pengecoran berjalan, tidak ada aksi',
     owner: 'Ratna Dewi',
     due: undefined,
     overdue: false,
@@ -976,8 +976,8 @@ const DEMO_TIMELINE = [
     tone: 'warning' as const,
     title: 'Keputusan: Perlu Perbaikan',
     meta: '10 Okt 2026 · 14:05',
-    note: 'Cover blok tulangan tidak sesuai spesifikasi pada Grid C/5 — terlihat pada 3 titik. Mohon penyesuaian & foto ulang.',
-    detail: 'Direkam oleh Sari Wulandari. Tanpa NCR — koreksi lapangan.',
+    note: 'Cover blok tulangan tidak sesuai spesifikasi pada Grid C/5, terlihat pada 3 titik. Mohon penyesuaian & foto ulang.',
+    detail: 'Direkam oleh Sari Wulandari. Tanpa NCR (koreksi lapangan).',
   },
   {
     id: 't4',
@@ -1002,6 +1002,6 @@ const DEMO_TIMELINE = [
     tone: 'warning' as const,
     title: 'Hold point menunggu rilis otoritas',
     meta: '13 Okt 2026 · 10:21',
-    detail: 'Rilis menunggu Ratna Dewi (Quality Manager) — syarat: verifikasi tindakan perbaikan.',
+    detail: 'Rilis menunggu Ratna Dewi (Quality Manager); syarat: verifikasi tindakan perbaikan.',
   },
 ]

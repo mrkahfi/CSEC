@@ -345,14 +345,14 @@ export const HOLD_POINT_STATUS = {
   },
   blocked_prerequisites: {
     id: 'blocked_prerequisites',
-    label: 'Terblokir — Prasyarat',
+    label: 'Terblokir (Prasyarat)',
     tone: 'danger',
     icon: OctagonAlert,
     description: 'Prasyarat rilis belum terpenuhi.',
   },
   blocked_finding: {
     id: 'blocked_finding',
-    label: 'Terblokir — Temuan',
+    label: 'Terblokir (Temuan)',
     tone: 'danger',
     icon: OctagonAlert,
     description: 'Masih ada temuan yang belum selesai.',

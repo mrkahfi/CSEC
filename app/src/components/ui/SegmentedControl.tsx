@@ -31,7 +31,7 @@ export function SegmentedControl<T extends string>({
       role="radiogroup"
       aria-label={label}
       className={cn(
-        'inline-flex items-center gap-0.5 rounded-lg border border-line-subtle bg-sunken p-0.5',
+        'inline-flex items-center gap-1 rounded-lg border border-line-subtle bg-sunken p-1',
         className,
       )}
     >
@@ -46,18 +46,18 @@ export function SegmentedControl<T extends string>({
             onClick={() => onChange(opt.value)}
             className={cn(
               'inline-flex items-center gap-1.5 rounded-md font-medium transition-colors duration-100',
-              size === 'sm' ? 'h-6.5 px-2 text-xs' : 'h-7.5 px-2.5 text-sm',
+              size === 'sm' ? 'h-8 px-2.5 text-sm' : 'h-9 px-3 text-sm',
               selected
                 ? 'bg-surface text-ink shadow-xs'
                 : 'text-ink-muted hover:text-ink',
             )}
           >
-            {opt.icon && <opt.icon {...iconProps(size === 'sm' ? 13 : 14)} />}
+            {opt.icon && <opt.icon {...iconProps(size === 'sm' ? 14 : 15)} />}
             {opt.label}
             {opt.count !== undefined && (
               <span
                 className={cn(
-                  'tnum rounded-full px-1 text-2xs tabular-nums',
+                  'tnum rounded-full px-1.5 text-xs tabular-nums',
                   selected ? 'bg-sunken text-ink-secondary' : 'bg-gray-200/70 text-ink-muted',
                 )}
               >

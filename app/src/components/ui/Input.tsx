@@ -129,10 +129,10 @@ export const Textarea = forwardRef<
 
 export const Select = forwardRef<
   HTMLSelectElement,
-  InputHTMLAttributes<HTMLSelectElement> & { invalid?: boolean }
->(function Select({ className, invalid, children, ...props }, ref) {
+  InputHTMLAttributes<HTMLSelectElement> & { invalid?: boolean; wrapperClassName?: string }
+>(function Select({ className, wrapperClassName, invalid, children, ...props }, ref) {
   return (
-    <div className="relative">
+    <div className={cn('relative', wrapperClassName)}>
       <select
         ref={ref}
         aria-invalid={invalid || undefined}

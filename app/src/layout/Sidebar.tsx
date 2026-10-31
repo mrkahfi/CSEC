@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { CircleHelp, RotateCcw, Lock, Sparkles } from 'lucide-react'
+import { CircleHelp, RotateCcw, Lock } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Logo } from '@/layout/Logo'
 import { NAV } from '@/layout/nav'
@@ -7,28 +7,36 @@ import { useDemo } from '@/demo/DemoContext'
 import { useToast } from '@/components/ui/Toast'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { iconProps } from '@/components/Icon'
+import { ACTION_ITEMS, FINDINGS, INSPECTIONS } from '@/demo/data'
+import { useMemo } from 'react'
+
+/** Hitungan nav hidup dari data seed (konsisten dengan register). */
+function useNavCounts() {
+  const { role } = useDemo()
+  return useMemo(() => {
+    const inspeksi = INSPECTIONS.filter(
+      (i) => i.projectId !== 'bl' && !['accepted', 'withdrawn', 'cancelled'].includes(i.status),
+    ).length
+    const temuan = FINDINGS.filter((f) => !['closed', 'superseded', 'cancelled'].includes(f.status)).length
+    const tindakan = ACTION_ITEMS.filter((a) => a.visibleTo.includes(role)).length
+    return { inspeksi, temuan, tindakan }
+  }, [role])
+}
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { resetDemo } = useDemo()
   const toast = useToast()
+  const counts = useNavCounts()
 
   return (
     <div className="flex h-full w-60 shrink-0 flex-col border-r border-line-subtle bg-surface">
-      {/* Identitas produk */}
-      <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
-        <Logo size={30} />
+      {/* Identitas produk — setinggi topbar agar kedua sisi header sejajar */}
+      <div className="flex h-16 shrink-0 items-center gap-3 px-5">
+        <Logo size={32} />
         <div className="min-w-0">
-          <p className="text-md leading-5 font-semibold tracking-tight text-ink">SiteOps</p>
-          <p className="truncate text-xs text-ink-muted">Site Operations Dashboard</p>
+          <p className="text-lg leading-6 font-semibold tracking-tight text-ink">SiteOps</p>
+          <p className="truncate text-xs leading-4 text-ink-muted">Site Operations Dashboard</p>
         </div>
-      </div>
-
-      {/* Label lingkungan demo — wajib jelas (PRD §8) */}
-      <div className="px-4 pb-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-2xs font-semibold tracking-wider text-amber-800 uppercase">
-          <Sparkles {...iconProps(11)} strokeWidth={2.4} />
-          Data Demo
-        </span>
       </div>
 
       {/* Navigasi primer */}
@@ -75,14 +83,14 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                             P1
                           </span>
                         )}
-                        {item.count !== undefined && (
+                        {item.countKey && (
                           <span
                             className={cn(
                               'tnum rounded-full px-1.5 text-2xs leading-4 font-medium tabular-nums',
                               isActive ? 'bg-brand-100 text-brand-800' : 'bg-sunken text-ink-muted',
                             )}
                           >
-                            {item.count}
+                            {counts[item.countKey]}
                           </span>
                         )}
                       </>

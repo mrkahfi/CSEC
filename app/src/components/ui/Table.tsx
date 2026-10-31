@@ -38,6 +38,8 @@ export interface TableHeaderCellProps extends ThHTMLAttributes<HTMLTableCellElem
   sortDirection?: 'asc' | 'desc' | false
   onSort?: () => void
   width?: string
+  /** Floor kolom — auto layout bisa memampatkan `width` saat kolom nowrap lain menuntut ruang. */
+  minWidth?: string
 }
 
 export function TableHeaderCell({
@@ -47,6 +49,7 @@ export function TableHeaderCell({
   sortDirection = false,
   onSort,
   width,
+  minWidth,
   children,
   ...props
 }: TableHeaderCellProps) {
@@ -70,9 +73,9 @@ export function TableHeaderCell({
     <th
       scope="col"
       aria-sort={sortDirection === false ? undefined : sortDirection === 'asc' ? 'ascending' : 'descending'}
-      style={width ? { width } : undefined}
+      style={width || minWidth ? { width, minWidth } : undefined}
       className={cn(
-        'border-b border-line px-3 py-2 text-xs font-semibold whitespace-nowrap text-ink-muted',
+        'border-b border-line px-4 py-2.5 text-xs font-semibold whitespace-nowrap text-ink-muted',
         align === 'left' && 'text-left',
         align === 'right' && 'text-right',
         align === 'center' && 'text-center',
@@ -103,7 +106,7 @@ export function TableCell({ className, align = 'left', ...props }: TableCellProp
   return (
     <td
       className={cn(
-        'px-3 py-2.5 align-middle text-ink-secondary',
+        'px-4 py-3 align-middle text-ink-secondary',
         align === 'left' && 'text-left',
         align === 'right' && 'text-right',
         align === 'center' && 'text-center',
@@ -135,5 +138,5 @@ export function TableRow({
 
 /** Sel referensi mono — ID permintaan, revisi dokumen, chainage. */
 export function MonoCell({ className, ...props }: TableCellProps) {
-  return <TableCell className={cn('font-mono text-[12.5px] text-ink', className)} {...props} />
+  return <TableCell className={cn('font-mono text-[13px] text-ink', className)} {...props} />
 }

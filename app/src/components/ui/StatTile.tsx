@@ -78,7 +78,7 @@ export function StatTile({
   )
 
   const cls = cn(
-    'rounded-lg border border-line-subtle bg-surface p-3.5 text-left shadow-xs transition-[border-color,box-shadow] duration-100',
+    'rounded-lg border border-line-subtle bg-surface p-4 text-left shadow-xs transition-[border-color,box-shadow] duration-100',
     onClick &&
       'cursor-pointer hover:border-line-strong hover:shadow-sm focus-visible:border-brand-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15',
     className,

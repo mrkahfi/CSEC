@@ -7,13 +7,36 @@ import { ROLE, type RoleId } from '@/components/status'
 export const PERSONA: Record<RoleId, { name: string; org: string }> = {
   project_manager: { name: 'Andi Prasetyo', org: 'PT Karya Bangun Nusantara' },
   site_engineer: { name: 'Budi Santoso', org: 'PT Karya Bangun Nusantara' },
-  qc_inspector: { name: 'Sari Wulandari', org: 'QA/QC — PT KBN' },
-  quality_manager: { name: 'Ratna Dewi', org: 'QA/QC — PT KBN' },
-  external: { name: 'Hendra Kusuma', org: 'Konsultan — CV Mitra Teknik' },
+  qc_inspector: { name: 'Sari Wulandari', org: 'QA/QC · PT KBN' },
+  quality_manager: { name: 'Ratna Dewi', org: 'QA/QC · PT KBN' },
+  external: { name: 'Hendra Kusuma', org: 'Konsultan · CV Mitra Teknik' },
   viewer: { name: 'Maya Anggraini', org: 'Manajemen Operasi' },
 }
 
 export const DEFAULT_ROLE: RoleId = 'project_manager'
+
+/** Peran terpilih bertahan antar muat ulang — presenter tidak perlu ganti ulang. */
+const ROLE_KEY = 'csec-demo-role'
+function initialRole(): RoleId {
+  try {
+    const saved = localStorage.getItem(ROLE_KEY) as RoleId | null
+    if (saved && saved in ROLE) return saved
+  } catch { /* penyimpanan tidak tersedia — pakai default */ }
+  return DEFAULT_ROLE
+}
+
+/**
+ * Halaman pendaratan per peran (PRD §8.1): manajemen → portofolio,
+ * peran proyek → proyek tugasnya, QA/QC → kotak tindakan/register.
+ */
+export const LANDING: Record<RoleId, string> = {
+  project_manager: '/',
+  site_engineer: '/proyek/aru',
+  qc_inspector: '/tindakan',
+  quality_manager: '/inspeksi',
+  external: '/tindakan',
+  viewer: '/',
+}
 
 interface DemoState {
   role: RoleId
@@ -36,15 +59,17 @@ export function useDemo() {
 }
 
 export function DemoProvider({ children }: { children: ReactNode }) {
-  const [role, setRoleState] = useState<RoleId>(DEFAULT_ROLE)
+  const [role, setRoleState] = useState<RoleId>(initialRole)
   const [scenarioEpoch, setEpoch] = useState(0)
 
   const setRole = useCallback((r: RoleId) => {
     setRoleState(r)
+    try { localStorage.setItem(ROLE_KEY, r) } catch { /* abaikan */ }
   }, [])
 
   const resetDemo = useCallback(() => {
     setRoleState(DEFAULT_ROLE)
+    try { localStorage.setItem(ROLE_KEY, DEFAULT_ROLE) } catch { /* abaikan */ }
     setEpoch((e) => e + 1)
   }, [])
 

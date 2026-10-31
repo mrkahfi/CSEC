@@ -6,6 +6,8 @@ export interface MenuItemDef {
   id: string
   label: string
   icon?: LucideIcon
+  /** Kelas tambahan untuk ikon (mis. warna tone notifikasi). */
+  iconClassName?: string
   onSelect?: () => void
   destructive?: boolean
   disabled?: boolean
@@ -30,10 +32,12 @@ export interface MenuProps {
   items: (MenuItemDef | 'divider' | { label: string; items: MenuItemDef[] })[]
   align?: 'start' | 'end'
   className?: string
+  /** Kelas tambahan untuk panel dropdown (mis. lebar khusus). */
+  panelClassName?: string
 }
 
 /** Menu konteks sederhana: klik-luar menutup, Escape menutup, panah memilih. */
-export function Menu({ trigger, items, align = 'start', className }: MenuProps) {
+export function Menu({ trigger, items, align = 'start', className, panelClassName }: MenuProps) {
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -88,6 +92,7 @@ export function Menu({ trigger, items, align = 'start', className }: MenuProps) 
             'absolute z-40 mt-1.5 min-w-52 rounded-lg border border-line-subtle bg-surface p-1 shadow-lg',
             'pop-in origin-top',
             align === 'end' ? 'right-0' : 'left-0',
+            panelClassName,
           )}
         >
           {items.map((it, i) => {
@@ -131,7 +136,7 @@ export function Menu({ trigger, items, align = 'start', className }: MenuProps) 
           activeIndex === idx && !item.disabled && (item.destructive ? 'bg-red-50' : 'bg-hover'),
         )}
       >
-        {item.icon && <item.icon {...iconProps(16)} className="shrink-0 opacity-80" />}
+        {item.icon && <item.icon {...iconProps(16)} className={cn('shrink-0 opacity-80', item.iconClassName)} />}
         <span className="flex-1">{item.label}</span>
         {item.hint}
       </button>

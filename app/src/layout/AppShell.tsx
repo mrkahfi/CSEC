@@ -1,7 +1,8 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { PanelLeft } from 'lucide-react'
 import { Sidebar } from '@/layout/Sidebar'
 import { Topbar } from '@/layout/Topbar'
+import { SearchPalette } from '@/layout/SearchPalette'
 import { IconButton } from '@/components/ui/IconButton'
 import { cn } from '@/lib/cn'
 
@@ -12,6 +13,19 @@ import { cn } from '@/lib/cn'
  */
 export function AppShell({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+
+  /* ⌘K / Ctrl+K membuka palet pencarian global (FR-SE-04). */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setSearchOpen((v) => !v)
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [])
 
   return (
     <div className="flex h-dvh overflow-hidden bg-canvas">
@@ -48,12 +62,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="pl-2 lg:hidden">
             <IconButton label="Buka navigasi" icon={PanelLeft} onClick={() => setDrawerOpen(true)} />
           </div>
-          <Topbar />
+          <Topbar onOpenSearch={() => setSearchOpen(true)} />
         </div>
 
         {/* Konten halaman */}
         <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
       </div>
+
+      {/* Palet pencarian global (⌘K) */}
+      <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   )
 }

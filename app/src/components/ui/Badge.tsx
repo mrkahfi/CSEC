@@ -10,8 +10,8 @@ const badgeVariants = cva(
   {
     variants: {
       size: {
-        sm: 'h-5 px-1.5 text-2xs tracking-wide',
-        md: 'h-6 px-2 text-xs',
+        sm: 'h-5.5 px-2 text-xs',
+        md: 'h-6.5 px-2.5 text-sm',
       },
     },
     defaultVariants: { size: 'md' },
@@ -36,7 +36,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
   return (
     <span ref={ref} className={cn(badgeVariants({ size }), t.badge, className)} {...props}>
       {dot && <span aria-hidden className={cn('h-1.5 w-1.5 rounded-full', t.dot)} />}
-      {icon && <Icon as={icon} {...iconProps(size === 'sm' ? 12 : 13)} strokeWidth={2.1} />}
+      {icon && <Icon as={icon} {...iconProps(size === 'sm' ? 13 : 14)} strokeWidth={2.1} />}
       {children}
     </span>
   )

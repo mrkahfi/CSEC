@@ -12,8 +12,8 @@ const statusBadgeVariants = cva(
   {
     variants: {
       size: {
-        sm: 'h-6 px-1.5 text-xs',
-        md: 'h-7 px-2 text-sm',
+        sm: 'h-6.5 px-2 text-sm',
+        md: 'h-7.5 px-2.5 text-sm',
       },
       emphasis: {
         /* Default: tint latar — banyak status dalam satu tabel tetap tenang */
@@ -69,7 +69,7 @@ export const StatusBadge = forwardRef<HTMLSpanElement, StatusBadgeProps>(functio
       {!hideIcon && (
         <Icon
           as={status.icon}
-          {...iconProps(size === 'sm' ? 13 : 14)}
+          {...iconProps(size === 'sm' ? 14 : 15)}
           strokeWidth={2}
           className={strong ? 'shrink-0' : cn('shrink-0', t.icon)}
         />
