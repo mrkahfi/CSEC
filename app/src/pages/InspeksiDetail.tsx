@@ -291,7 +291,7 @@ export function InspeksiDetail() {
         icon={FileSearch}
         title="Catatan inspeksi tidak ditemukan"
         description="ID tidak ditemukan pada data demo."
-        actions={<Button variant="secondary" onClick={() => navigate('/inspeksi')}><ArrowLeft {...iconProps(15)} /> Kembali ke register</Button>}
+        actions={<Button variant="secondary" onClick={() => navigate('/dashboard/inspeksi')}><ArrowLeft {...iconProps(15)} /> Kembali ke register</Button>}
         className="py-20"
       />
     )
@@ -318,9 +318,9 @@ export function InspeksiDetail() {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: 'Proyek', to: '/proyek' },
-          { label: project.name, to: `/proyek/${project.id}` },
-          { label: 'Inspeksi', to: `/inspeksi?proyek=${project.id}` },
+          { label: 'Proyek', to: '/dashboard/proyek' },
+          { label: project.name, to: `/dashboard/proyek/${project.id}` },
+          { label: 'Inspeksi', to: `/dashboard/inspeksi?proyek=${project.id}` },
           { label: ins.ref },
         ]}
         title={ins.title}
@@ -530,7 +530,7 @@ export function InspeksiDetail() {
                 <CardHeader title="Temuan terkait & inspeksi terdahulu" />
                 <CardBody className="space-y-2 pt-2">
                   {findings.map((f) => (
-                    <Link key={f.id} to={`/temuan/${f.id}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-line-subtle px-3 py-2 transition-colors hover:bg-hover">
+                    <Link key={f.id} to={`/dashboard/temuan/${f.id}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-line-subtle px-3 py-2 transition-colors hover:bg-hover">
                       <span className="font-mono text-xs text-ink-muted">{f.ref}</span>
                       <span className="text-sm font-medium text-ink">{f.title}</span>
                       <span className="ml-auto flex gap-1.5">
@@ -539,7 +539,7 @@ export function InspeksiDetail() {
                     </Link>
                   ))}
                   {priors.map((p) => (
-                    <Link key={p.id} to={`/inspeksi/${p.id}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-line-subtle px-3 py-2 transition-colors hover:bg-hover">
+                    <Link key={p.id} to={`/dashboard/inspeksi/${p.id}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-line-subtle px-3 py-2 transition-colors hover:bg-hover">
                       <ClipboardCheck {...iconProps(15)} className="text-ink-muted" />
                       <span className="font-mono text-xs text-ink-muted">{p.ref}</span>
                       <span className="text-sm text-ink-secondary">{p.title}</span>

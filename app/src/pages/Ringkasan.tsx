@@ -3,6 +3,7 @@ import {
   ArrowRight,
   CalendarClock,
   ClipboardCheck,
+  FileText,
   FileWarning,
   Flag,
   Info,
@@ -12,26 +13,37 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { iconProps, type LucideIcon } from '@/components/Icon'
-import { TONE_STYLES } from '@/components/status'
+import { FINDING_CLASSIFICATION, FINDING_STATUS, TONE_STYLES } from '@/components/status'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { PageBody } from '@/components/ui/PageBody'
 import { StatTile } from '@/components/ui/StatTile'
+import { PlanActualBar, PlanActualDelta } from '@/components/ui/PlanActual'
 import { Select } from '@/components/ui/Input'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Skeleton, SkeletonText } from '@/components/ui/Skeleton'
-import { formatRelative } from '@/lib/format'
+import { formatDate, formatRelative } from '@/lib/format'
 import { useSimulatedLoading } from '@/demo/hooks'
 import {
   ACTIVITY,
+  DAILY_REPORTS,
   EVENT_ICON,
+  MILESTONE_STATUS,
   PROJECT_STATUS,
   PROJECTS,
+  PROJECT_HEALTH,
   CONTROL_POINTS,
+  attentionProjects,
+  healthOf,
+  milestonesAtRisk,
   portfolioCounts,
+  priorityIssues,
+  progressOf,
   projectPulse,
   projectName,
+  reportDueToday,
   type Project,
 } from '@/demo/data'
 
@@ -59,14 +71,18 @@ function PulseBar({ projectId }: { projectId: string }) {
   )
 }
 
+/** Kartu proyek pada direktori — kini dengan kesehatan & progres. */
 function ProjectCard({ p }: { p: Project }) {
   const archived = p.status === 'closed'
   const pts = CONTROL_POINTS.filter((c) => c.projectId === p.id)
   const critical = pts.filter((c) => c.pointType === 'hold' && c.status !== 'released' && c.status !== 'not_due')
   const st = PROJECT_STATUS[p.status]
+  const health = healthOf(p.id)
+  const hst = PROJECT_HEALTH[health.healthId]
+  const prog = progressOf(p.id)
   return (
     <Link
-      to={`/proyek/${p.id}`}
+      to={`/dashboard/proyek/${p.id}`}
       className={cn(
         'group flex flex-col gap-3 rounded-xl border border-line-subtle bg-surface p-5 shadow-xs transition-all duration-100',
         'hover:-translate-y-0.5 hover:border-line-strong hover:shadow-sm',
@@ -80,8 +96,25 @@ function ProjectCard({ p }: { p: Project }) {
             {p.code} · {p.client} · {p.location}
           </p>
         </div>
-        <Badge tone={st.tone} size="sm" dot>{st.label}</Badge>
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <Badge tone={st.tone} size="sm" dot>{st.label}</Badge>
+          {health.healthId !== 'on_track' && !archived && (
+            <StatusBadge status={hst} size="sm" emphasis={health.healthId === 'behind' ? 'strong' : 'subtle'} />
+          )}
+        </div>
       </div>
+
+      {prog && prog.weekly.length > 0 && (
+        <div className="space-y-1">
+          <PlanActualBar plan={prog.planPct} actual={prog.actualPct} label={`Progres ${p.name}: realisasi ${prog.actualPct}% dari rencana ${prog.planPct}%`} />
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-2xs text-ink-muted">
+            <span><span className="tnum font-semibold text-ink">{prog.actualPct}%</span> realisasi</span>
+            <span aria-hidden>·</span>
+            <span className="tnum">rencana {prog.planPct}%</span>
+            <PlanActualDelta plan={prog.planPct} actual={prog.actualPct} />
+          </div>
+        </div>
+      )}
 
       <PulseBar projectId={p.id} />
 
@@ -100,6 +133,84 @@ function ProjectCard({ p }: { p: Project }) {
         </span>
       </div>
     </Link>
+  )
+}
+
+/** Kartu "perlu perhatian" — exception-first: mengapa & ke mana menindak. */
+function AttentionCard({ p }: { p: Project }) {
+  const health = healthOf(p.id)
+  const hst = PROJECT_HEALTH[health.healthId]
+  const prog = progressOf(p.id)
+  const riskyMilestone = milestonesAtRisk().find((m) => m.projectId === p.id)
+  const delayed = health.healthId === 'behind'
+  return (
+    <div
+      className={cn(
+        'flex flex-col gap-3 rounded-xl border bg-surface p-5 shadow-xs',
+        delayed ? 'border-red-200' : 'border-amber-200',
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <Link to={`/dashboard/proyek/${p.id}`} className="block truncate text-md font-semibold text-ink hover:text-brand-700">
+            {p.name}
+          </Link>
+          <p className="mt-0.5 truncate text-xs text-ink-muted">
+            {p.code} · {p.location} · PM {p.pm}
+          </p>
+        </div>
+        <StatusBadge status={hst} size="sm" emphasis={delayed ? 'strong' : 'subtle'} />
+      </div>
+
+      <p className="text-sm leading-5 text-ink-secondary">{health.headline}</p>
+
+      {prog && prog.weekly.length > 0 && (
+        <div className="space-y-1 rounded-lg border border-line-subtle bg-sunken p-3">
+          <PlanActualBar plan={prog.planPct} actual={prog.actualPct} label={`Progres ${p.name}: realisasi ${prog.actualPct}% dari rencana ${prog.planPct}%`} />
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-2xs text-ink-muted">
+            <span><span className="tnum font-semibold text-ink">{prog.actualPct}%</span> realisasi · rencana <span className="tnum">{prog.planPct}%</span></span>
+            <PlanActualDelta plan={prog.planPct} actual={prog.actualPct} />
+          </div>
+          <p className="text-2xs text-ink-disabled">Dilaporkan via {prog.sourceRef} · {prog.reporter}</p>
+        </div>
+      )}
+
+      <ul className="space-y-1.5">
+        {health.reasons.slice(0, 3).map((r) => {
+          const body = (
+            <>
+              <span aria-hidden className={cn('mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full', TONE_STYLES[r.severity].dot)} />
+              <span className="min-w-0">
+                {r.refLabel && <span className="font-mono text-2xs text-ink-muted">{r.refLabel} · </span>}
+                {r.label}
+              </span>
+            </>
+          )
+          return (
+            <li key={r.id} className="flex items-start gap-2 text-xs leading-4 text-ink-secondary">
+              {r.to ? (
+                <Link to={r.to} className="-mx-1 flex items-start gap-2 rounded px-1 py-0.5 hover:text-brand-700">
+                  {body}
+                </Link>
+              ) : (
+                body
+              )}
+            </li>
+          )
+        })}
+      </ul>
+
+      {riskyMilestone && (
+        <div className="mt-auto flex items-center gap-2 border-t border-line-subtle pt-2.5 text-xs">
+          <CalendarClock {...iconProps(13)} className="shrink-0 text-ink-muted" />
+          <span className="min-w-0 flex-1 truncate text-ink-secondary">
+            <span className="text-ink-muted">Berikutnya:</span> {riskyMilestone.title}
+            <span className="tnum text-ink-muted"> · {formatRelative(riskyMilestone.date)}</span>
+          </span>
+          <StatusBadge status={MILESTONE_STATUS[riskyMilestone.statusId]} size="sm" />
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -124,16 +235,21 @@ export function Ringkasan() {
     emphasis?: 'neutral' | 'warning' | 'danger' | 'success'
     to: string
   }[] = [
-    { label: 'Menunggu review', value: c.awaitingReview, icon: ClipboardCheck, to: '/inspeksi?set=review' },
-    { label: 'Terjadwal & berlangsung', value: c.scheduled, icon: CalendarClock, to: '/inspeksi?set=jadwal' },
-    { label: 'Perlu perbaikan', value: c.corrections, icon: FileWarning, emphasis: 'warning', to: '/inspeksi?set=perbaikan' },
-    { label: 'Menunggu keputusan eksternal', value: c.awaitingExternal, icon: Flag, to: '/inspeksi?set=eksternal' },
-    { label: 'Temuan terbuka', value: c.openFindings, icon: TriangleAlert, emphasis: 'warning', to: '/temuan?set=terbuka' },
-    { label: 'Tindakan terlambat', value: c.overdueActions, icon: TriangleAlert, emphasis: 'danger', to: '/temuan?set=overdue' },
-    { label: 'Hold point menunggu rilis', value: c.holdAwaitingRelease, icon: Lock, emphasis: c.holdAwaitingRelease > 0 ? 'warning' : 'neutral', to: '/inspeksi?set=review' },
+    { label: 'Menunggu review', value: c.awaitingReview, icon: ClipboardCheck, to: '/dashboard/inspeksi?set=review' },
+    { label: 'Terjadwal & berlangsung', value: c.scheduled, icon: CalendarClock, to: '/dashboard/inspeksi?set=jadwal' },
+    { label: 'Perlu perbaikan', value: c.corrections, icon: FileWarning, emphasis: 'warning', to: '/dashboard/inspeksi?set=perbaikan' },
+    { label: 'Menunggu keputusan eksternal', value: c.awaitingExternal, icon: Flag, to: '/dashboard/inspeksi?set=eksternal' },
+    { label: 'Temuan terbuka', value: c.openFindings, icon: TriangleAlert, emphasis: 'warning', to: '/dashboard/temuan?set=terbuka' },
+    { label: 'Tindakan terlambat', value: c.overdueActions, icon: TriangleAlert, emphasis: 'danger', to: '/dashboard/temuan?set=overdue' },
+    { label: 'Hold point menunggu rilis', value: c.holdAwaitingRelease, icon: Lock, emphasis: c.holdAwaitingRelease > 0 ? 'warning' : 'neutral', to: '/dashboard/inspeksi?set=review' },
   ]
 
   const impacts = ACTIVITY.filter((e) => e.impact).slice(0, 6)
+  const attention = attentionProjects()
+  const issues = priorityIssues().slice(0, 5)
+  const riskyMs = milestonesAtRisk().slice(0, 5)
+  const reports = [...DAILY_REPORTS].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 3)
+  const reportMissing = PROJECTS.filter((p) => p.status !== 'closed' && reportDueToday(p.id))
 
   return (
     <>
@@ -175,13 +291,163 @@ export function Ringkasan() {
           </div>
         )}
 
-        {/* Kartu proyek */}
-        <section aria-label="Proyek aktif">
-          <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="text-md font-semibold text-ink">Proyek</h2>
-            <Link to="/proyek" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-800">
+        {/* ══ Exception-first: proyek yang perlu perhatian pemilik ══ */}
+        <section aria-label="Proyek yang perlu perhatian">
+          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+            <div>
+              <h2 className="text-md font-semibold text-ink">Perlu perhatian</h2>
+              <p className="text-xs text-ink-muted">Proyek terurut dari yang paling memerlukan tindakan — progres dari laporan harian lapangan.</p>
+            </div>
+            <Link to="/dashboard/proyek" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-800">
               Lihat semua proyek <ArrowRight {...iconProps(14)} strokeWidth={2.1} />
             </Link>
+          </div>
+          {loading ? (
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="rounded-xl border border-line-subtle bg-surface p-5 shadow-xs">
+                  <Skeleton className="h-4 w-44" />
+                  <Skeleton className="mt-2 h-3 w-full" />
+                  <Skeleton className="mt-4 h-2 w-full" />
+                  <SkeletonText lines={3} className="mt-3" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {attention.map((p) => (
+                <AttentionCard key={p.id} p={p} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* ══ Isu prioritas + milestone berisiko + laporan harian ══ */}
+        <div className="grid items-start gap-4 lg:grid-cols-5">
+          <Card className="lg:col-span-3">
+            <CardHeader
+              title="Isu terbuka prioritas"
+              description="Temuan terpenting lintas proyek — terlambat & yang memblokir pekerjaan di urutan atas."
+            />
+            <CardBody className="pt-1">
+              {loading ? (
+                <SkeletonText lines={6} className="p-2" />
+              ) : (
+                <ul className="divide-y divide-line-subtle">
+                  {issues.map(({ finding: f, overdue, blocks }) => {
+                    const cls = FINDING_CLASSIFICATION[f.classification]
+                    const st = FINDING_STATUS[f.status]
+                    return (
+                      <li key={f.id}>
+                        <Link to={`/dashboard/temuan/${f.id}`} className="group -mx-2 flex items-start gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-hover">
+                          <span className={cn('mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full', TONE_STYLES[cls.tone].badge)}>
+                            <cls.icon {...iconProps(14)} />
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-md font-medium text-ink group-hover:text-brand-700">
+                              <span className="font-mono text-xs text-ink-muted">{f.ref}</span> · {f.title}
+                            </p>
+                            <p className="mt-0.5 truncate text-xs text-ink-muted">
+                              {projectName(f.projectId)} · PJ: {f.assignee}
+                              {f.dueAt && <> · target {formatRelative(f.dueAt)}</>}
+                              {blocks.length > 0 && (
+                                <span className="ml-1.5 inline-flex items-center gap-0.5 font-medium text-red-700">
+                                  <Lock {...iconProps(11)} strokeWidth={2.2} /> memblokir {blocks.map((b) => b.ref).join(', ')}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                          <div className="flex shrink-0 flex-col items-end gap-1">
+                            <StatusBadge status={st} size="sm" />
+                            {overdue && (
+                              <Badge tone="danger" size="sm">terlambat</Badge>
+                            )}
+                          </div>
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+              <div className="border-t border-line-subtle pt-2.5">
+                <Link to="/dashboard/temuan" className="text-sm font-medium text-brand-700 hover:text-brand-800">
+                  Lihat semua temuan & tindakan →
+                </Link>
+              </div>
+            </CardBody>
+          </Card>
+
+          <div className="space-y-4 lg:col-span-2">
+            {/* Milestone & aktivitas berisiko */}
+            <Card>
+              <CardHeader title="Aktivitas & milestone berisiko" />
+              <CardBody className="space-y-2.5 pt-2">
+                {loading ? (
+                  <SkeletonText lines={4} />
+                ) : (
+                  riskyMs.map((m) => (
+                    <div key={m.id} className="rounded-lg border border-line-subtle p-2.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="tnum rounded bg-sunken px-1.5 py-0.5 text-2xs font-medium text-ink-secondary">{formatDate(m.date)}</span>
+                        <span className="min-w-0 flex-1 truncate text-xs font-medium text-ink">{m.title}</span>
+                        <StatusBadge status={MILESTONE_STATUS[m.statusId]} size="sm" />
+                      </div>
+                      <p className="mt-1 text-2xs text-ink-muted">
+                        {projectName(m.projectId)} · {m.note}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </CardBody>
+            </Card>
+
+            {/* Sinyal lapangan — laporan harian */}
+            <Card>
+              <CardHeader title="Laporan harian lapangan" description="Sumber kondisi & progres — disusun pengawas proyek." />
+              <CardBody className="pt-2">
+                {loading ? (
+                  <SkeletonText lines={4} />
+                ) : (
+                  <>
+                    <ul className="divide-y divide-line-subtle">
+                      {reports.map((r) => (
+                        <li key={r.id}>
+                          <Link to={`/dashboard/proyek/${r.projectId}`} className="group -mx-2 block rounded-lg px-2 py-2.5 transition-colors hover:bg-hover">
+                            <p className="flex items-center gap-2 text-xs">
+                              <FileText {...iconProps(13)} className="shrink-0 text-ink-muted" />
+                              <span className="font-mono text-ink-muted">{r.ref}</span>
+                              <span className="truncate font-medium text-ink group-hover:text-brand-700">{projectName(r.projectId)}</span>
+                              <time className="tnum ml-auto shrink-0 text-2xs text-ink-muted">{formatRelative(r.at)}</time>
+                            </p>
+                            <p className="mt-1 line-clamp-2 pl-[22px] text-2xs leading-4 text-ink-secondary">{r.progressNote}</p>
+                            {r.flags.length > 0 && (
+                              <p className="mt-1 line-clamp-1 pl-[22px] text-2xs text-ink-muted">
+                                <TriangleAlert {...iconProps(11)} strokeWidth={2.2} className="mr-1 inline text-amber-600" />
+                                {r.flags[0].label}
+                                {r.flags.length > 1 && ` · +${r.flags.length - 1} isu lainnya`}
+                              </p>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    {reportMissing.length > 0 && (
+                      <p className="mt-2 rounded-md bg-sunken px-2.5 py-1.5 text-2xs text-ink-muted">
+                        <Info {...iconProps(11)} className="mr-1 inline text-ink-muted" />
+                        Laporan hari ini belum diterima: {reportMissing.map((p) => p.code).join(', ')}.
+                      </p>
+                    )}
+                  </>
+                )}
+              </CardBody>
+            </Card>
+          </div>
+        </div>
+
+        {/* ══ Direktori semua proyek ══ */}
+        <section aria-label="Semua proyek">
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 className="text-md font-semibold text-ink">Semua proyek</h2>
           </div>
           {loading ? (
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">

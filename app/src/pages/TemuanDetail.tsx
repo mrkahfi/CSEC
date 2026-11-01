@@ -30,7 +30,7 @@ import { formatDateTime, formatRelative } from '@/lib/format'
 import { useDemo } from '@/demo/DemoContext'
 import { useSimulatedLoading } from '@/demo/hooks'
 import { EventTimeline } from '@/demo/EventTimeline'
-import { controlPointsOfProject, findingById, inspectionByRef, projectById, projectName } from '@/demo/data'
+import { controlPointsOfProject, findingById, inspectionByRef, projectById, projectName, reportsMentioningFinding } from '@/demo/data'
 import type { CorrectiveAction } from '@/demo/data'
 
 const ACTION_STATUS: Record<CorrectiveAction['status'], { label: string; tone: 'warning' | 'info' | 'active' | 'success' | 'danger'; icon: typeof CircleCheck; description: string }> = {
@@ -128,7 +128,7 @@ export function TemuanDetail() {
         icon={FileSearch}
         title="Temuan tidak ditemukan"
         description="Referensi tidak ada pada data demo."
-        actions={<Button variant="secondary" onClick={() => navigate('/temuan')}><ArrowLeft {...iconProps(15)} /> Kembali ke register</Button>}
+        actions={<Button variant="secondary" onClick={() => navigate('/dashboard/temuan')}><ArrowLeft {...iconProps(15)} /> Kembali ke register</Button>}
         className="py-20"
       />
     )
@@ -141,15 +141,16 @@ export function TemuanDetail() {
   const blockingHolds = controlPointsOfProject(f.projectId).filter(
     (c) => c.conditions?.some((x) => !x.met && x.label.includes(f.ref)),
   )
+  const mentioningReports = reportsMentioningFinding(f.id)
   const overdue = f.dueAt && new Date(f.dueAt).getTime() < Date.now() && !['closed', 'superseded', 'cancelled'].includes(f.status)
 
   return (
     <>
       <PageHeader
         breadcrumbs={[
-          { label: 'Proyek', to: '/proyek' },
-          { label: project.name, to: `/proyek/${project.id}` },
-          { label: 'Temuan', to: `/temuan?proyek=${project.id}` },
+          { label: 'Proyek', to: '/dashboard/proyek' },
+          { label: project.name, to: `/dashboard/proyek/${project.id}` },
+          { label: 'Temuan', to: `/dashboard/temuan?proyek=${project.id}` },
           { label: f.ref },
         ]}
         title={f.title}
@@ -163,7 +164,7 @@ export function TemuanDetail() {
         actions={
           sourceIns && (
             <Link
-              to={`/inspeksi/${sourceIns.id}`}
+              to={`/dashboard/inspeksi/${sourceIns.id}`}
               className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-surface px-3 text-sm font-medium text-ink shadow-xs transition-colors hover:bg-hover"
             >
               <ClipboardCheck {...iconProps(15)} /> Inspeksi sumber {sourceIns.ref}
@@ -278,8 +279,24 @@ export function TemuanDetail() {
             <Card>
               <CardHeader title="Konteks" />
               <CardBody className="space-y-1.5 pt-3 text-xs text-ink-muted">
-                <p>Proyek: <Link to={`/proyek/${project.id}`} className="font-medium text-brand-700 hover:underline">{projectName(project.id)}</Link></p>
-                {sourceIns && <p>Sumber: <Link to={`/inspeksi/${sourceIns.id}`} className="font-mono text-brand-700 hover:underline">{sourceIns.ref}</Link></p>}
+                <p>Proyek: <Link to={`/dashboard/proyek/${project.id}`} className="font-medium text-brand-700 hover:underline">{projectName(project.id)}</Link></p>
+                {sourceIns && <p>Sumber: <Link to={`/dashboard/inspeksi/${sourceIns.id}`} className="font-mono text-brand-700 hover:underline">{sourceIns.ref}</Link></p>}
+                {mentioningReports.length > 0 && (
+                  <div>
+                    <p className="mt-1">Disebut dalam laporan harian lapangan:</p>
+                    <ul className="mt-1 space-y-1">
+                      {mentioningReports.map((r) => (
+                        <li key={r.id}>
+                          <Link to={`/dashboard/proyek/${r.projectId}`} className="inline-flex items-center gap-1 text-brand-700 hover:underline">
+                            <FileText {...iconProps(11)} />
+                            <span className="font-mono">{r.ref}</span>
+                            <span className="tnum text-ink-muted">· {formatRelative(r.at)}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </CardBody>
             </Card>
           </div>

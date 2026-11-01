@@ -77,7 +77,7 @@ export function KotakTindakan() {
                 <li key={a.id}>
                   <button
                     type="button"
-                    onClick={() => navigate(a.record.type === 'inspection' ? `/inspeksi/${a.record.id}` : a.record.type === 'finding' ? `/temuan/${a.record.id}` : `/proyek/${a.projectId}?titik=${a.record.id}`)}
+                    onClick={() => navigate(a.record.type === 'inspection' ? `/dashboard/inspeksi/${a.record.id}` : a.record.type === 'finding' ? `/dashboard/temuan/${a.record.id}` : `/dashboard/proyek/${a.projectId}?titik=${a.record.id}`)}
                     className={cn(
                       'group block w-full cursor-pointer rounded-xl border bg-surface p-5 text-left shadow-xs transition-all',
                       overdue ? 'border-red-200 hover:border-red-300 hover:shadow-sm' : 'border-line-subtle hover:border-line-strong hover:shadow-sm',

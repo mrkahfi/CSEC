@@ -12,7 +12,7 @@ export function NotFound() {
       title="Halaman tidak ditemukan"
       description="Tautan tidak dikenali pada demo. Semua rute demo tersedia lewat navigasi kiri."
       actions={
-        <Button variant="secondary" onClick={() => navigate('/')}>
+        <Button variant="secondary" onClick={() => navigate('/dashboard')}>
           Kembali ke Ringkasan
         </Button>
       }

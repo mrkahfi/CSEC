@@ -133,7 +133,7 @@ export function TemuanRegister() {
                 {rows.map((f) => {
                   const overdue = isOverdue(f)
                   return (
-                    <TableRow key={f.id} clickable onClick={() => navigate(`/temuan/${f.id}`)}>
+                    <TableRow key={f.id} clickable onClick={() => navigate(`/dashboard/temuan/${f.id}`)}>
                       <MonoCell>{f.ref}</MonoCell>
                       <TableCell>
                         <p className="max-w-80 truncate text-sm font-medium text-ink">{f.title}</p>

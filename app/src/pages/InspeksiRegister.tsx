@@ -213,7 +213,7 @@ export function InspeksiRegister() {
                   const cp = i.holdPointId ? controlPointById(i.holdPointId) : undefined
                   const hpBlocked = cp && !['released', 'not_due'].includes(cp.status)
                   return (
-                    <TableRow key={i.id} clickable onClick={() => navigate(`/inspeksi/${i.id}`)}>
+                    <TableRow key={i.id} clickable onClick={() => navigate(`/dashboard/inspeksi/${i.id}`)}>
                       <MonoCell>
                         <span className="group-hover:text-brand-700">{i.ref}</span>
                         <span className="mt-0.5 block whitespace-nowrap text-2xs text-ink-muted tnum">umur {i.submittedAt ? formatAge(i.submittedAt) : '-'}</span>

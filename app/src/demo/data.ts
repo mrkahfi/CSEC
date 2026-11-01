@@ -5,6 +5,7 @@ import type {
   InspectionStatusId,
   PointTypeId,
   RoleId,
+  StatusDef,
   StatusTone,
 } from '@/components/status'
 import {
@@ -14,6 +15,8 @@ import {
   CalendarX,
   CircleCheck,
   CircleX,
+  OctagonAlert,
+  TrendingDown,
   ClipboardCheck,
   Eye,
   EyeOff,
@@ -103,7 +106,7 @@ export const PROJECTS: Project[] = [
     type: 'Gedung bertingkat (struktur & arsitektur)',
     status: 'active',
     value: 'Rp 412 M',
-    period: 'Jan 2025 – Agu 2026',
+    period: 'Jan 2025 s.d. Agu 2026',
     pm: 'Andi Prasetyo',
     siteManager: 'Rizky Hidayat',
     qualityLead: 'Sari Wulandari',
@@ -118,7 +121,7 @@ export const PROJECTS: Project[] = [
     type: 'Fasilitas kesehatan (2 lantai + MEP)',
     status: 'active',
     value: 'Rp 68 M',
-    period: 'Okt 2025 – Mar 2026',
+    period: 'Okt 2025 s.d. Mar 2026',
     pm: 'Andi Prasetyo',
     siteManager: 'Dedi Kurniawan',
     qualityLead: 'Sari Wulandari',
@@ -130,10 +133,10 @@ export const PROJECTS: Project[] = [
     name: 'Peningkatan Jalan Kartika',
     client: 'Dinas Bina Marga Kota (fiktif)',
     location: 'Makassar, Sektor 2',
-    type: 'Jalan (peningkatan perkerasan, Sta 0+000–1+200)',
+    type: 'Jalan (peningkatan perkerasan, Sta 0+000-1+200)',
     status: 'active',
     value: 'Rp 31 M',
-    period: 'Agu 2026 – Feb 2027',
+    period: 'Agu 2026 s.d. Feb 2027',
     pm: 'Andi Prasetyo',
     siteManager: 'Yusuf Maulana',
     qualityLead: 'Sari Wulandari',
@@ -148,7 +151,7 @@ export const PROJECTS: Project[] = [
     type: 'Renovasi gudang (struktur baja)',
     status: 'closed',
     value: 'Rp 12 M',
-    period: 'Feb 2025 – Des 2025 · diarsipkan',
+    period: 'Feb 2025 s.d. Des 2025 · diarsipkan',
     pm: 'Andi Prasetyo',
     siteManager: 'Dedi Kurniawan',
     qualityLead: 'Sari Wulandari',
@@ -180,7 +183,7 @@ export const WORK_PACKAGES: WorkPackage[] = [
   { id: 'wp-ks-mep', projectId: 'ks', code: 'KS-MEP-L2', name: 'MEP plafon lantai 2 (kelistrikan & HVAC)', discipline: 'MEP', location: 'Lantai 2 · Zona Klinik', itpRef: 'ITP-KS-MEP Rev B' },
   { id: 'wp-ks-san', projectId: 'ks', code: 'KS-PLB-L1', name: 'Instalasi sanitair & plumbing lantai 1', discipline: 'Plumbing', location: 'Lantai 1 · Blok Poli', itpRef: 'ITP-KS-PLB Rev A' },
   { id: 'wp-ks-ff', projectId: 'ks', code: 'KS-FF-L2', name: 'Instalasi fire fighting lantai 2', discipline: 'Fire Fighting', location: 'Lantai 2 · Koridor Utara', itpRef: 'ITP-KS-FF Rev A' },
-  { id: 'wp-jk-sub', projectId: 'jk', code: 'JK-EW-01', name: 'Tanah dasar & subbase (earthwork)', discipline: 'Perkerasan jalan', location: 'Sta 0+400 – 0+900', itpRef: 'ITP-JK-RW Rev 2', nextActivity: 'Layer base kelas A' },
+  { id: 'wp-jk-sub', projectId: 'jk', code: 'JK-EW-01', name: 'Tanah dasar & subbase (earthwork)', discipline: 'Perkerasan jalan', location: 'Sta 0+400 s.d. 0+900', itpRef: 'ITP-JK-RW Rev 2', nextActivity: 'Layer base kelas A' },
   { id: 'wp-bl-st', projectId: 'bl', code: 'BL-ST-01', name: 'Struktur baja kanopi & mezzanine', discipline: 'Struktur baja', location: 'Blok Gudang B', itpRef: 'ITP-BL-ST Rev A' },
 ]
 
@@ -402,8 +405,8 @@ export const INSPECTIONS: Inspection[] = [
     projectId: 'aru',
     activityId: 'wp-ar-l8',
     title: 'Inspeksi tulangan pelat lantai 8',
-    scope: 'Tulangan pelat & balok · Grid A/1–4, ±184 m², besi D16-150',
-    location: 'Tower A · Lantai 8 · Grid A/1–4',
+    scope: 'Tulangan pelat & balok · Grid A/1-4, ±184 m², besi D16-150',
+    location: 'Tower A · Lantai 8 · Grid A/1-4',
     locationDetail: 'Zona puring timur, dekat lift core B',
     pointType: 'hold',
     itpRef: 'ITP-ARU-STR Rev C · Item 4.2',
@@ -433,9 +436,9 @@ export const INSPECTIONS: Inspection[] = [
     priorInspectionIds: ['wir-ar-0131'],
     holdPointId: 'hp-ar-02',
     timeline: [
-      { id: 't1', at: agoD(6), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan dibuat', kind: 'created', detail: 'WIR-AR-2026-0142 · lingkup Grid A/1–4 · S-301 Rev C' },
+      { id: 't1', at: agoD(6), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan dibuat', kind: 'created', detail: 'WIR-AR-2026-0142 · lingkup Grid A/1-4 · S-301 Rev C' },
       { id: 't2', at: agoH(140), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan untuk review', kind: 'submitted', note: 'Pemberitahuan 48 jam sesuai ITP.' },
-      { id: 't3', at: agoD(4), actor: SARI.name, role: 'QA/QC', title: 'Keputusan direkam: Perlu Perbaikan', kind: 'correction', note: 'Cover tulangan sebagian 20 mm (spesifikasi 25 mm); foto pendukung kurang mewakili area Grid A/3–4.', detail: 'Bukan inkonformitas teknis formal, tidak membuat NCR. Re-inspeksi ditautkan ke pengajuan ini.' },
+      { id: 't3', at: agoD(4), actor: SARI.name, role: 'QA/QC', title: 'Keputusan direkam: Perlu Perbaikan', kind: 'correction', note: 'Cover tulangan sebagian 20 mm (spesifikasi 25 mm); foto pendukung kurang mewakili area Grid A/3-4.', detail: 'Bukan inkonformitas teknis formal, tidak membuat NCR. Re-inspeksi ditautkan ke pengajuan ini.' },
       { id: 't4', at: agoD(3), actor: BUDI.name, role: 'Site Engineer', title: 'Perbaikan dikerjakan + bukti dilampirkan', kind: 'evidence', note: 'Cover diganti spacer 25 mm; 8 foto baru & laporan pengawasan LW-08-114.' },
       { id: 't5', at: agoD(1), actor: BUDI.name, role: 'Site Engineer', title: 'Re-inspeksi diminta', kind: 'reinspection', detail: 'Tertaut ke WIR-AR-2026-0142; riwayat pengajuan pertama tetap tersimpan.' },
       { id: 't6', at: agoH(20), actor: SARI.name, role: 'QA/QC', title: 'Inspeksi ulang dilaksanakan di lapangan', kind: 'in_progress', note: 'Pemeriksaan lapangan selesai; keputusan formal menunggu perekaman.' },
@@ -447,8 +450,8 @@ export const INSPECTIONS: Inspection[] = [
     projectId: 'aru',
     activityId: 'wp-ar-l9',
     title: 'Inspeksi bekisting & dinding geser L9',
-    scope: 'Bekisting dinding geser inti · Grid C/2–5, per…' ,
-    location: 'Tower A · Lantai 9 · Grid C/2–5',
+    scope: 'Bekisting dinding geser inti · Grid C/2-5, per…' ,
+    location: 'Tower A · Lantai 9 · Grid C/2-5',
     pointType: 'witness',
     itpRef: 'ITP-ARU-STR Rev C · Item 3.1',
     status: 'submitted',
@@ -482,7 +485,7 @@ export const INSPECTIONS: Inspection[] = [
     activityId: 'wp-ar-l8',
     title: 'Inspeksi tulangan balok lantai 7 (parsial)',
     scope: 'Tulangan balok B-7a/B-7b · lingkup yang diperiksa: balok B-7a saja',
-    location: 'Tower A · Lantai 7 · Grid B/2–4',
+    location: 'Tower A · Lantai 7 · Grid B/2-4',
     pointType: 'hold',
     itpRef: 'ITP-ARU-STR Rev C · Item 4.1',
     status: 'accepted',
@@ -507,7 +510,7 @@ export const INSPECTIONS: Inspection[] = [
       { id: 't2', at: agoD(10), actor: SARI.name, role: 'QA/QC', title: 'Inspeksi dilaksanakan (lingkup parsial)', kind: 'in_progress', note: 'Balok B-7b belum dapat diperiksa (material belum tiba). Sisa lingkup memerlukan pengajuan baru.' },
       { id: 't3', at: agoD(9), actor: SARI.name, role: 'QA/QC', title: 'Keputusan direkam: Diterima (lingkup B-7a)', kind: 'accepted', note: 'Diterima untuk lingkup & revisi gambar yang ditinjau (S-301 Rev C).', detail: 'Bukan penerimaan kontraktual; bukan rilis hold point.' },
     ],
-    decision: { outcome: 'Diterima', statusId: 'accepted', by: SARI.name, role: 'QA/QC', scope: 'Balok B-7a · Grid B/2–4 · S-301 Rev C', comment: 'Sesuai gambar & spesifikasi. Sisa lingkup (B-7b) = pengajuan terpisah.' },
+    decision: { outcome: 'Diterima', statusId: 'accepted', by: SARI.name, role: 'QA/QC', scope: 'Balok B-7a · Grid B/2-4 · S-301 Rev C', comment: 'Sesuai gambar & spesifikasi. Sisa lingkup (B-7b) = pengajuan terpisah.' },
   },
   {
     id: 'wir-ar-0128',
@@ -545,7 +548,7 @@ export const INSPECTIONS: Inspection[] = [
     activityId: 'wp-ar-l7',
     title: 'Waterproofing bak toilet L7',
     scope: 'Waterproofing 6 bak toilet · uji genangan 48 jam',
-    location: 'Tower A · Lantai 7 · Bak Toilet 1–6',
+    location: 'Tower A · Lantai 7 · Bak Toilet 1-6',
     pointType: 'hold',
     itpRef: 'ITP-ARU-ARC Rev B · Item 7.3',
     status: 'deferred',
@@ -626,7 +629,7 @@ export const INSPECTIONS: Inspection[] = [
     activityId: 'wp-ks-mep',
     title: 'Instalasi MEP plafon lantai 2',
     scope: 'Kelistrikan, HVAC & pasokan gas medis · plafon zona klinik',
-    location: 'Lantai 2 · Zona Klinik · Sektor A1–A6',
+    location: 'Lantai 2 · Zona Klinik · Sektor A1-A6',
     pointType: 'review',
     itpRef: 'ITP-KS-MEP Rev B · Item 2.5',
     status: 'clarification_required',
@@ -664,7 +667,7 @@ export const INSPECTIONS: Inspection[] = [
     activityId: 'wp-ks-san',
     title: 'Instalasi sanitair lantai 1',
     scope: 'Pipa air bersih & kotor · blok poli',
-    location: 'Lantai 1 · Blok Poli · Ruang 101–118',
+    location: 'Lantai 1 · Blok Poli · Ruang 101-118',
     pointType: 'witness',
     itpRef: 'ITP-KS-PLB Rev A · Item 2.1',
     status: 'accepted',
@@ -722,7 +725,7 @@ export const INSPECTIONS: Inspection[] = [
     activityId: 'wp-jk-sub',
     title: 'Pemadatan subbase (uji kepadatan lapangan)',
     scope: 'Subbase kelas B · kepadatan in-situ (sand cone), 3 titik',
-    location: 'Sta 0+600 – 0+900 · Lajur kanan',
+    location: 'Sta 0+600 s.d. 0+900 · Lajur kanan',
     pointType: 'witness',
     itpRef: 'ITP-JK-RW Rev 2 · Item 3.4',
     status: 'scheduled',
@@ -752,8 +755,8 @@ export const INSPECTIONS: Inspection[] = [
     projectId: 'jk',
     activityId: 'wp-jk-sub',
     title: 'Tanah dasar (uji CBR lapangan)',
-    scope: 'Tanah dasar sta 0+400–0+600 · CBR & kepadatan',
-    location: 'Sta 0+400 – 0+600 · Lajur kiri',
+    scope: 'Tanah dasar sta 0+400-0+600 · CBR & kepadatan',
+    location: 'Sta 0+400 s.d. 0+600 · Lajur kiri',
     pointType: 'witness',
     itpRef: 'ITP-JK-RW Rev 2 · Item 2.3',
     status: 'accepted',
@@ -772,7 +775,7 @@ export const INSPECTIONS: Inspection[] = [
       { id: 't1', at: agoD(10), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
       { id: 't2', at: agoD(9), actor: 'PT Cipta Karya', role: 'Konsultan', title: 'Keputusan direkam: Diterima', kind: 'accepted' },
     ],
-    decision: { outcome: 'Diterima', statusId: 'accepted', by: 'PT Cipta Karya', role: 'Konsultan', scope: 'Sta 0+400–0+600 lajur kiri', comment: 'CBR memenuhi; lanjut subbase.' },
+    decision: { outcome: 'Diterima', statusId: 'accepted', by: 'PT Cipta Karya', role: 'Konsultan', scope: 'Sta 0+400-0+600 lajur kiri', comment: 'CBR memenuhi; lanjut subbase.' },
   },
   {
     id: 'wir-jk-0027',
@@ -807,8 +810,8 @@ export const INSPECTIONS: Inspection[] = [
     projectId: 'jk',
     activityId: 'wp-jk-sub',
     title: 'Pemadatan tanah dasar (lanjutan)',
-    scope: 'Tanah dasar sta 0+900–1+200 · sedang diperiksa',
-    location: 'Sta 0+900 – 1+200 · Lajur kanan',
+    scope: 'Tanah dasar sta 0+900-1+200 · sedang diperiksa',
+    location: 'Sta 0+900 s.d. 1+200 · Lajur kanan',
     pointType: 'surveillance',
     itpRef: 'ITP-JK-RW Rev 2 · Item 2.3',
     status: 'in_progress',
@@ -835,7 +838,7 @@ export const INSPECTIONS: Inspection[] = [
     activityId: 'wp-bl-st',
     title: 'Ereksi struktur baja mezzanine',
     scope: 'Ereksi kolom & balok WF · blok gudang B',
-    location: 'Blok Gudang B · Grid 3–7/A–D',
+    location: 'Blok Gudang B · Grid 3-7/A-D',
     pointType: 'hold',
     itpRef: 'ITP-BL-ST Rev A · Item 4.1',
     status: 'accepted',
@@ -932,11 +935,11 @@ export const FINDINGS: Finding[] = [
     ref: 'F-AR-021',
     projectId: 'aru',
     inspectionRef: 'WIR-AR-2026-0142',
-    location: 'Tower A · Lantai 8 · Grid A/2–3',
+    location: 'Tower A · Lantai 8 · Grid A/2-3',
     title: 'Cover tulangan pelat di bawah spesifikasi',
-    facts: 'Pengukuran lapangan pada 12 titik menunjukkan cover 20 mm pada area Grid A/2–3; spesifikasi 25 mm (SPEC-CON-01 §5.3). 4 titik lainnya sesuai.',
+    facts: 'Pengukuran lapangan pada 12 titik menunjukkan cover 20 mm pada area Grid A/2-3; spesifikasi 25 mm (SPEC-CON-01 §5.3). 4 titik lainnya sesuai.',
     suspectedCause: 'Spacer tidak terpasang merata saat pengecoran tahap awal (dugaan, belum dikonfirmasi).',
-    affectedExtent: '±6 m² pelat atas Grid A/2–3, luas pasti masih diinvestigasi',
+    affectedExtent: '±6 m² pelat atas Grid A/2-3, luas pasti masih diinvestigasi',
     sourceRequirement: 'SPEC-CON-01 Rev 1 §5.3 · S-301 Rev C',
     classification: 'confirmed_nc',
     status: 'verification_pending',
@@ -968,9 +971,9 @@ export const FINDINGS: Finding[] = [
     ref: 'F-AR-022',
     projectId: 'aru',
     inspectionRef: 'WIR-AR-2026-0131',
-    location: 'Tower A · Lantai 7 · Grid B/2–4',
+    location: 'Tower A · Lantai 7 · Grid B/2-4',
     title: 'Urutan ikatan kait balok tidak seragam',
-    facts: 'Jarak kait bervariasi 190–210 mm pada 2 titik; toleransi ±10 mm. Sudah diperbaiki saat inspeksi.',
+    facts: 'Jarak kait bervariasi 190-210 mm pada 2 titik; toleransi ±10 mm. Sudah diperbaiki saat inspeksi.',
     affectedExtent: '2 titik kait, sudah dikoreksi saat inspeksi',
     sourceRequirement: 'SPEC-CON-01 Rev 1 §5.1',
     classification: 'observation',
@@ -1109,9 +1112,9 @@ export const ACTION_ITEMS: ActionItem[] = [
 
 /** Notifikasi in-app — SELALU berlabel simulasi (FR-NO-04). */
 export const NOTIFICATIONS = [
-  { id: 'n1', at: agoH(2), title: 'Re-inspeksi WIR-AR-2026-0142 menunggu keputusan Anda', body: 'Sari Wulandari · QA/QC · simulasi', link: '/inspeksi/wir-ar-0142', tone: 'info' as StatusTone },
-  { id: 'n2', at: agoD(1), title: 'Tindakan CA-014-1 melewati jatuh tempo', body: 'F-KS-014 panel listrik, overdue 1 hari · simulasi', link: '/temuan/f-ks-014', tone: 'danger' as StatusTone },
-  { id: 'n3', at: agoD(2), title: 'Jadwal witness WP-JK-01 diubah', body: 'Kehadiran konsultan ditunda ke H+1 14:00 · simulasi', link: '/inspeksi/wir-jk-0041', tone: 'warning' as StatusTone },
+  { id: 'n1', at: agoH(2), title: 'Re-inspeksi WIR-AR-2026-0142 menunggu keputusan Anda', body: 'Sari Wulandari · QA/QC · simulasi', link: '/dashboard/inspeksi/wir-ar-0142', tone: 'info' as StatusTone },
+  { id: 'n2', at: agoD(1), title: 'Tindakan CA-014-1 melewati jatuh tempo', body: 'F-KS-014 panel listrik, overdue 1 hari · simulasi', link: '/dashboard/temuan/f-ks-014', tone: 'danger' as StatusTone },
+  { id: 'n3', at: agoD(2), title: 'Jadwal witness WP-JK-01 diubah', body: 'Kehadiran konsultan ditunda ke H+1 14:00 · simulasi', link: '/dashboard/inspeksi/wir-jk-0041', tone: 'warning' as StatusTone },
 ]
 
 /* ------------------------------------------------------------
@@ -1134,18 +1137,483 @@ export interface ActivityEntry {
 }
 
 export const ACTIVITY: ActivityEntry[] = [
-  { id: 'g1', at: agoH(2), actor: SARI.name, role: 'QA/QC', projectId: 'aru', ref: 'WIR-AR-2026-0142', kind: 'in_progress', title: 'Inspeksi ulang dilaksanakan di lapangan', note: 'Keputusan formal menunggu perekaman.', impact: true, link: '/inspeksi/wir-ar-0142' },
-  { id: 'g2', at: agoH(5), actor: BUDI.name, role: 'Site Engineer', projectId: 'aru', ref: 'WIR-AR-2026-0147', kind: 'created', title: 'Draf pengajuan dibuat', link: '/inspeksi/wir-ar-0147' },
-  { id: 'g3', at: agoH(20), actor: 'Sistem (simulasi)', role: 'Eskalasi demo', projectId: 'ks', ref: 'F-KS-014', kind: 'rejected', title: 'Tindakan CA-014-1 melewati jatuh tempo', impact: true, link: '/temuan/f-ks-014' },
-  { id: 'g4', at: agoD(1), actor: BUDI.name, role: 'Site Engineer', projectId: 'aru', ref: 'F-AR-021', kind: 'evidence', title: 'Bukti perbaikan diajukan (CA-021-1)', note: 'Menunggu verifikasi QA/QC.', impact: true, link: '/temuan/f-ar-021' },
-  { id: 'g5', at: agoD(1), actor: 'Yusuf Maulana', role: 'Site Manager', projectId: 'jk', ref: 'WIR-JK-2026-0041', kind: 'scheduled', title: 'Jadwal witness disetujui ulang', link: '/inspeksi/wir-jk-0041' },
-  { id: 'g6', at: agoD(1), actor: SARI.name, role: 'QA/QC', projectId: 'ks', ref: 'WIR-KS-2026-0091', kind: 'scheduled', title: 'Inspeksi fire fighting terjadwal H+3', link: '/inspeksi/wir-ks-0091' },
-  { id: 'g7', at: agoD(2), actor: 'PT Cipta Karya', role: 'Konsultan', projectId: 'jk', ref: 'WIR-JK-2026-0041', kind: 'rescheduled', title: 'Jadwal diubah, konsultan berhalangan', note: 'Waktu asli, alasan, & penanggung jawab tercatat.', impact: true, link: '/inspeksi/wir-jk-0041' },
-  { id: 'g8', at: agoD(2), actor: SARI.name, role: 'QA/QC', projectId: 'ks', ref: 'WIR-KS-2026-0088', kind: 'clarification', title: 'Perlu klarifikasi, referensi revisi gambar', note: 'Bukan kegagalan teknis.', impact: true, link: '/inspeksi/wir-ks-0088' },
-  { id: 'g9', at: agoD(2), actor: SARI.name, role: 'QA/QC', projectId: 'ks', ref: 'F-KS-012', kind: 'finding', title: 'Temuan potensi inkonformitas dicatat', link: '/temuan/f-ks-012' },
-  { id: 'g10', at: agoD(3), actor: 'Andi Prasetyo', role: 'Project Manager', projectId: 'aru', ref: 'F-AR-021', kind: 'action', title: 'Tindakan perbaikan ditugaskan ke subkontraktor', link: '/temuan/f-ar-021' },
-  { id: 'g11', at: agoD(4), actor: SARI.name, role: 'QA/QC', projectId: 'aru', ref: 'WIR-AR-2026-0142', kind: 'correction', title: 'Keputusan direkam: Perlu Perbaikan', note: 'Alasan wajib tercatat; riwayat pengajuan dipertahankan.', impact: true, link: '/inspeksi/wir-ar-0142' },
-  { id: 'g12', at: agoD(4), actor: SARI.name, role: 'QA/QC', projectId: 'aru', ref: 'F-AR-021', kind: 'finding', title: 'Inkonformitas terkonfirmasi (indikator NCR)', impact: true, link: '/temuan/f-ar-021' },
+  { id: 'g1', at: agoH(2), actor: SARI.name, role: 'QA/QC', projectId: 'aru', ref: 'WIR-AR-2026-0142', kind: 'in_progress', title: 'Inspeksi ulang dilaksanakan di lapangan', note: 'Keputusan formal menunggu perekaman.', impact: true, link: '/dashboard/inspeksi/wir-ar-0142' },
+  { id: 'g2', at: agoH(5), actor: BUDI.name, role: 'Site Engineer', projectId: 'aru', ref: 'WIR-AR-2026-0147', kind: 'created', title: 'Draf pengajuan dibuat', link: '/dashboard/inspeksi/wir-ar-0147' },
+  { id: 'g3', at: agoH(20), actor: 'Sistem (simulasi)', role: 'Eskalasi demo', projectId: 'ks', ref: 'F-KS-014', kind: 'rejected', title: 'Tindakan CA-014-1 melewati jatuh tempo', impact: true, link: '/dashboard/temuan/f-ks-014' },
+  { id: 'g4', at: agoD(1), actor: BUDI.name, role: 'Site Engineer', projectId: 'aru', ref: 'F-AR-021', kind: 'evidence', title: 'Bukti perbaikan diajukan (CA-021-1)', note: 'Menunggu verifikasi QA/QC.', impact: true, link: '/dashboard/temuan/f-ar-021' },
+  { id: 'g5', at: agoD(1), actor: 'Yusuf Maulana', role: 'Site Manager', projectId: 'jk', ref: 'WIR-JK-2026-0041', kind: 'scheduled', title: 'Jadwal witness disetujui ulang', link: '/dashboard/inspeksi/wir-jk-0041' },
+  { id: 'g6', at: agoD(1), actor: SARI.name, role: 'QA/QC', projectId: 'ks', ref: 'WIR-KS-2026-0091', kind: 'scheduled', title: 'Inspeksi fire fighting terjadwal H+3', link: '/dashboard/inspeksi/wir-ks-0091' },
+  { id: 'g7', at: agoD(2), actor: 'PT Cipta Karya', role: 'Konsultan', projectId: 'jk', ref: 'WIR-JK-2026-0041', kind: 'rescheduled', title: 'Jadwal diubah, konsultan berhalangan', note: 'Waktu asli, alasan, & penanggung jawab tercatat.', impact: true, link: '/dashboard/inspeksi/wir-jk-0041' },
+  { id: 'g8', at: agoD(2), actor: SARI.name, role: 'QA/QC', projectId: 'ks', ref: 'WIR-KS-2026-0088', kind: 'clarification', title: 'Perlu klarifikasi, referensi revisi gambar', note: 'Bukan kegagalan teknis.', impact: true, link: '/dashboard/inspeksi/wir-ks-0088' },
+  { id: 'g9', at: agoD(2), actor: SARI.name, role: 'QA/QC', projectId: 'ks', ref: 'F-KS-012', kind: 'finding', title: 'Temuan potensi inkonformitas dicatat', link: '/dashboard/temuan/f-ks-012' },
+  { id: 'g10', at: agoD(3), actor: 'Andi Prasetyo', role: 'Project Manager', projectId: 'aru', ref: 'F-AR-021', kind: 'action', title: 'Tindakan perbaikan ditugaskan ke subkontraktor', link: '/dashboard/temuan/f-ar-021' },
+  { id: 'g11', at: agoD(4), actor: SARI.name, role: 'QA/QC', projectId: 'aru', ref: 'WIR-AR-2026-0142', kind: 'correction', title: 'Keputusan direkam: Perlu Perbaikan', note: 'Alasan wajib tercatat; riwayat pengajuan dipertahankan.', impact: true, link: '/dashboard/inspeksi/wir-ar-0142' },
+  { id: 'g12', at: agoD(4), actor: SARI.name, role: 'QA/QC', projectId: 'aru', ref: 'F-AR-021', kind: 'finding', title: 'Inkonformitas terkonfirmasi (indikator NCR)', impact: true, link: '/dashboard/temuan/f-ar-021' },
+]
+
+/* ============================================================
+ * KENDALI EKSEKUSI — kesehatan proyek, progres vs rencana,
+ * laporan harian lapangan & milestone (penyempurnaan demo)
+ * ------------------------------------------------------------
+ * Prinsip: progres & kondisi lapangan BERSUMBER dari laporan
+ * harian (pengawas/site) — tidak ada deteksi otomatis. Seluruh
+ * angka & alasan saling tertaut ke catatan yang sudah ada
+ * (temuan, titik kendali, inspeksi) agar cerita "pantau →
+ * deteksi deviasi → pahami masalah lapangan → tugaskan
+ * tindak lanjut → pantau penyelesaian" konsisten antar layar.
+ * ============================================================ */
+
+/* ------------------------------------------------------------
+ * Kesehatan proyek — status level pemilik (bukan status QA)
+ * ------------------------------------------------------------ */
+
+export type ProjectHealthId = 'on_track' | 'at_risk' | 'behind' | 'archived'
+
+export const PROJECT_HEALTH: Record<ProjectHealthId, StatusDef> = {
+  on_track: {
+    id: 'on_track',
+    label: 'Sesuai Rencana',
+    tone: 'success',
+    icon: CircleCheck,
+    description: 'Progres mengikuti rencana; tidak ada hambatan material terbuka.',
+  },
+  at_risk: {
+    id: 'at_risk',
+    label: 'Perlu Perhatian',
+    tone: 'warning',
+    icon: TriangleAlert,
+    description: 'Ada hambatan/risiko yang perlu ditindaklanjuti sebelum berdampak ke jadwal.',
+  },
+  behind: {
+    id: 'behind',
+    label: 'Terlambat',
+    tone: 'danger',
+    icon: TrendingDown,
+    description: 'Progres di bawah rencana dan/atau ada aktivitas terblokir; perlu tindakan pemulihan.',
+  },
+  archived: {
+    id: 'archived',
+    label: 'Arsip',
+    tone: 'neutral',
+    icon: Archive,
+    description: 'Proyek selesai & diarsipkan; rekaman hanya-baca.',
+  },
+}
+
+/** Satu alasan "mengapa proyek ini perlu perhatian" — tertaut ke catatan sumber. */
+export interface HealthReason {
+  id: string
+  severity: Extract<StatusTone, 'danger' | 'warning' | 'info'>
+  /** Referensi catatan sumber, mis. "F-AR-021". */
+  refLabel?: string
+  label: string
+  to?: string
+}
+
+export interface ProjectHealthState {
+  healthId: ProjectHealthId
+  /** Satu kalimat ringkas untuk pemilik. */
+  headline: string
+  reasons: HealthReason[]
+}
+
+export const PROJECT_HEALTH_STATE: Record<string, ProjectHealthState> = {
+  aru: {
+    healthId: 'behind',
+    headline: 'Terlambat ±5 poin dari rencana; siklus cor lantai 8 terblokir hold point.',
+    reasons: [
+      { id: 'r1', severity: 'danger', refLabel: 'HP-AR-02', label: 'Cor pelat L8 tertahan — rilis hold point menunggu 2 kondisi (temuan & verifikasi).', to: '/dashboard/proyek/aru?titik=hp-ar-02' },
+      { id: 'r2', severity: 'warning', refLabel: 'F-AR-021', label: 'Perbaikan cover tulangan sudah diajukan; verifikasi QA/QC menjadi syarat rilis cor.', to: '/dashboard/temuan/f-ar-021' },
+      { id: 'r3', severity: 'warning', refLabel: 'WIR-AR-2026-0142', label: 'Keputusan re-inspeksi menunggu perekaman QA/QC.', to: '/dashboard/inspeksi/wir-ar-0142' },
+      { id: 'r4', severity: 'info', label: 'Selisih vs rencana melebar 4 minggu berturut-turut (1 → 5 poin).' },
+    ],
+  },
+  ks: {
+    healthId: 'at_risk',
+    headline: 'Progres sedikit di bawah rencana; ada tindakan K3 yang terlambat.',
+    reasons: [
+      { id: 'r1', severity: 'danger', refLabel: 'CA-014-1', label: 'Penutupan panel listrik (F-KS-014) lewat jatuh tempo 1 hari — perlu eskalasi.', to: '/dashboard/temuan/f-ks-014' },
+      { id: 'r2', severity: 'warning', refLabel: 'F-KS-012', label: 'Investigasi jalur kabel vs gas medis berjalan; berdampak ke penutupan plafon L2.', to: '/dashboard/temuan/f-ks-012' },
+      { id: 'r3', severity: 'info', refLabel: 'WIR-KS-2026-0088', label: 'Pengajuan MEP L2 dikembalikan untuk kelengkapan referensi revisi.', to: '/dashboard/inspeksi/wir-ks-0088' },
+    ],
+  },
+  jk: {
+    healthId: 'at_risk',
+    headline: 'Progres ±4 poin di bawah rencana; rantai penerimaan bergantung jadwal konsultan.',
+    reasons: [
+      { id: 'r1', severity: 'warning', refLabel: 'WIR-JK-2026-0041', label: 'Witness kepadatan subbase dijadwalkan ulang (konsultan berhalangan) — waktu baru H+1 14:00.', to: '/dashboard/inspeksi/wir-jk-0041' },
+      { id: 'r2', severity: 'warning', refLabel: 'WIR-JK-2026-0027', label: 'Keputusan mix design aspal masih di konsultan; mulai aspal lapis 1 menunggu.', to: '/dashboard/inspeksi/wir-jk-0027' },
+      { id: 'r3', severity: 'info', refLabel: 'LW-05-021', label: 'Rework subgrade area A selesai; penerimaan ulang menyusul witness kepadatan.' },
+    ],
+  },
+  bl: {
+    healthId: 'archived',
+    headline: 'Proyek selesai & diarsipkan.',
+    reasons: [],
+  },
+}
+
+/* ------------------------------------------------------------
+ * Progres aktual vs rencana — direkap dari laporan harian
+ * ------------------------------------------------------------ */
+
+export interface ProgressPoint {
+  label: string
+  plan: number
+  actual: number
+}
+
+export interface ProjectProgress {
+  projectId: string
+  /** Rencana & realisasi kumulatif (%) pada tanggal laporan terakhir. */
+  planPct: number
+  actualPct: number
+  asOf: string
+  /** Laporan sumber rekapan terakhir. */
+  sourceRef: string
+  reporter: string
+  weekly: ProgressPoint[]
+}
+
+export const PROJECT_PROGRESS: Record<string, ProjectProgress> = {
+  aru: {
+    projectId: 'aru',
+    planPct: 61,
+    actualPct: 56,
+    asOf: agoH(20),
+    sourceRef: 'LW-08-116',
+    reporter: 'Hendra Kusuma (Konsultan)',
+    weekly: [
+      { label: 'M1', plan: 46, actual: 45 },
+      { label: 'M2', plan: 50, actual: 48 },
+      { label: 'M3', plan: 53, actual: 51 },
+      { label: 'M4', plan: 56, actual: 53 },
+      { label: 'M5', plan: 59, actual: 55 },
+      { label: 'M6', plan: 61, actual: 56 },
+    ],
+  },
+  ks: {
+    projectId: 'ks',
+    planPct: 64,
+    actualPct: 60,
+    asOf: agoH(26),
+    sourceRef: 'LW-11-038',
+    reporter: 'Hendra Kusuma (Konsultan)',
+    weekly: [
+      { label: 'M1', plan: 50, actual: 49 },
+      { label: 'M2', plan: 54, actual: 53 },
+      { label: 'M3', plan: 57, actual: 56 },
+      { label: 'M4', plan: 60, actual: 58 },
+      { label: 'M5', plan: 62, actual: 59 },
+      { label: 'M6', plan: 64, actual: 60 },
+    ],
+  },
+  jk: {
+    projectId: 'jk',
+    planPct: 42,
+    actualPct: 38,
+    asOf: agoH(30),
+    sourceRef: 'LW-05-021',
+    reporter: 'Firdaus Ramli (Konsultan)',
+    weekly: [
+      { label: 'M1', plan: 28, actual: 27 },
+      { label: 'M2', plan: 31, actual: 30 },
+      { label: 'M3', plan: 34, actual: 32 },
+      { label: 'M4', plan: 37, actual: 34 },
+      { label: 'M5', plan: 40, actual: 36 },
+      { label: 'M6', plan: 42, actual: 38 },
+    ],
+  },
+  bl: {
+    projectId: 'bl',
+    planPct: 100,
+    actualPct: 100,
+    asOf: agoD(30),
+    sourceRef: 'LW-05-018',
+    reporter: 'Dedi Kurniawan (Site Manager)',
+    weekly: [],
+  },
+}
+
+/* ------------------------------------------------------------
+ * Laporan harian lapangan — sumber kondisi & progres
+ * (dimiliki konsultan pengawas; kontraktor melaporkan via
+ * Field Ops). Setiap isu tertaut ke catatan resminya.
+ * ------------------------------------------------------------ */
+
+export interface ReportFlag {
+  id: string
+  kind: 'finding' | 'inspection' | 'holdpoint'
+  /** id data seed, mis. 'f-ar-021'. */
+  refId: string
+  label: string
+  to: string
+}
+
+export interface ReportDelay {
+  id: string
+  category: string
+  desc: string
+}
+
+export interface DailyReport {
+  id: string
+  ref: string
+  projectId: string
+  at: string
+  author: string
+  authorOrg: string
+  /** Rekapan progres kumulatif yang dilaporkan hari itu. */
+  progressNote: string
+  workSummary: string[]
+  delays: ReportDelay[]
+  flags: ReportFlag[]
+  photoCount: number
+}
+
+export const DAILY_REPORTS: DailyReport[] = [
+  /* ---------- ARU · LW-08-11x (konsultan pengawas) ---------- */
+  {
+    id: 'lw-08-116',
+    ref: 'LW-08-116',
+    projectId: 'aru',
+    at: agoH(20),
+    author: 'Hendra Kusuma',
+    authorOrg: 'Konsultan · CV Mitra Teknik',
+    progressNote: 'Progres kumulatif pelaksanaan 56% (rencana 61%).',
+    workSummary: [
+      'Pembesian pelat L8: koreksi cover Grid A/2-3 selesai; menunggu keputusan re-inspeksi QA/QC.',
+      'Bekisting dinding geser L9 berlanjut (Grid C/2-5); witness point telah diajukan.',
+      'Arsitektur L7: pemasangan keramik zona parkir ±80%.',
+    ],
+    delays: [
+      { id: 'd1', category: 'cuaca', desc: 'Hujan sore (1 jam) — pekerjaan bekisting L9 dihentikan sementara.' },
+    ],
+    flags: [
+      { id: 'fl1', kind: 'finding', refId: 'f-ar-021', label: 'F-AR-021 · verifikasi perbaikan cover menunggu QA/QC', to: '/dashboard/temuan/f-ar-021' },
+      { id: 'fl2', kind: 'holdpoint', refId: 'hp-ar-02', label: 'HP-AR-02 · rilis cor L8 menunggu 2 kondisi', to: '/dashboard/proyek/aru?titik=hp-ar-02' },
+      { id: 'fl3', kind: 'inspection', refId: 'wir-ar-0142', label: 'WIR-AR-2026-0142 · keputusan re-inspeksi menunggu perekaman', to: '/dashboard/inspeksi/wir-ar-0142' },
+    ],
+    photoCount: 12,
+  },
+  {
+    id: 'lw-08-115',
+    ref: 'LW-08-115',
+    projectId: 'aru',
+    at: agoH(44),
+    author: 'Hendra Kusuma',
+    authorOrg: 'Konsultan · CV Mitra Teknik',
+    progressNote: 'Progres kumulatif pelaksanaan 55% (rencana 59%).',
+    workSummary: [
+      'Re-inspeksi pembesian pelat L8 dilaksanakan pagi; hasil diverifikasi lapangan.',
+      'Pengecoran pelat L8 tetap tertahan sampai rilis hold point.',
+    ],
+    delays: [],
+    flags: [
+      { id: 'fl1', kind: 'inspection', refId: 'wir-ar-0142', label: 'WIR-AR-2026-0142 · re-inspeksi dilaksanakan di lapangan', to: '/dashboard/inspeksi/wir-ar-0142' },
+      { id: 'fl2', kind: 'finding', refId: 'f-ar-021', label: 'F-AR-021 · perbaikan sudah diajukan dengan bukti foto', to: '/dashboard/temuan/f-ar-021' },
+    ],
+    photoCount: 8,
+  },
+  {
+    id: 'lw-08-114',
+    ref: 'LW-08-114',
+    projectId: 'aru',
+    at: agoH(92),
+    author: 'Hendra Kusuma',
+    authorOrg: 'Konsultan · CV Mitra Teknik',
+    progressNote: 'Progres kumulatif pelaksanaan 54% (rencana 56%).',
+    workSummary: [
+      'Pemeriksaan pembesian pelat L8 menemukan cover sebagian 20 mm (spesifikasi 25 mm).',
+      'Area Grid A/2-3 dikembalikan untuk perbaikan; pengecoran ditunda.',
+    ],
+    delays: [
+      { id: 'd1', category: 'kualitas', desc: 'Rework cover tulangan — pengecoran pelat L8 ditunda sampai perbaikan diverifikasi.' },
+    ],
+    flags: [
+      { id: 'fl1', kind: 'finding', refId: 'f-ar-021', label: 'F-AR-021 · cover tulangan di bawah spesifikasi dicatat', to: '/dashboard/temuan/f-ar-021' },
+      { id: 'fl2', kind: 'inspection', refId: 'wir-ar-0142', label: 'WIR-AR-2026-0142 · dikembalikan untuk perbaikan', to: '/dashboard/inspeksi/wir-ar-0142' },
+    ],
+    photoCount: 6,
+  },
+
+  /* ---------- KS · LW-11-03x ---------- */
+  {
+    id: 'lw-11-038',
+    ref: 'LW-11-038',
+    projectId: 'ks',
+    at: agoH(26),
+    author: 'Hendra Kusuma',
+    authorOrg: 'Konsultan · CV Mitra Teknik',
+    progressNote: 'Progres kumulatif pelaksanaan 60% (rencana 64%).',
+    workSummary: [
+      'Instalasi MEP plafon L2 berlanjut (Sektor A4-A6).',
+      'Tim MEP menyusun investigasi jalur kabel vs gas medis Sektor A3.',
+      'Instalasi sanitair L1 selesai dan lulus uji tekan.',
+    ],
+    delays: [
+      { id: 'd1', category: 'desain/RFI', desc: 'Penutupan plafon menunggu klarifikasi revisi shop drawing MEP-12.' },
+    ],
+    flags: [
+      { id: 'fl1', kind: 'finding', refId: 'f-ks-014', label: 'F-KS-014 · tindakan penutupan panel listrik lewat jatuh tempo', to: '/dashboard/temuan/f-ks-014' },
+      { id: 'fl2', kind: 'finding', refId: 'f-ks-012', label: 'F-KS-012 · investigasi jalur kabel vs gas medis berjalan', to: '/dashboard/temuan/f-ks-012' },
+      { id: 'fl3', kind: 'inspection', refId: 'wir-ks-0088', label: 'WIR-KS-2026-0088 · perlu kelengkapan referensi revisi', to: '/dashboard/inspeksi/wir-ks-0088' },
+    ],
+    photoCount: 9,
+  },
+  {
+    id: 'lw-11-037',
+    ref: 'LW-11-037',
+    projectId: 'ks',
+    at: agoH(50),
+    author: 'Hendra Kusuma',
+    authorOrg: 'Konsultan · CV Mitra Teknik',
+    progressNote: 'Progres kumulatif pelaksanaan 59% (rencana 62%).',
+    workSummary: [
+      'Patroli K3 menemukan panel distribusi sementara tanpa penutup di Ruang Panel L1.',
+      'Tindakan penutupan panel ditugaskan ke subkontraktor MEP.',
+    ],
+    delays: [],
+    flags: [
+      { id: 'fl1', kind: 'finding', refId: 'f-ks-014', label: 'F-KS-014 · panel listrik sementara tidak tertutup', to: '/dashboard/temuan/f-ks-014' },
+    ],
+    photoCount: 4,
+  },
+
+  /* ---------- JK · LW-05-02x ---------- */
+  {
+    id: 'lw-05-021',
+    ref: 'LW-05-021',
+    projectId: 'jk',
+    at: agoH(30),
+    author: 'Firdaus Ramli',
+    authorOrg: 'Konsultan · PT Cipta Karya',
+    progressNote: 'Progres kumulatif pelaksanaan 38% (rencana 42%).',
+    workSummary: [
+      'Rework subgrade area A (Sta 1+210-1+225) selesai dipadatkan; menunggu pemeriksaan ulang.',
+      'Penebaran base kelas A mulai parsial Sta 1+250 s.d. 1+270.',
+    ],
+    delays: [
+      { id: 'd1', category: 'inspeksi', desc: 'Witness kepadatan subbase dijadwalkan ulang — konsultan berhalangan; waktu baru H+1 14:00.' },
+    ],
+    flags: [
+      { id: 'fl1', kind: 'inspection', refId: 'wir-jk-0041', label: 'WIR-JK-2026-0041 · jadwal witness diubah', to: '/dashboard/inspeksi/wir-jk-0041' },
+      { id: 'fl2', kind: 'inspection', refId: 'wir-jk-0027', label: 'WIR-JK-2026-0027 · mix design masih review eksternal', to: '/dashboard/inspeksi/wir-jk-0027' },
+    ],
+    photoCount: 7,
+  },
+  {
+    id: 'lw-05-020',
+    ref: 'LW-05-020',
+    projectId: 'jk',
+    at: agoH(54),
+    author: 'Firdaus Ramli',
+    authorOrg: 'Konsultan · PT Cipta Karya',
+    progressNote: 'Progres kumulatif pelaksanaan 37% (rencana 40%).',
+    workSummary: [
+      'Proposal mix design aspal (AC-WC/AC-BC) diajukan ke konsultan untuk review.',
+      'Pemadatan subbase berlanjut Sta 0+900 s.d. 1+200.',
+    ],
+    delays: [],
+    flags: [
+      { id: 'fl1', kind: 'inspection', refId: 'wir-jk-0027', label: 'WIR-JK-2026-0027 · mix design diajukan', to: '/dashboard/inspeksi/wir-jk-0027' },
+    ],
+    photoCount: 3,
+  },
+]
+
+/* ------------------------------------------------------------
+ * Milestone / aktivitas berikutnya & risikonya
+ * ------------------------------------------------------------ */
+
+export type MilestoneStatusId = 'on_track' | 'at_risk' | 'blocked'
+
+export const MILESTONE_STATUS: Record<MilestoneStatusId, StatusDef> = {
+  on_track: { id: 'on_track', label: 'Sesuai Jadwal', tone: 'success', icon: CircleCheck, description: 'Tidak ada hambatan pada persiapan aktivitas ini.' },
+  at_risk: { id: 'at_risk', label: 'Berisiko', tone: 'warning', icon: TriangleAlert, description: 'Ada prasyarat/risiko yang belum selesai; dapat menggeser jadwal.' },
+  blocked: { id: 'blocked', label: 'Tertahan', tone: 'danger', icon: OctagonAlert, description: 'Aktivitas tidak dapat dimulai sampai prasyarat dirilis.' },
+}
+
+export interface Milestone {
+  id: string
+  projectId: string
+  title: string
+  date: string
+  statusId: MilestoneStatusId
+  note: string
+  links: ReportFlag[]
+}
+
+export const MILESTONES: Milestone[] = [
+  {
+    id: 'ms-aru-1',
+    projectId: 'aru',
+    title: 'Pengecoran pelat lantai 8',
+    date: aheadD(2),
+    statusId: 'blocked',
+    note: 'Hold point belum dirilis; menunggu verifikasi temuan & keputusan re-inspeksi.',
+    links: [
+      { id: 'l1', kind: 'holdpoint', refId: 'hp-ar-02', label: 'HP-AR-02', to: '/dashboard/proyek/aru?titik=hp-ar-02' },
+      { id: 'l2', kind: 'finding', refId: 'f-ar-021', label: 'F-AR-021', to: '/dashboard/temuan/f-ar-021' },
+    ],
+  },
+  {
+    id: 'ms-aru-2',
+    projectId: 'aru',
+    title: 'Pengecoran dinding geser lantai 9',
+    date: aheadD(9),
+    statusId: 'at_risk',
+    note: 'Bergantung pemulihan siklus cor L8; witness bekisting L9 terjadwal H+2.',
+    links: [
+      { id: 'l1', kind: 'inspection', refId: 'wir-ar-0151', label: 'WIR-AR-2026-0151', to: '/dashboard/inspeksi/wir-ar-0151' },
+    ],
+  },
+  {
+    id: 'ms-ks-1',
+    projectId: 'ks',
+    title: 'Inspeksi fire fighting lantai 2 (uji tekan sprinkler)',
+    date: aheadD(3),
+    statusId: 'on_track',
+    note: 'Terjadwal H+3 09:00; pemberitahuan 48 jam terpenuhi.',
+    links: [
+      { id: 'l1', kind: 'inspection', refId: 'wir-ks-0091', label: 'WIR-KS-2026-0091', to: '/dashboard/inspeksi/wir-ks-0091' },
+    ],
+  },
+  {
+    id: 'ms-ks-2',
+    projectId: 'ks',
+    title: 'Penutupan plafon lantai 2 zona klinik',
+    date: aheadD(7),
+    statusId: 'at_risk',
+    note: 'Menunggu klarifikasi revisi MEP-12 & investigasi jalur gas medis.',
+    links: [
+      { id: 'l1', kind: 'inspection', refId: 'wir-ks-0088', label: 'WIR-KS-2026-0088', to: '/dashboard/inspeksi/wir-ks-0088' },
+      { id: 'l2', kind: 'finding', refId: 'f-ks-012', label: 'F-KS-012', to: '/dashboard/temuan/f-ks-012' },
+    ],
+  },
+  {
+    id: 'ms-jk-1',
+    projectId: 'jk',
+    title: 'Witness kepadatan subbase (dijadwalkan ulang)',
+    date: aheadH(30),
+    statusId: 'at_risk',
+    note: 'Waktu baru H+1 14:00 setelah konsultan berhalangan; perlu konfirmasi kehadiran.',
+    links: [
+      { id: 'l1', kind: 'inspection', refId: 'wir-jk-0041', label: 'WIR-JK-2026-0041', to: '/dashboard/inspeksi/wir-jk-0041' },
+    ],
+  },
+  {
+    id: 'ms-jk-2',
+    projectId: 'jk',
+    title: 'Penerimaan layer base sebelum aspal (HP-JK-01)',
+    date: aheadD(8),
+    statusId: 'at_risk',
+    note: 'Prasyarat: witness kepadatan lulus & keputusan mix design aspal.',
+    links: [
+      { id: 'l1', kind: 'holdpoint', refId: 'hp-jk-01', label: 'HP-JK-01', to: '/dashboard/proyek/jk?titik=hp-jk-01' },
+      { id: 'l2', kind: 'inspection', refId: 'wir-jk-0027', label: 'WIR-JK-2026-0027', to: '/dashboard/inspeksi/wir-jk-0027' },
+    ],
+  },
 ]
 
 /* ------------------------------------------------------------
@@ -1196,11 +1664,77 @@ export function projectPulse(projectId: string): PulseSegment[] {
 }
 
 /* ------------------------------------------------------------
+ * Selektor kendali eksekusi
+ * ------------------------------------------------------------ */
+
+export const healthOf = (projectId: string): ProjectHealthState =>
+  PROJECT_HEALTH_STATE[projectId] ?? { healthId: 'on_track', headline: '', reasons: [] }
+export const progressOf = (projectId: string) => PROJECT_PROGRESS[projectId]
+
+export const reportsOfProject = (projectId: string) =>
+  DAILY_REPORTS.filter((r) => r.projectId === projectId).sort((a, b) => b.at.localeCompare(a.at))
+export const latestReportOf = (projectId: string) => reportsOfProject(projectId)[0]
+export const milestonesOfProject = (projectId: string) =>
+  MILESTONES.filter((m) => m.projectId === projectId).sort((a, b) => a.date.localeCompare(b.date))
+
+const HEALTH_RANK: Record<ProjectHealthId, number> = { behind: 0, at_risk: 1, on_track: 2, archived: 3 }
+
+/** Proyek aktif terurut dari yang paling perlu perhatian (exception-first). */
+export function attentionProjects(): Project[] {
+  return PROJECTS.filter((p) => p.status !== 'closed').sort((a, b) => {
+    const ha = healthOf(a.id)
+    const hb = healthOf(b.id)
+    if (ha.healthId !== hb.healthId) return HEALTH_RANK[ha.healthId] - HEALTH_RANK[hb.healthId]
+    const pa = progressOf(a.id)
+    const pb = progressOf(b.id)
+    return (pa ? pa.actualPct - pa.planPct : 0) - (pb ? pb.actualPct - pb.planPct : 0)
+  })
+}
+
+export interface PriorityIssue {
+  finding: Finding
+  overdue: boolean
+  /** Hold point yang diblokir temuan ini (bila ada). */
+  blocks: ControlPoint[]
+}
+
+/** Temuan terbuka terpenting lintas proyek — overdue dulu, lalu yang memblokir. */
+export function priorityIssues(): PriorityIssue[] {
+  const open = FINDINGS.filter((f) => !['closed', 'superseded', 'cancelled'].includes(f.status))
+  const key = (f: Finding): PriorityIssue => {
+    const overdue = !!f.dueAt && new Date(f.dueAt).getTime() < NOW
+    const blocks = CONTROL_POINTS.filter((c) => c.conditions?.some((x) => !x.met && x.label.includes(f.ref)))
+    return { finding: f, overdue, blocks }
+  }
+  const weight = (i: PriorityIssue) => (i.overdue ? 0 : i.blocks.length > 0 ? 1 : 2)
+  return open
+    .map(key)
+    .sort((a, b) => weight(a) - weight(b) || a.finding.ref.localeCompare(b.finding.ref))
+}
+
+/** Milestone berisiko/tertahan — untuk pita "perlu perhatian". */
+export function milestonesAtRisk() {
+  return MILESTONES.filter((m) => m.statusId !== 'on_track').sort((a, b) => a.date.localeCompare(b.date))
+}
+
+/** Laporan hari ini belum diterima? (batas: 06:00 hari demo) — sinyal disiplin pelaporan. */
+export function reportDueToday(projectId: string) {
+  const latest = latestReportOf(projectId)
+  if (!latest) return false
+  const todayStart = new Date(new Date(NOW).setHours(6, 0, 0, 0)).getTime()
+  return new Date(latest.at).getTime() < todayStart
+}
+
+/** Laporan harian yang menyebut sebuah temuan — jejak lapangan → tindak lanjut. */
+export const reportsMentioningFinding = (findingId: string) =>
+  DAILY_REPORTS.filter((r) => r.flags.some((fl) => fl.kind === 'finding' && fl.refId === findingId))
+
+/* ------------------------------------------------------------
  * Indeks pencarian global (FR-SE-01/02)
  * ------------------------------------------------------------ */
 
 export interface SearchEntry {
-  type: 'proyek' | 'inspeksi' | 'temuan' | 'titik kendali'
+  type: 'proyek' | 'inspeksi' | 'temuan' | 'titik kendali' | 'laporan harian'
   id: string
   title: string
   subtitle: string
@@ -1212,10 +1746,11 @@ export interface SearchEntry {
 
 export function searchIndex(): SearchEntry[] {
   return [
-    ...PROJECTS.map<SearchEntry>((p) => ({ type: 'proyek', id: p.id, title: p.name, subtitle: `${p.code} · ${p.client}`, projectId: p.id, statusId: p.status, location: p.location, to: `/proyek/${p.id}` })),
-    ...INSPECTIONS.map<SearchEntry>((i) => ({ type: 'inspeksi', id: i.id, title: `${i.ref} · ${i.title}`, subtitle: i.scope, projectId: i.projectId, statusId: i.status, location: i.location, to: `/inspeksi/${i.id}` })),
-    ...FINDINGS.map<SearchEntry>((f) => ({ type: 'temuan', id: f.id, title: `${f.ref} · ${f.title}`, subtitle: f.facts.slice(0, 80) + '…', projectId: f.projectId, statusId: f.status, location: f.location, to: `/temuan/${f.id}` })),
-    ...CONTROL_POINTS.map<SearchEntry>((c) => ({ type: 'titik kendali', id: c.id, title: `${c.ref} · ${c.title}`, subtitle: `Otoritas: ${c.releaseAuthority}`, projectId: c.projectId, statusId: c.status, location: c.nextActivity ?? '-', to: `/proyek/${c.projectId}?titik=${c.id}` })),
+    ...PROJECTS.map<SearchEntry>((p) => ({ type: 'proyek', id: p.id, title: p.name, subtitle: `${p.code} · ${p.client}`, projectId: p.id, statusId: p.status, location: p.location, to: `/dashboard/proyek/${p.id}` })),
+    ...INSPECTIONS.map<SearchEntry>((i) => ({ type: 'inspeksi', id: i.id, title: `${i.ref} · ${i.title}`, subtitle: i.scope, projectId: i.projectId, statusId: i.status, location: i.location, to: `/dashboard/inspeksi/${i.id}` })),
+    ...FINDINGS.map<SearchEntry>((f) => ({ type: 'temuan', id: f.id, title: `${f.ref} · ${f.title}`, subtitle: f.facts.slice(0, 80) + '…', projectId: f.projectId, statusId: f.status, location: f.location, to: `/dashboard/temuan/${f.id}` })),
+    ...CONTROL_POINTS.map<SearchEntry>((c) => ({ type: 'titik kendali', id: c.id, title: `${c.ref} · ${c.title}`, subtitle: `Otoritas: ${c.releaseAuthority}`, projectId: c.projectId, statusId: c.status, location: c.nextActivity ?? '-', to: `/dashboard/proyek/${c.projectId}?titik=${c.id}` })),
+    ...DAILY_REPORTS.map<SearchEntry>((r) => ({ type: 'laporan harian', id: r.id, title: `${r.ref} · ${projectName(r.projectId)}`, subtitle: r.progressNote, projectId: r.projectId, statusId: healthOf(r.projectId).healthId, location: r.author, to: `/dashboard/proyek/${r.projectId}` })),
   ]
 }
 

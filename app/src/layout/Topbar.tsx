@@ -87,7 +87,7 @@ export function Topbar({ onOpenSearch }: { onOpenSearch: () => void }) {
               id: 'inbox',
               label: `Lihat semua di Kotak Tindakan (${inboxCount})`,
               icon: Inbox,
-              onSelect: () => navigate('/tindakan'),
+              onSelect: () => navigate('/dashboard/tindakan'),
             },
           ]}
           trigger={({ toggle }) => (

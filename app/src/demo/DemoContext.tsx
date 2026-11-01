@@ -30,12 +30,12 @@ function initialRole(): RoleId {
  * peran proyek → proyek tugasnya, QA/QC → kotak tindakan/register.
  */
 export const LANDING: Record<RoleId, string> = {
-  project_manager: '/',
-  site_engineer: '/proyek/aru',
-  qc_inspector: '/tindakan',
-  quality_manager: '/inspeksi',
-  external: '/tindakan',
-  viewer: '/',
+  project_manager: '/dashboard',
+  site_engineer: '/dashboard/proyek/aru',
+  qc_inspector: '/dashboard/tindakan',
+  quality_manager: '/dashboard/inspeksi',
+  external: '/dashboard/tindakan',
+  viewer: '/dashboard',
 }
 
 interface DemoState {

@@ -1,22 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, Building2, ClipboardList, Flag, Search, ScanSearch, X } from 'lucide-react'
+import { ArrowRight, Building2, ClipboardList, FileText, Flag, Search, ScanSearch, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { iconProps, type LucideIcon } from '@/components/Icon'
 import { Kbd } from '@/components/ui/Kbd'
 import { FINDING_STATUS, HOLD_POINT_STATUS, INSPECTION_STATUS } from '@/components/status'
-import { PROJECT_STATUS, searchIndex, type SearchEntry } from '@/demo/data'
+import { PROJECT_STATUS, PROJECT_HEALTH, MILESTONE_STATUS, searchIndex, type SearchEntry } from '@/demo/data'
 
 const TYPE_META: Record<SearchEntry['type'], { icon: LucideIcon; label: string; cls: string }> = {
   proyek: { icon: Building2, label: 'Proyek', cls: 'bg-brand-50 text-brand-700' },
   inspeksi: { icon: ClipboardList, label: 'Inspeksi', cls: 'bg-sky-50 text-sky-700' },
   temuan: { icon: Flag, label: 'Temuan', cls: 'bg-amber-50 text-amber-800' },
   'titik kendali': { icon: ScanSearch, label: 'Titik kendali', cls: 'bg-violet-50 text-violet-700' },
+  'laporan harian': { icon: FileText, label: 'Laporan harian', cls: 'bg-gray-100 text-gray-700' },
 }
 
 /** Label status dari id — katalog apa pun yang cocok. */
 function statusLabel(statusId: string): string | null {
-  const catalogs = [PROJECT_STATUS, INSPECTION_STATUS, FINDING_STATUS, HOLD_POINT_STATUS] as const
+  const catalogs = [PROJECT_STATUS, INSPECTION_STATUS, FINDING_STATUS, HOLD_POINT_STATUS, PROJECT_HEALTH, MILESTONE_STATUS] as const
   for (const c of catalogs) {
     const def = (c as Record<string, { label: string }>)[statusId]
     if (def) return def.label

@@ -2,12 +2,16 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   ArrowRight,
+  Camera,
   ClipboardList,
   Eye,
+  FileText,
   Flag,
   History,
+  Info,
   Lock,
   MapPin,
+  TriangleAlert,
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { iconProps } from '@/components/Icon'
@@ -22,19 +26,28 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { TableContainer, Table, TableHead, TableBody, TableHeaderCell, TableRow, TableCell, MonoCell } from '@/components/ui/Table'
 import { Timeline } from '@/components/ui/Timeline'
-import { formatRelative, formatDateTime } from '@/lib/format'
+import { PlanActualChart, PlanActualDelta } from '@/components/ui/PlanActual'
+import { formatDate, formatRelative, formatDateTime } from '@/lib/format'
 import { useSimulatedLoading } from '@/demo/hooks'
 import {
   ACTIVITY,
   CONTROL_POINTS,
   EVENT_ICON,
+  MILESTONE_STATUS,
+  PROJECT_HEALTH,
   PROJECT_STATUS,
   controlPointById,
   controlPointsOfProject,
   findingsOfProject,
+  healthOf,
   inspectionsOfProject,
+  milestonesOfProject,
+  progressOf,
   projectById,
   projectPulse,
+  reportDueToday,
+  reportsOfProject,
+  type Project,
 } from '@/demo/data'
 
 type TabId = 'ringkasan' | 'inspeksi' | 'temuan' | 'titik' | 'aktivitas'
@@ -75,6 +88,237 @@ function ControlPointRow({ cp, highlight }: { cp: (typeof CONTROL_POINTS)[number
         </div>
       )}
     </div>
+  )
+}
+
+/** Progres vs rencana + kesehatan proyek + alasannya — sumber: laporan harian. */
+function ProgresKesehatanCard({ project }: { project: Project }) {
+  const navigate = useNavigate()
+  const health = healthOf(project.id)
+  const hst = PROJECT_HEALTH[health.healthId]
+  const prog = progressOf(project.id)
+  const archived = project.status === 'closed'
+  return (
+    <Card>
+      <CardHeader
+        title="Progres & kesehatan"
+        description={health.headline || undefined}
+        actions={<StatusBadge status={hst} size="sm" emphasis={health.healthId === 'behind' ? 'strong' : 'subtle'} />}
+      />
+      <CardBody className="space-y-4 pt-3">
+        {prog && prog.weekly.length > 0 ? (
+          <>
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="flex items-baseline gap-2">
+                  <span className="tnum text-3xl font-semibold tracking-tight text-ink">{prog.actualPct}%</span>
+                  <span className="tnum text-sm text-ink-muted">/ rencana {prog.planPct}%</span>
+                </p>
+                <PlanActualDelta plan={prog.planPct} actual={prog.actualPct} className="mt-0.5" />
+              </div>
+              <p className="text-2xs leading-4 text-ink-muted">
+                Per {formatDate(prog.asOf)} · direkap dari laporan harian{' '}
+                <span className="font-mono">{prog.sourceRef}</span> · {prog.reporter}
+              </p>
+            </div>
+            <PlanActualChart points={prog.weekly} />
+          </>
+        ) : (
+          <p className="text-sm text-ink-muted">
+            {archived ? 'Proyek arsip — rekaman progres historis (100%).' : 'Belum ada rekapan progres pada periode demo.'}
+          </p>
+        )}
+
+        {health.reasons.length > 0 && (
+          <div className="rounded-lg border border-line-subtle bg-sunken p-3">
+            <p className="text-2xs font-semibold uppercase tracking-wider text-ink-muted">Mengapa status ini</p>
+            <ul className="mt-2 space-y-1.5">
+              {health.reasons.map((r) => {
+                const body = (
+                  <>
+                    <span aria-hidden className={cn('mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full', TS[r.severity].dot)} />
+                    <span className="min-w-0">
+                      {r.refLabel && <span className="font-mono text-2xs text-ink-muted">{r.refLabel} · </span>}
+                      {r.label}
+                    </span>
+                  </>
+                )
+                return (
+                  <li key={r.id} className="flex items-start gap-2 text-xs leading-4 text-ink-secondary">
+                    {r.to ? (
+                      <button
+                        type="button"
+                        onClick={() => navigate(r.to!)}
+                        className="-mx-1 flex cursor-pointer items-start gap-2 rounded px-1 py-0.5 text-left hover:text-brand-700"
+                      >
+                        {body}
+                      </button>
+                    ) : (
+                      body
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        )}
+      </CardBody>
+    </Card>
+  )
+}
+
+/** Laporan harian terbaru — jejak lapangan yang menjadi sumber kondisi. */
+function LaporanHarianCard({ projectId }: { projectId: string }) {
+  const navigate = useNavigate()
+  const reports = reportsOfProject(projectId)
+  const stale = reportDueToday(projectId)
+  return (
+    <Card>
+      <CardHeader
+        title="Laporan harian lapangan"
+        description="Sumber progres & kondisi lapangan — disusun pengawas proyek."
+      />
+      <CardBody className="space-y-3 pt-3">
+        {stale && reports.length > 0 && (
+          <p className="flex items-start gap-1.5 rounded-md bg-sunken px-2.5 py-1.5 text-xs text-ink-muted">
+            <Info {...iconProps(13)} className="mt-0.5 shrink-0" />
+            Laporan hari ini belum diterima — terakhir diterima {formatRelative(reports[0].at)}.
+          </p>
+        )}
+        {reports.length === 0 && <p className="text-sm text-ink-muted">Tidak ada laporan harian pada periode demo.</p>}
+        {reports.slice(0, 2).map((r) => (
+          <div key={r.id} className="rounded-xl border border-line-subtle p-3.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <FileText {...iconProps(14)} className="shrink-0 text-ink-muted" />
+              <span className="font-mono text-xs text-ink-muted">{r.ref}</span>
+              <span className="tnum text-xs text-ink-muted">{formatDate(r.at)}</span>
+              <span className="ml-auto text-2xs text-ink-disabled">{r.author} · {r.authorOrg}</span>
+            </div>
+            <p className="mt-2 text-sm font-medium text-ink">{r.progressNote}</p>
+            <ul className="mt-1.5 space-y-1">
+              {r.workSummary.map((w, i) => (
+                <li key={i} className="flex gap-1.5 text-xs leading-4 text-ink-secondary">
+                  <span aria-hidden className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-gray-400" />
+                  {w}
+                </li>
+              ))}
+            </ul>
+            {r.delays.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {r.delays.map((d) => (
+                  <p key={d.id} className="flex items-start gap-1.5 rounded-md border border-dashed border-amber-300 bg-amber-50/60 px-2.5 py-1.5 text-xs text-amber-950">
+                    <TriangleAlert {...iconProps(12)} strokeWidth={2.2} className="mt-0.5 shrink-0 text-amber-600" />
+                    <span><span className="font-medium capitalize">{d.category}:</span> {d.desc}</span>
+                  </p>
+                ))}
+              </div>
+            )}
+            {r.flags.length > 0 && (
+              <div className="mt-2.5 border-t border-line-subtle pt-2.5">
+                <p className="text-2xs font-semibold uppercase tracking-wider text-ink-muted">Isu yang dilaporkan</p>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {r.flags.map((fl) => (
+                    <button
+                      key={fl.id}
+                      type="button"
+                      onClick={() => navigate(fl.to)}
+                      className="cursor-pointer rounded-full border border-line-subtle bg-sunken px-2 py-0.5 text-2xs text-ink-secondary transition-colors hover:border-line-strong hover:text-brand-700"
+                    >
+                      {fl.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <p className="mt-2 flex items-center gap-1 text-2xs text-ink-disabled">
+              <Camera {...iconProps(11)} /> {r.photoCount} foto terlampir pada laporan
+            </p>
+          </div>
+        ))}
+        {reports.length > 2 && (
+          <p className="text-xs text-ink-muted">
+            +{reports.length - 2} laporan sebelumnya ({reports.slice(2).map((r) => r.ref).join(', ')}).
+          </p>
+        )}
+      </CardBody>
+    </Card>
+  )
+}
+
+/** Aktivitas & milestone berikutnya + risikonya. */
+function MilestoneCard({ projectId }: { projectId: string }) {
+  const navigate = useNavigate()
+  const ms = milestonesOfProject(projectId)
+  return (
+    <Card>
+      <CardHeader title="Aktivitas & milestone berikutnya" />
+      <CardBody className="space-y-2.5 pt-2">
+        {ms.length === 0 && <p className="text-sm text-ink-muted">Tidak ada milestone terjadwal pada periode demo.</p>}
+        {ms.map((m) => (
+          <div key={m.id} className="rounded-lg border border-line-subtle p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="tnum rounded bg-sunken px-1.5 py-0.5 text-2xs font-medium text-ink-secondary">
+                {formatDate(m.date)} · {formatRelative(m.date)}
+              </span>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{m.title}</span>
+              <StatusBadge status={MILESTONE_STATUS[m.statusId]} size="sm" />
+            </div>
+            <p className="mt-1 text-xs text-ink-muted">{m.note}</p>
+            {m.links.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {m.links.map((l) => (
+                  <button
+                    key={l.id}
+                    type="button"
+                    onClick={() => navigate(l.to)}
+                    className="cursor-pointer rounded-full border border-line-subtle bg-sunken px-2 py-0.5 font-mono text-2xs text-ink-secondary transition-colors hover:border-line-strong hover:text-brand-700"
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </CardBody>
+    </Card>
+  )
+}
+
+/** Isu terbuka proyek — pintasan ke tindak lanjut (temuan). */
+function IsuTerbukaCard({ projectId }: { projectId: string }) {
+  const navigate = useNavigate()
+  const fnd = findingsOfProject(projectId).filter((f) => !['closed', 'superseded', 'cancelled'].includes(f.status))
+  return (
+    <Card>
+      <CardHeader title="Isu terbuka" description={`${fnd.length} temuan menunggu penyelesaian`} />
+      <CardBody className="space-y-2 pt-2">
+        {fnd.length === 0 && <p className="text-sm text-ink-muted">Tidak ada temuan terbuka.</p>}
+        {fnd.map((f) => {
+          const st = FINDING_STATUS[f.status]
+          const overdue = f.dueAt && new Date(f.dueAt).getTime() < Date.now() && !['closed'].includes(f.status)
+          return (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => navigate(`/dashboard/temuan/${f.id}`)}
+              className="block w-full cursor-pointer rounded-lg border border-line-subtle p-2.5 text-left transition-colors hover:bg-hover"
+            >
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-2xs text-ink-muted">{f.ref}</span>
+                <span className="min-w-0 flex-1 truncate text-xs font-medium text-ink">{f.title}</span>
+                <StatusBadge status={st} size="sm" />
+              </div>
+              <p className="mt-1 text-2xs text-ink-muted">
+                PJ: {f.assignee}
+                {f.dueAt && <> · target {formatRelative(f.dueAt)}</>}
+                {overdue && <span className="font-medium text-red-700"> · terlambat</span>}
+              </p>
+            </button>
+          )
+        })}
+      </CardBody>
+    </Card>
   )
 }
 
@@ -119,7 +363,7 @@ export function ProyekDetail() {
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ label: 'Proyek', to: '/proyek' }, { label: project.name }]}
+        breadcrumbs={[{ label: 'Proyek', to: '/dashboard/proyek' }, { label: project.name }]}
         title={project.name}
         description={`${project.client} · ${project.location} · ${project.type}`}
         meta={
@@ -135,14 +379,14 @@ export function ProyekDetail() {
             <>
               <button
                 type="button"
-                onClick={() => navigate(`/inspeksi?proyek=${project.id}`)}
+                onClick={() => navigate(`/dashboard/inspeksi?proyek=${project.id}`)}
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-surface px-3 text-sm font-medium text-ink shadow-xs transition-colors hover:bg-hover"
               >
                 <ClipboardList {...iconProps(15)} /> Register inspeksi
               </button>
               <button
                 type="button"
-                onClick={() => navigate('/laporan')}
+                onClick={() => navigate('/dashboard/laporan')}
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-brand-600 px-3 text-sm font-medium text-white shadow-xs transition-colors hover:bg-brand-700"
               >
                 Ringkasan kualitas <ArrowRight {...iconProps(15)} strokeWidth={2.1} />
@@ -170,6 +414,9 @@ export function ProyekDetail() {
         {tab === 'ringkasan' && (
           <div className="grid gap-4 lg:grid-cols-3">
             <div className="space-y-4 lg:col-span-2">
+              <ProgresKesehatanCard project={project} />
+              <LaporanHarianCard projectId={id} />
+              <MilestoneCard projectId={id} />
               <Card>
                 <CardHeader title="Ringkasan workflow" />
                 <CardBody className="pt-3">
@@ -189,8 +436,8 @@ export function ProyekDetail() {
                   </div>
                   <div className="mt-4 grid grid-cols-3 divide-x divide-line-subtle rounded-lg border border-line-subtle bg-sunken">
                     {[
-                      { label: 'Inspeksi terbuka', v: openIns.length, to: '/inspeksi?proyek=' + id },
-                      { label: 'Temuan terbuka', v: openFnd.length, to: '/temuan?proyek=' + id },
+                      { label: 'Inspeksi terbuka', v: openIns.length, to: '/dashboard/inspeksi?proyek=' + id },
+                      { label: 'Temuan terbuka', v: openFnd.length, to: '/dashboard/temuan?proyek=' + id },
                       { label: 'Hold point belum rilis', v: pts.filter((p) => p.pointType === 'hold' && !['released', 'not_due'].includes(p.status)).length },
                     ].map((m) => (
                       <button key={m.label} type="button" onClick={() => m.to && navigate(m.to)} className="cursor-pointer px-3 py-3 text-left transition-colors hover:bg-hover">
@@ -227,6 +474,7 @@ export function ProyekDetail() {
             </div>
 
             <div className="space-y-4">
+              <IsuTerbukaCard projectId={id} />
               <Card>
                 <CardHeader title="Titik kendali" description={`${pts.filter((p) => p.pointType === 'hold').length} hold · ${pts.filter((p) => p.pointType === 'witness').length} witness · ${pts.filter((p) => p.pointType === 'review').length} review`} />
                 <CardBody className="space-y-2.5 pt-2">
@@ -296,7 +544,7 @@ export function ProyekDetail() {
                 </TableHead>
                 <TableBody>
                   {ins.map((i) => (
-                    <TableRow key={i.id} clickable onClick={() => navigate(`/inspeksi/${i.id}`)}>
+                    <TableRow key={i.id} clickable onClick={() => navigate(`/dashboard/inspeksi/${i.id}`)}>
                       <MonoCell>{i.ref}</MonoCell>
                       <TableCell>
                         <p className="text-sm font-medium text-ink">{i.title}</p>
@@ -338,7 +586,7 @@ export function ProyekDetail() {
           ) : (
             <div className="space-y-2.5">
               {fnd.map((f) => (
-                <Link key={f.id} to={`/temuan/${f.id}`} className="group block rounded-xl border border-line-subtle bg-surface p-4 shadow-xs transition-all hover:border-line-strong hover:shadow-sm">
+                <Link key={f.id} to={`/dashboard/temuan/${f.id}`} className="group block rounded-xl border border-line-subtle bg-surface p-4 shadow-xs transition-all hover:border-line-strong hover:shadow-sm">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono text-xs text-ink-muted">{f.ref}</span>
                     <span className="text-sm font-semibold text-ink group-hover:text-brand-700">{f.title}</span>

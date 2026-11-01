@@ -8,7 +8,6 @@ import {
   History,
   BarChart3,
   Settings2,
-  Palette,
 } from 'lucide-react'
 
 export interface NavItem {
@@ -32,25 +31,24 @@ export const NAV: NavSection[] = [
   {
     label: 'Portofolio',
     items: [
-      { to: '/', label: 'Ringkasan', icon: LayoutDashboard, exact: true },
-      { to: '/proyek', label: 'Proyek', icon: Building2 },
+      { to: '/dashboard', label: 'Ringkasan', icon: LayoutDashboard, exact: true },
+      { to: '/dashboard/proyek', label: 'Proyek', icon: Building2 },
     ],
   },
   {
     label: 'Pekerjaan',
     items: [
-      { to: '/inspeksi', label: 'Inspeksi', icon: ClipboardList, countKey: 'inspeksi' },
-      { to: '/temuan', label: 'Temuan & Tindakan', icon: Flag, countKey: 'temuan' },
-      { to: '/tindakan', label: 'Kotak Tindakan', icon: Inbox, countKey: 'tindakan' },
-      { to: '/aktivitas', label: 'Aktivitas', icon: History },
+      { to: '/dashboard/inspeksi', label: 'Inspeksi', icon: ClipboardList, countKey: 'inspeksi' },
+      { to: '/dashboard/temuan', label: 'Temuan & Tindakan', icon: Flag, countKey: 'temuan' },
+      { to: '/dashboard/tindakan', label: 'Kotak Tindakan', icon: Inbox, countKey: 'tindakan' },
+      { to: '/dashboard/aktivitas', label: 'Aktivitas', icon: History },
     ],
   },
   {
     label: 'Lainnya',
     items: [
-      { to: '/laporan', label: 'Laporan', icon: BarChart3, tag: 'p1' },
-      { to: '/pengaturan', label: 'Pengaturan Proyek', icon: Settings2, tag: 'otoritas' },
-      { to: '/foundations', label: 'Design System', icon: Palette },
+      { to: '/dashboard/laporan', label: 'Laporan', icon: BarChart3, tag: 'p1' },
+      { to: '/dashboard/pengaturan', label: 'Pengaturan Proyek', icon: Settings2, tag: 'otoritas' },
     ],
   },
 ]

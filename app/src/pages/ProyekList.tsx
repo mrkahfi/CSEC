@@ -7,10 +7,21 @@ import { SearchInput } from '@/components/ui/SearchInput'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { Badge } from '@/components/ui/Badge'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { PlanActualBar } from '@/components/ui/PlanActual'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { TableContainer, Table, TableHead, TableBody, TableHeaderCell, TableRow, TableCell } from '@/components/ui/Table'
-import { PROJECT_STATUS, PROJECTS, controlPointsOfProject, findingsOfProject, inspectionsOfProject } from '@/demo/data'
+import {
+  PROJECT_HEALTH,
+  PROJECT_STATUS,
+  PROJECTS,
+  attentionProjects,
+  controlPointsOfProject,
+  findingsOfProject,
+  healthOf,
+  inspectionsOfProject,
+  progressOf,
+} from '@/demo/data'
 import { useSimulatedLoading } from '@/demo/hooks'
 
 type SetId = 'semua' | 'aktif' | 'arsip'
@@ -27,13 +38,16 @@ export function ProyekList() {
 
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase()
-    return PROJECTS.filter((p) => {
+    const filtered = PROJECTS.filter((p) => {
       if (set === 'aktif' && p.status === 'closed') return false
       if (set === 'arsip' && p.status !== 'closed') return false
       if (preset && p.id !== preset) return false
       if (!needle) return true
       return [p.name, p.code, p.client, p.location, p.pm].some((s) => s.toLowerCase().includes(needle))
     })
+    // Exception-first: proyek yang paling perlu perhatian di atas.
+    const rank = new Map(attentionProjects().map((p, i) => [p.id, i]))
+    return [...filtered].sort((a, b) => (rank.get(a.id) ?? 99) - (rank.get(b.id) ?? 99))
   }, [q, set, preset])
 
   const openCounts = (id: string) => {
@@ -47,7 +61,7 @@ export function ProyekList() {
     <>
       <PageHeader
         title="Proyek"
-        description="Daftar proyek pada data demo, termasuk proyek arsip yang hanya-baca."
+        description="Daftar proyek pada data demo, termasuk proyek arsip yang hanya-baca. Kesehatan & progres direkap dari laporan harian lapangan."
       />
 
       <PageBody className="space-y-4">
@@ -92,6 +106,8 @@ export function ProyekList() {
               <TableHead>
                 <TableRow>
                   <TableHeaderCell>Proyek</TableHeaderCell>
+                  <TableHeaderCell className="hidden sm:table-cell">Kesehatan</TableHeaderCell>
+                  <TableHeaderCell className="hidden xl:table-cell">Progres</TableHeaderCell>
                   <TableHeaderCell className="hidden lg:table-cell">Klien & lokasi</TableHeaderCell>
                   <TableHeaderCell className="hidden xl:table-cell">Penanggung jawab</TableHeaderCell>
                   <TableHeaderCell>Status</TableHeaderCell>
@@ -101,9 +117,11 @@ export function ProyekList() {
               <TableBody>
                 {rows.map((p) => {
                   const st = PROJECT_STATUS[p.status]
+                  const health = healthOf(p.id)
+                  const prog = progressOf(p.id)
                   const c = openCounts(p.id)
                   return (
-                    <TableRow key={p.id} clickable onClick={() => navigate(`/proyek/${p.id}`)}>
+                    <TableRow key={p.id} clickable onClick={() => navigate(`/dashboard/proyek/${p.id}`)}>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
@@ -114,6 +132,24 @@ export function ProyekList() {
                             <p className="font-mono text-xs text-ink-muted">{p.code} · {p.type}</p>
                           </div>
                         </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <StatusBadge status={PROJECT_HEALTH[health.healthId]} size="sm" emphasis={health.healthId === 'behind' ? 'strong' : 'subtle'} />
+                      </TableCell>
+                      <TableCell className="hidden xl:table-cell">
+                        {prog && prog.weekly.length > 0 ? (
+                          <div className="w-36">
+                            <PlanActualBar plan={prog.planPct} actual={prog.actualPct} label={`Progres ${p.name}: realisasi ${prog.actualPct}% dari rencana ${prog.planPct}%`} />
+                            <p className="tnum mt-1 text-2xs text-ink-muted">
+                              <span className="font-semibold text-ink">{prog.actualPct}%</span> / {prog.planPct}%
+                              <span className={prog.actualPct - prog.planPct < 0 ? 'ml-1.5 font-medium text-red-700' : 'ml-1.5 text-ink-muted'}>
+                                {prog.actualPct - prog.planPct > 0 ? '+' : ''}{prog.actualPct - prog.planPct} poin
+                              </span>
+                            </p>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-ink-disabled">-</span>
+                        )}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         <p className="text-sm text-ink-secondary">{p.client}</p>

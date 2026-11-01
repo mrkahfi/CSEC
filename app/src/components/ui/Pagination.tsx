@@ -27,7 +27,7 @@ export function Pagination({
   return (
     <nav aria-label="Navigasi halaman" className={cn('flex items-center justify-between gap-4 px-1', className)}>
       <p className="tnum text-sm text-ink-muted">
-        Menampilkan <span className="font-medium text-ink">{from}–{to}</span> dari{' '}
+        Menampilkan <span className="font-medium text-ink">{from}-{to}</span> dari{' '}
         <span className="font-medium text-ink">{total}</span> {itemLabel}
       </p>
       <div className="flex items-center gap-1">

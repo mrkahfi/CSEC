@@ -39,3 +39,6 @@ app/scripts/shots/
 .cache/
 .vite/
 coverage/
+
+# Firebase deploy cache
+.firebase/
