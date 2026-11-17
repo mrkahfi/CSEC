@@ -81,7 +81,7 @@ export function TemuanRegister() {
             wrapperClassName="w-60"
           >
             <option value="">Semua proyek</option>
-            {PROJECTS.map((p) => <option key={p.id} value={p.id}>{p.code} · {p.name}</option>)}
+            {PROJECTS.map((p) => <option key={p.id} value={p.id}>[{p.code}] {p.name}</option>)}
           </Select>
           <SegmentedControl<SetId>
             label="Set status temuan"
@@ -117,7 +117,7 @@ export function TemuanRegister() {
           />
         ) : (
           <TableContainer>
-            {/* Fixed layout — alasan sama dengan register inspeksi. */}
+            {/* Fixed layout: alasan sama dengan register inspeksi. */}
             <Table className="table-fixed min-w-[990px]">
               <TableHead>
                 <TableRow>
@@ -137,12 +137,15 @@ export function TemuanRegister() {
                       <MonoCell>{f.ref}</MonoCell>
                       <TableCell>
                         <p className="max-w-80 truncate text-sm font-medium text-ink">{f.title}</p>
-                        <p className="mt-0.5 flex max-w-80 items-center gap-1 text-xs text-ink-muted">
-                          <MapPin {...iconProps(12)} />
-                          <span className="truncate">{f.location}</span>
-                          <span aria-hidden>·</span>
-                          <span className="shrink-0">{projectCode(f.projectId)}</span>
-                        </p>
+                        <div className="mt-1 flex max-w-80 items-center gap-1.5 text-xs text-ink-muted">
+                          <span className="shrink-0 rounded bg-sunken px-1.5 py-0.2 font-mono text-2xs font-semibold text-ink-secondary border border-line-subtle">
+                            {projectCode(f.projectId)}
+                          </span>
+                          <span className="flex items-center gap-0.5 truncate text-2xs">
+                            <MapPin {...iconProps(11)} />
+                            <span className="truncate">{f.location}</span>
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         <StatusBadge status={FINDING_CLASSIFICATION[f.classification]} size="sm" />

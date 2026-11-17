@@ -2,7 +2,7 @@ import { Timeline, type TimelineItem } from '@/components/ui/Timeline'
 import { formatDateTime } from '@/lib/format'
 import { EVENT_ICON, EVENT_TONE, type TimelineEvent } from '@/demo/data'
 
-/** Peta peristiwa data → item timeline (aktor · peran · waktu — FR-AU-02). */
+/** Peta peristiwa data ke item timeline (aktor, peran, waktu: FR-AU-02). */
 export function EventTimeline({ events }: { events: TimelineEvent[] }) {
   const items: TimelineItem[] = events.map((e) => ({
     id: e.id,

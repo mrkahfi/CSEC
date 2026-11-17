@@ -4,7 +4,7 @@ import { useDemo } from '@/demo/DemoContext'
 
 /**
  * Simulasi pemuatan (PRD §14.3): skeleton singkat setiap kali
- * rute berubah atau skenario di-reset — murni presentasi.
+ * rute berubah atau skenario di-reset: murni presentasi.
  */
 export function useSimulatedLoading(ms = 600) {
   const { pathname } = useLocation()

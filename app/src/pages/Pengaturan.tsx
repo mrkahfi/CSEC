@@ -28,11 +28,11 @@ import { useDemo } from '@/demo/DemoContext'
 import { useSimulatedLoading } from '@/demo/hooks'
 import { PROJECTS, controlPointsOfProject } from '@/demo/data'
 
-/** Profil workflow per proyek — statis, ilustratif (FR-CF-01). */
+/** Profil workflow per proyek: statis, ilustratif (FR-CF-01). */
 const PROFILES: Record<string, {
   terminology: string
   noticeHours: number
-  outcomes: { outcome: string; role: string }[]
+  outcomes: { outcome: string; role: string; person: string }[]
   requiredEvidence: string[]
   holdBehavior: string[]
   escalation: string
@@ -42,9 +42,9 @@ const PROFILES: Record<string, {
     terminology: 'WIR (Work Inspection Request, istilah kontrak)',
     noticeHours: 48,
     outcomes: [
-      { outcome: 'Keputusan internal (terima/koreksi/klarifikasi/tunda)', role: 'QA/QC Inspector · Sari Wulandari' },
-      { outcome: 'Rilis hold point pengecoran', role: 'Quality Manager · Ratna Dewi' },
-      { outcome: 'Keputusan pihak eksternal (bila ITP mensyaratkan)', role: 'Konsultan · CV Mitra Teknik' },
+      { outcome: 'Keputusan internal (terima/koreksi/klarifikasi/tunda)', role: 'QA/QC Inspector', person: 'Sari Wulandari' },
+      { outcome: 'Rilis hold point pengecoran', role: 'Quality Manager', person: 'Ratna Dewi' },
+      { outcome: 'Keputusan pihak eksternal (bila ITP mensyaratkan)', role: 'Konsultan', person: 'CV Mitra Teknik' },
     ],
     requiredEvidence: ['Foto cover & tulangan per grid', 'Berita acara uji slump per batch', 'Laporan pengawasan harian konsultan', 'Checklist pra-pengecoran bertanda tangan'],
     holdBehavior: [
@@ -59,9 +59,9 @@ const PROFILES: Record<string, {
     terminology: 'RFI (Request for Inspection, istilah proyek)',
     noticeHours: 24,
     outcomes: [
-      { outcome: 'Keputusan internal', role: 'QA/QC Inspector · Sari Wulandari' },
-      { outcome: 'Rilis titik tahan FF', role: 'Quality Manager · Ratna Dewi' },
-      { outcome: 'Review shop drawing', role: 'Konsultan · CV Mitra Teknik' },
+      { outcome: 'Keputusan internal', role: 'QA/QC Inspector', person: 'Sari Wulandari' },
+      { outcome: 'Rilis titik tahan FF', role: 'Quality Manager', person: 'Ratna Dewi' },
+      { outcome: 'Review shop drawing', role: 'Konsultan', person: 'CV Mitra Teknik' },
     ],
     requiredEvidence: ['Foto instalasi sebelum plafon ditutup', 'Hasil uji kontinuitas/isolasi', 'Checklist QA kontraktor bertanda tangan'],
     holdBehavior: ['Titik review bukan hold fisik, hanya titik tahan FF yang memblokir.', 'Revisi shop drawing wajib dikonfirmasi sebelum review teknis.'],
@@ -72,8 +72,8 @@ const PROFILES: Record<string, {
     terminology: 'IR (Inspection Request, istilah proyek; referensi lokasi memakai chainage/Sta)',
     noticeHours: 72,
     outcomes: [
-      { outcome: 'Keputusan internal', role: 'QA/QC Inspector · Sari Wulandari' },
-      { outcome: 'Kehadiran witness & penerimaan layer', role: 'Konsultan · PT Cipta Karya' },
+      { outcome: 'Keputusan internal', role: 'QA/QC Inspector', person: 'Sari Wulandari' },
+      { outcome: 'Kehadiran witness & penerimaan layer', role: 'Konsultan', person: 'PT Cipta Karya' },
     ],
     requiredEvidence: ['Laporan uji lab (CBR/proctor/sand cone)', 'Foto sta & lajur', 'BA uji lapangan'],
     holdBehavior: ['Witness tidak hadir ≠ izin lanjut, efek mengikuti prosedur dinas.', 'Hold layer base menahan pekerjaan aspal hingga rilis.'],
@@ -83,7 +83,7 @@ const PROFILES: Record<string, {
   bl: {
     terminology: 'WIR (arsip, hanya-baca)',
     noticeHours: 24,
-    outcomes: [{ outcome: '-', role: 'Proyek arsip (konfigurasi historis)' }],
+    outcomes: [{ outcome: '-', role: 'Proyek arsip', person: 'Konfigurasi historis' }],
     requiredEvidence: ['-'],
     holdBehavior: ['Konfigurasi historis tidak berlaku; rekaman hanya-baca.'],
     escalation: '-',
@@ -91,7 +91,7 @@ const PROFILES: Record<string, {
   },
 }
 
-/** Peran yang dapat melihat konfigurasi (simulasi SC-38 — bukan enforcement). */
+/** Peran yang dapat melihat konfigurasi (simulasi SC-38: bukan enforcement). */
 const CONFIG_VIEWERS = ['project_manager', 'quality_manager', 'qc_inspector']
 
 export function Pengaturan() {
@@ -125,14 +125,14 @@ export function Pengaturan() {
             onChange={(e) => setProjectId(e.target.value)}
             wrapperClassName="w-72"
           >
-            {PROJECTS.map((p) => <option key={p.id} value={p.id}>{p.code} · {p.name}</option>)}
+            {PROJECTS.map((p) => <option key={p.id} value={p.id}>[{p.code}] {p.name}</option>)}
           </Select>
         }
       />
 
       <PageBody className="space-y-5">
         {!allowed ? (
-          /* SC-38: state akses terbatas dirancang — bukan sekadar nav disembunyikan */
+          /* SC-38: state akses terbatas dirancang, bukan sekadar nav disembunyikan */
           <EmptyState
             icon={EyeOff}
             title="Akses terbatas (konfigurasi hanya untuk peran berwenang)"
@@ -188,7 +188,10 @@ export function Pengaturan() {
                     {profile.outcomes.map((o) => (
                       <li key={o.outcome} className="flex items-start justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
                         <span className="text-sm text-ink-secondary">{o.outcome}</span>
-                        <span className="text-right text-sm font-semibold text-ink">{o.role}</span>
+                        <div className="text-right text-xs">
+                          <span className="font-semibold text-ink block">{o.person}</span>
+                          <span className="inline-block mt-0.5 rounded bg-sunken px-1.5 py-0.5 text-2xs text-ink-muted">{o.role}</span>
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -252,9 +255,45 @@ export function Pengaturan() {
                 <CardBody className="pt-4">
                   <Timeline
                     items={[
-                      { id: 'r1', icon: FileText, tone: 'neutral', title: 'ITP & profil workflow (revisi awal disetujui)', meta: 'QA Manager · 12 bulan lalu', note: 'Baseline dari template kontrak.' },
-                      { id: 'r2', icon: TriangleAlert, tone: 'warning', title: 'Revisi 2 (notice period 24→48 jam, kondisi rilis ditambah)', meta: 'Quality Manager · 5 bulan lalu', note: 'Disetujui konsultan; berlaku prospektif.' },
-                      { id: 'r3', icon: CircleCheck, tone: 'success', title: 'Revisi berjalan (tanpa perubahan tertunda)', meta: 'Demo · hari ini', detail: 'Perubahan berikutnya memerlukan review otoritas kualitas/kontrak.' },
+                      {
+                        id: 'r1',
+                        icon: FileText,
+                        tone: 'neutral',
+                        title: 'ITP & profil workflow (revisi awal disetujui)',
+                        meta: (
+                          <span className="flex items-center gap-1.5 text-xs text-ink-muted">
+                            <span className="font-medium text-ink-secondary">QA Manager</span>
+                            <span className="rounded bg-sunken px-1.5 py-0.5 text-2xs">12 bulan lalu</span>
+                          </span>
+                        ),
+                        note: 'Baseline dari template kontrak.',
+                      },
+                      {
+                        id: 'r2',
+                        icon: TriangleAlert,
+                        tone: 'warning',
+                        title: 'Revisi 2 (notice period 24 ke 48 jam, kondisi rilis ditambah)',
+                        meta: (
+                          <span className="flex items-center gap-1.5 text-xs text-ink-muted">
+                            <span className="font-medium text-ink-secondary">Quality Manager</span>
+                            <span className="rounded bg-sunken px-1.5 py-0.5 text-2xs">5 bulan lalu</span>
+                          </span>
+                        ),
+                        note: 'Disetujui konsultan; berlaku prospektif.',
+                      },
+                      {
+                        id: 'r3',
+                        icon: CircleCheck,
+                        tone: 'success',
+                        title: 'Revisi berjalan (tanpa perubahan tertunda)',
+                        meta: (
+                          <span className="flex items-center gap-1.5 text-xs text-ink-muted">
+                            <span className="font-medium text-ink-secondary">Demo</span>
+                            <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-2xs font-semibold text-emerald-700">Hari ini</span>
+                          </span>
+                        ),
+                        detail: 'Perubahan berikutnya memerlukan review otoritas kualitas/kontrak.',
+                      },
                     ]}
                   />
                 </CardBody>

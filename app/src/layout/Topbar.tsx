@@ -44,7 +44,7 @@ export function Topbar({ onOpenSearch }: { onOpenSearch: () => void }) {
 
   return (
     <header className="flex h-16 min-w-0 flex-1 shrink-0 items-center gap-4 border-b border-line-subtle bg-surface px-5">
-      {/* Pencarian global — buka palet (FR-SE-01) */}
+      {/* Pencarian global: buka palet (FR-SE-01) */}
       <div className="hidden min-w-0 flex-1 justify-center sm:flex">
         <button
           type="button"
@@ -60,7 +60,7 @@ export function Topbar({ onOpenSearch }: { onOpenSearch: () => void }) {
       <div className="flex-1 sm:hidden" />
 
       <div className="flex shrink-0 items-center gap-2">
-        {/* Notifikasi demo — dari data seed, tautan ke catatan (FR-NO-03/04) */}
+        {/* Notifikasi demo: dari data seed, tautan ke catatan (FR-NO-03/04) */}
         <Menu
           align="end"
           panelClassName="w-[26rem]"
@@ -124,7 +124,12 @@ export function Topbar({ onOpenSearch }: { onOpenSearch: () => void }) {
               })),
             },
             'divider',
-            { id: 'logout', label: 'Keluar (nonaktif di demo)', icon: LogOut, disabled: true },
+            {
+              id: 'logout',
+              label: 'Kembali ke Portal Modul',
+              icon: LogOut,
+              onSelect: () => navigate('/'),
+            },
           ]}
           trigger={({ toggle }) => (
             <button

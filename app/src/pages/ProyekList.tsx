@@ -60,8 +60,8 @@ export function ProyekList() {
   return (
     <>
       <PageHeader
-        title="Proyek"
-        description="Daftar proyek pada data demo, termasuk proyek arsip yang hanya-baca. Kesehatan & progres direkap dari laporan harian lapangan."
+        title="Daftar Proyek"
+        meta={<Badge tone="brand" size="sm">{PROJECTS.length} proyek</Badge>}
       />
 
       <PageBody className="space-y-4">
@@ -128,8 +128,11 @@ export function ProyekList() {
                             <Building2 size={16} strokeWidth={1.8} />
                           </span>
                           <div className="min-w-0">
-                            <p className="truncate text-md font-semibold text-ink">{p.name}</p>
-                            <p className="font-mono text-xs text-ink-muted">{p.code} · {p.type}</p>
+                            <p className="truncate text-sm font-bold text-ink">{p.name}</p>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <span className="font-mono text-xs font-semibold text-ink-secondary">{p.code}</span>
+                              <span className="rounded bg-sunken px-1.5 py-0.2 text-2xs text-ink-muted border border-line-subtle">{p.type}</span>
+                            </div>
                           </div>
                         </div>
                       </TableCell>

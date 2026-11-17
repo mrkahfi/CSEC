@@ -1222,7 +1222,7 @@ export const PROJECT_HEALTH_STATE: Record<string, ProjectHealthState> = {
     healthId: 'behind',
     headline: 'Terlambat ±5 poin dari rencana; siklus cor lantai 8 terblokir hold point.',
     reasons: [
-      { id: 'r1', severity: 'danger', refLabel: 'HP-AR-02', label: 'Cor pelat L8 tertahan — rilis hold point menunggu 2 kondisi (temuan & verifikasi).', to: '/dashboard/proyek/aru?titik=hp-ar-02' },
+      { id: 'r1', severity: 'danger', refLabel: 'HP-AR-02', label: 'Cor pelat L8 tertahan: rilis hold point menunggu 2 kondisi (temuan & verifikasi).', to: '/dashboard/proyek/aru?titik=hp-ar-02' },
       { id: 'r2', severity: 'warning', refLabel: 'F-AR-021', label: 'Perbaikan cover tulangan sudah diajukan; verifikasi QA/QC menjadi syarat rilis cor.', to: '/dashboard/temuan/f-ar-021' },
       { id: 'r3', severity: 'warning', refLabel: 'WIR-AR-2026-0142', label: 'Keputusan re-inspeksi menunggu perekaman QA/QC.', to: '/dashboard/inspeksi/wir-ar-0142' },
       { id: 'r4', severity: 'info', label: 'Selisih vs rencana melebar 4 minggu berturut-turut (1 → 5 poin).' },
@@ -1232,7 +1232,7 @@ export const PROJECT_HEALTH_STATE: Record<string, ProjectHealthState> = {
     healthId: 'at_risk',
     headline: 'Progres sedikit di bawah rencana; ada tindakan K3 yang terlambat.',
     reasons: [
-      { id: 'r1', severity: 'danger', refLabel: 'CA-014-1', label: 'Penutupan panel listrik (F-KS-014) lewat jatuh tempo 1 hari — perlu eskalasi.', to: '/dashboard/temuan/f-ks-014' },
+      { id: 'r1', severity: 'danger', refLabel: 'CA-014-1', label: 'Penutupan panel listrik (F-KS-014) lewat jatuh tempo 1 hari: perlu eskalasi.', to: '/dashboard/temuan/f-ks-014' },
       { id: 'r2', severity: 'warning', refLabel: 'F-KS-012', label: 'Investigasi jalur kabel vs gas medis berjalan; berdampak ke penutupan plafon L2.', to: '/dashboard/temuan/f-ks-012' },
       { id: 'r3', severity: 'info', refLabel: 'WIR-KS-2026-0088', label: 'Pengajuan MEP L2 dikembalikan untuk kelengkapan referensi revisi.', to: '/dashboard/inspeksi/wir-ks-0088' },
     ],
@@ -1241,7 +1241,7 @@ export const PROJECT_HEALTH_STATE: Record<string, ProjectHealthState> = {
     healthId: 'at_risk',
     headline: 'Progres ±4 poin di bawah rencana; rantai penerimaan bergantung jadwal konsultan.',
     reasons: [
-      { id: 'r1', severity: 'warning', refLabel: 'WIR-JK-2026-0041', label: 'Witness kepadatan subbase dijadwalkan ulang (konsultan berhalangan) — waktu baru H+1 14:00.', to: '/dashboard/inspeksi/wir-jk-0041' },
+      { id: 'r1', severity: 'warning', refLabel: 'WIR-JK-2026-0041', label: 'Witness kepadatan subbase dijadwalkan ulang (konsultan berhalangan): waktu baru H+1 14:00.', to: '/dashboard/inspeksi/wir-jk-0041' },
       { id: 'r2', severity: 'warning', refLabel: 'WIR-JK-2026-0027', label: 'Keputusan mix design aspal masih di konsultan; mulai aspal lapis 1 menunggu.', to: '/dashboard/inspeksi/wir-jk-0027' },
       { id: 'r3', severity: 'info', refLabel: 'LW-05-021', label: 'Rework subgrade area A selesai; penerimaan ulang menyusul witness kepadatan.' },
     ],
@@ -1387,7 +1387,7 @@ export const DAILY_REPORTS: DailyReport[] = [
       'Arsitektur L7: pemasangan keramik zona parkir ±80%.',
     ],
     delays: [
-      { id: 'd1', category: 'cuaca', desc: 'Hujan sore (1 jam) — pekerjaan bekisting L9 dihentikan sementara.' },
+      { id: 'd1', category: 'cuaca', desc: 'Hujan sore (1 jam): pekerjaan bekisting L9 dihentikan sementara.' },
     ],
     flags: [
       { id: 'fl1', kind: 'finding', refId: 'f-ar-021', label: 'F-AR-021 · verifikasi perbaikan cover menunggu QA/QC', to: '/dashboard/temuan/f-ar-021' },
@@ -1428,7 +1428,7 @@ export const DAILY_REPORTS: DailyReport[] = [
       'Area Grid A/2-3 dikembalikan untuk perbaikan; pengecoran ditunda.',
     ],
     delays: [
-      { id: 'd1', category: 'kualitas', desc: 'Rework cover tulangan — pengecoran pelat L8 ditunda sampai perbaikan diverifikasi.' },
+      { id: 'd1', category: 'kualitas', desc: 'Rework cover tulangan: pengecoran pelat L8 ditunda sampai perbaikan diverifikasi.' },
     ],
     flags: [
       { id: 'fl1', kind: 'finding', refId: 'f-ar-021', label: 'F-AR-021 · cover tulangan di bawah spesifikasi dicatat', to: '/dashboard/temuan/f-ar-021' },
@@ -1494,7 +1494,7 @@ export const DAILY_REPORTS: DailyReport[] = [
       'Penebaran base kelas A mulai parsial Sta 1+250 s.d. 1+270.',
     ],
     delays: [
-      { id: 'd1', category: 'inspeksi', desc: 'Witness kepadatan subbase dijadwalkan ulang — konsultan berhalangan; waktu baru H+1 14:00.' },
+      { id: 'd1', category: 'inspeksi', desc: 'Witness kepadatan subbase dijadwalkan ulang: konsultan berhalangan, waktu baru H+1 14:00.' },
     ],
     flags: [
       { id: 'fl1', kind: 'inspection', refId: 'wir-jk-0041', label: 'WIR-JK-2026-0041 · jadwal witness diubah', to: '/dashboard/inspeksi/wir-jk-0041' },

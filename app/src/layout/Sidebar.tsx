@@ -23,19 +23,25 @@ function useNavCounts() {
   }, [role])
 }
 
-export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+export function Sidebar({
+  onNavigate,
+  onOpenGlossary,
+}: {
+  onNavigate?: () => void
+  onOpenGlossary?: () => void
+}) {
   const { resetDemo } = useDemo()
   const toast = useToast()
   const counts = useNavCounts()
 
   return (
-    <div className="flex h-full w-60 shrink-0 flex-col border-r border-line-subtle bg-surface">
-      {/* Identitas produk — setinggi topbar agar kedua sisi header sejajar */}
+    <div className="flex h-full w-64 shrink-0 flex-col border-r border-line-subtle bg-surface">
+      {/* Identitas produk: setinggi topbar agar kedua sisi header sejajar */}
       <div className="flex h-16 shrink-0 items-center gap-3 px-5">
         <Logo size={32} />
         <div className="min-w-0">
           <p className="text-lg leading-6 font-semibold tracking-tight text-ink">SiteOps</p>
-          <p className="truncate text-xs leading-4 text-ink-muted">Site Operations Dashboard</p>
+          <p className="text-xs leading-4 text-ink-muted">Site Operations Dashboard</p>
         </div>
       </div>
 
@@ -118,7 +124,13 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         </button>
         <button
           type="button"
-          onClick={() => toast({ tone: 'info', title: 'Panduan istilah (demo)', description: 'Glosarium WIR, hold point, NCR menyusul pada iterasi konten.' })}
+          onClick={() => {
+            if (onOpenGlossary) {
+              onOpenGlossary()
+            } else {
+              toast({ tone: 'info', title: 'Panduan Istilah', description: 'Glosarium konvensi mutu lapangan.' })
+            }
+          }}
           className="flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2 py-[7px] text-sm font-medium text-ink-secondary transition-colors hover:bg-hover hover:text-ink"
         >
           <CircleHelp {...iconProps(16)} className="text-ink-muted" />

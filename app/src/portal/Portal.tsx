@@ -20,7 +20,7 @@ import { cn } from '@/lib/cn'
  * aplikasi lapangan mobile untuk eksekutor.
  */
 
-/** Mockup mini browser untuk kartu dashboard — murni dekoratif. */
+/** Mockup mini browser untuk kartu dashboard: murni dekoratif. */
 function BrowserMock() {
   return (
     <div aria-hidden className="w-full overflow-hidden rounded-t-xl border border-b-0 border-line-subtle bg-surface shadow-xs">
@@ -57,7 +57,7 @@ function BrowserMock() {
   )
 }
 
-/** Mockup mini phone untuk kartu aplikasi lapangan — murni dekoratif. */
+/** Mockup mini phone untuk kartu aplikasi lapangan: murni dekoratif. */
 function PhoneMock() {
   return (
     <div aria-hidden className="mx-auto w-36 rounded-[1.4rem] border-[5px] border-gray-900 bg-surface shadow-md">
@@ -105,7 +105,7 @@ const MODULES = [
     icon: Monitor,
     label: 'Modul Web',
     name: 'Site Operations Dashboard',
-    desc: 'Kendali eksekusi lintas proyek: progres vs rencana, kesehatan proyek, dan tindak lanjut temuan — dari laporan lapangan hingga keputusan manajemen.',
+    desc: 'Kendali eksekusi lintas proyek: progres vs rencana, kesehatan proyek, dan tindak lanjut temuan, dari laporan lapangan hingga keputusan manajemen.',
     cta: 'Buka Dashboard',
     mock: <BrowserMock />,
   },

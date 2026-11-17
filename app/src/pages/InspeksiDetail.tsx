@@ -6,6 +6,7 @@ import {
   Camera,
   CircleCheck,
   ClipboardCheck,
+  Eye,
   EyeOff,
   FileSearch,
   FileText,
@@ -44,6 +45,7 @@ import { Tooltip } from '@/components/ui/Tooltip'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useToast } from '@/components/ui/Toast'
+import { EvidenceViewerModal, type EvidenceType } from '@/components/EvidenceViewerModal'
 import { formatDateTime, formatRelative } from '@/lib/format'
 import { useDemo } from '@/demo/DemoContext'
 import { useSimulatedLoading } from '@/demo/hooks'
@@ -94,6 +96,7 @@ function DecisionDialog({
   authorized: boolean
 }) {
   const toast = useToast()
+  const { setScenario } = useDemo()
   const [comment, setComment] = useState('')
   if (!outcome) return null
   const o = OUTCOMES[outcome]
@@ -104,7 +107,12 @@ function DecisionDialog({
       open
       onClose={onClose}
       title={`Rekam keputusan: ${o.label}`}
-      description={`${ins.ref} · ${ins.title}`}
+      description={
+        <span className="flex items-center gap-2">
+          <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-sunken text-ink">{ins.ref}</span>
+          <span className="text-ink-secondary">{ins.title}</span>
+        </span>
+      }
       footer={
         <>
           <Button variant="ghost" onClick={onClose}>Batal</Button>
@@ -113,7 +121,12 @@ function DecisionDialog({
             disabled={needsComment && comment.trim() === ''}
             onClick={() => {
               onClose()
-              toast({ tone: 'brand', title: 'Simulasi keputusan direkam', description: `${o.label} · ${ins.ref}, data demo tidak berubah (tanpa persistensi).` })
+              if (outcome === 'correction') {
+                setScenario((prev) => ({ ...prev, wirStatus: 'correction' }))
+              } else if (outcome === 'accept') {
+                setScenario((prev) => ({ ...prev, wirStatus: 'accepted' }))
+              }
+              toast({ tone: 'brand', title: 'Keputusan direkam', description: `${o.label}: ${ins.ref}. Status simulasi skenario diperbarui.` })
             }}
           >
             <o.icon {...iconProps(16)} strokeWidth={2} />
@@ -139,7 +152,12 @@ function DecisionDialog({
           </div>
           <div className="sm:col-span-2">
             <dt className="text-xs text-ink-muted">Lingkup yang ditinjau</dt>
-            <dd className="font-medium text-ink">{ins.scope} · ITP: <span className="font-mono text-xs">{ins.itpRef}</span></dd>
+            <dd className="flex flex-wrap items-center gap-2 font-medium text-ink">
+              <span>{ins.scope}</span>
+              <span className="rounded bg-surface px-1.5 py-0.5 text-xs text-ink-secondary border border-line-subtle font-mono">
+                ITP: {ins.itpRef}
+              </span>
+            </dd>
           </div>
         </dl>
 
@@ -175,9 +193,13 @@ function DecisionDialog({
 
 function ReleaseDialog({ cpId, onClose }: { cpId: string; onClose: () => void }) {
   const toast = useToast()
+  const { scenario, setScenario } = useDemo()
   const [comment, setComment] = useState('')
   const cp = controlPointById(cpId)!
-  const unmet = cp.conditions?.filter((c) => !c.met) ?? []
+  
+  // Dalam skenario demo: jika WIR diterima, kondisi tercapai untuk simulasi rilis
+  const conditionsMet = cp.id === 'hp-ar-02' && scenario.wirStatus === 'accepted'
+  const unmet = conditionsMet ? [] : (cp.conditions?.filter((c) => !c.met) ?? [])
   const canRelease = unmet.length === 0 && comment.trim() !== ''
 
   return (
@@ -186,7 +208,7 @@ function ReleaseDialog({ cpId, onClose }: { cpId: string; onClose: () => void })
       onClose={onClose}
       size="lg"
       title={`Catat Rilis Hold Point ${cp.ref}`}
-      description={`${cp.title} · ${cp.itpRef}`}
+      description={`${cp.title} (${cp.itpRef})`}
       footer={
         <>
           <Button variant="ghost" onClick={onClose}>Batal</Button>
@@ -195,7 +217,8 @@ function ReleaseDialog({ cpId, onClose }: { cpId: string; onClose: () => void })
             disabled={!canRelease}
             onClick={() => {
               onClose()
-              toast({ tone: 'success', title: 'Simulasi rilis tercatat', description: `${cp.ref} dirilis oleh otoritas, aktivitas berikutnya tidak lagi terblokir (demo).` })
+              setScenario((prev) => ({ ...prev, holdPointReleased: true }))
+              toast({ tone: 'success', title: 'Rilis hold point tercatat', description: `${cp.ref} resmi dirilis oleh Quality Manager. Izin cor aktif.` })
             }}
           >
             <Stamp {...iconProps(16)} strokeWidth={2} />
@@ -206,7 +229,7 @@ function ReleaseDialog({ cpId, onClose }: { cpId: string; onClose: () => void })
     >
       <div className="space-y-3.5">
         <Callout tone="warning" icon={Stamp} title="Rilis otoritas, berbeda dari keputusan inspeksi">
-          Mengizinkan aktivitas berikutnya berjalan · tercatat atas nama {cp.releaseAuthority}.
+          Mengizinkan aktivitas berikutnya berjalan. Tercatat resmi atas nama {cp.releaseAuthority}.
         </Callout>
 
         <div>
@@ -261,12 +284,14 @@ export function InspeksiDetail() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
   const loading = useSimulatedLoading()
-  const { role } = useDemo()
+  const { role, scenario } = useDemo()
   const toast = useToast()
 
   const ins = inspectionById(id)
   const [outcome, setOutcome] = useState<OutcomeId | null>(null)
   const [releaseOpen, setReleaseOpen] = useState(false)
+  const [viewerOpen, setViewerOpen] = useState(false)
+  const [viewerType, setViewerType] = useState<EvidenceType>('photo-rebar')
 
   if (loading) {
     return (
@@ -299,8 +324,17 @@ export function InspeksiDetail() {
 
   const project = projectById(ins.projectId)
   const wp = activityById(ins.activityId)
-  const cp = ins.holdPointId ? controlPointById(ins.holdPointId) : undefined
-  const statusDef = INSPECTION_STATUS[ins.status]
+  const rawCp = ins.holdPointId ? controlPointById(ins.holdPointId) : undefined
+  const cp = (rawCp?.id === 'hp-ar-02' && scenario.holdPointReleased)
+    ? { ...rawCp, status: 'released' as const }
+    : rawCp
+
+  const rawStatus = (ins.id === 'wir-ar-0142' && scenario.wirStatus === 'accepted')
+    ? 'accepted'
+    : (ins.id === 'wir-ar-0142' && scenario.wirStatus === 'correction')
+      ? 'correction_required'
+      : ins.status
+  const statusDef = INSPECTION_STATUS[rawStatus]
   const findings = ins.linkedFindingIds.map((f) => findingById(f)!).filter(Boolean)
   const priors = ins.priorInspectionIds.map((p) => inspectionById(p)!).filter(Boolean)
   const archived = project.status === 'closed'
@@ -364,10 +398,16 @@ export function InspeksiDetail() {
           title={`Status: ${statusDef.label}`}
           actions={
             ins.nextAction ? (
-              <span className="text-xs text-ink-muted">
-                Tindakan berikutnya: <span className="font-medium text-ink">{ins.nextAction.label}</span> · {ins.nextAction.owner}
-                {ins.nextAction.dueAt && <> · target {formatRelative(ins.nextAction.dueAt)}</>}
-              </span>
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="text-ink-muted font-medium">Tindakan berikutnya:</span>
+                <span className="font-bold text-ink">{ins.nextAction.label}</span>
+                <span className="rounded bg-sunken px-1.5 py-0.2 font-medium text-ink-secondary border border-line-subtle">{ins.nextAction.owner}</span>
+                {ins.nextAction.dueAt && (
+                  <span className="rounded bg-amber-50 px-1.5 py-0.2 font-mono text-2xs font-bold text-amber-800 border border-amber-200">
+                    target {formatRelative(ins.nextAction.dueAt)}
+                  </span>
+                )}
+              </div>
             ) : undefined
           }
         >
@@ -389,44 +429,44 @@ export function InspeksiDetail() {
             <Card>
               <CardHeader title="Detail pengajuan" />
               <CardBody className="pt-3">
-                <dl className="grid gap-x-8 gap-y-3.5 sm:grid-cols-2">
+                <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
                   <div>
-                    <dt className="text-xs text-ink-muted">Lokasi kerja</dt>
-                    <dd className="text-sm font-medium text-ink">
-                      <span className="inline-flex items-center gap-1"><MapPin {...iconProps(13)} className="text-ink-muted" />{ins.location}</span>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5">Lokasi kerja</dt>
+                    <dd className="text-sm font-semibold text-ink">
+                      <span className="inline-flex items-center gap-1.5"><MapPin {...iconProps(13)} className="text-brand-600" />{ins.location}</span>
                       {ins.locationDetail && <span className="mt-0.5 block pl-5 text-xs font-normal text-ink-muted">{ins.locationDetail}</span>}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">Paket kerja</dt>
-                    <dd className="text-sm font-medium text-ink">{wp?.name} <span className="font-mono text-xs text-ink-muted">{wp?.code}</span></dd>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5">Paket kerja</dt>
+                    <dd className="text-sm font-semibold text-ink">{wp?.name} <span className="font-mono text-xs font-normal text-ink-muted bg-sunken px-1.5 py-0.2 rounded border border-line-subtle">{wp?.code}</span></dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">Titik inspeksi & ITP</dt>
-                    <dd className="flex items-center gap-2 text-sm font-medium text-ink">
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5">Titik inspeksi &amp; ITP</dt>
+                    <dd className="flex items-center gap-2 text-sm font-semibold text-ink">
                       <StatusBadge status={POINT_TYPE[ins.pointType]} size="sm" />
                       <span className="font-mono text-xs font-normal text-ink-muted">{ins.itpRef}</span>
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">Pemberitahuan (notice)</dt>
-                    <dd className="text-sm font-medium text-ink">{ins.noticeHours > 0 ? `${ins.noticeHours} jam sebelum jadwal` : '-'}</dd>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5">Pemberitahuan (notice)</dt>
+                    <dd className="text-sm font-semibold text-ink">{ins.noticeHours > 0 ? `${ins.noticeHours} jam sebelum jadwal` : '-'}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">Pengirim</dt>
-                    <dd className="text-sm font-medium text-ink">{ins.submitter.name}<span className="block text-xs font-normal text-ink-muted">{ins.submitter.org}</span></dd>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5">Pengirim</dt>
+                    <dd className="text-sm font-semibold text-ink">{ins.submitter.name}<span className="block text-xs font-normal text-ink-muted">{ins.submitter.org}</span></dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">Reviewer / otoritas</dt>
-                    <dd className="text-sm font-medium text-ink">{ins.reviewer}{ins.externalAuthority && <span className="block text-xs font-normal text-ink-muted">Eksternal: {ins.externalAuthority}</span>}</dd>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5">Reviewer / otoritas</dt>
+                    <dd className="text-sm font-semibold text-ink">{ins.reviewer}{ins.externalAuthority && <span className="block text-xs font-normal text-ink-muted">Eksternal: {ins.externalAuthority}</span>}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">Diajukan</dt>
-                    <dd className="tnum text-sm font-medium text-ink">{ins.submittedAt ? formatDateTime(ins.submittedAt) : 'belum diajukan (draf)'}</dd>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5">Diajukan</dt>
+                    <dd className="tnum font-mono text-sm font-semibold text-ink">{ins.submittedAt ? formatDateTime(ins.submittedAt) : 'belum diajukan (draf)'}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">Jadwal diminta / disetujui</dt>
-                    <dd className="tnum text-sm font-medium text-ink">
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5">Jadwal diminta / disetujui</dt>
+                    <dd className="tnum font-mono text-sm font-semibold text-ink">
                       {ins.scheduledAt ? formatDateTime(ins.scheduledAt) : ins.requestedAt ? formatDateTime(ins.requestedAt) : '-'}
                     </dd>
                   </div>
@@ -493,32 +533,151 @@ export function InspeksiDetail() {
 
             {/* Bukti & lampiran — SC-29 */}
             <Card>
-              <CardHeader title="Bukti & lampiran" />
+              <CardHeader
+                icon={Camera}
+                title="Bukti Foto &amp; Laporan Lapangan"
+                actions={
+                  <Badge tone="brand" size="sm">
+                    {ins.evidence.length} berkas terlampir
+                  </Badge>
+                }
+              />
               <CardBody className="pt-2">
                 <div className="grid gap-3 sm:grid-cols-3">
-                  {ins.evidence.map((e) => (
-                    <figure key={e.id} className={cn('overflow-hidden rounded-lg border', e.unavailable ? 'border-dashed border-red-300 bg-red-50/50' : 'border-line-subtle bg-surface shadow-xs transition-shadow hover:shadow-sm')}>
-                      {e.kind === 'photo' && (
-                        <div className={cn('flex aspect-video items-center justify-center', e.unavailable ? 'bg-red-50 text-red-400' : 'bg-sunken text-gray-400')}>
-                          {e.unavailable ? <TriangleAlert {...iconProps(22)} /> : <Camera {...iconProps(22)} />}
-                        </div>
-                      )}
-                      <figcaption className="space-y-1 p-2.5">
-                        <p className={cn('text-xs font-medium leading-4', e.unavailable ? 'text-red-800' : 'text-ink')}>{e.title}</p>
-                        <p className="text-2xs leading-4 text-ink-muted">{e.meta}</p>
-                        {e.unavailable && (
-                          <p className="rounded bg-red-100 px-1.5 py-1 text-2xs font-medium leading-4 text-red-800">
-                            Lampiran tidak tersedia, perlu penggantian.
-                          </p>
+                  {ins.evidence.map((e) => {
+                    const isPhoto = e.kind === 'photo'
+                    const isTest = e.kind === 'test'
+                    const isDoc = e.kind === 'doc'
+                    const isUnavailable = e.unavailable
+
+                    const handleClick = () => {
+                      if (isUnavailable) {
+                        toast({ tone: 'danger', title: 'Lampiran tidak tersedia', description: 'Berkas rusak atau belum diunggah dari lapangan.' })
+                        return
+                      }
+                      if (e.id === 'ev1') setViewerType('photo-rebar')
+                      else if (e.id === 'ev3') setViewerType('test-slump')
+                      else if (e.id === 'ev2') setViewerType('doc-laporan')
+                      else setViewerType('photo-before')
+                      setViewerOpen(true)
+                    }
+
+                    return (
+                      <figure
+                        key={e.id}
+                        onClick={handleClick}
+                        className={cn(
+                          'overflow-hidden rounded-xl border transition-all duration-150 flex flex-col',
+                          isUnavailable
+                            ? 'border-dashed border-red-300 bg-red-50/40 cursor-not-allowed opacity-80'
+                            : 'border-line-subtle bg-surface shadow-2xs hover:shadow-sm hover:border-brand-300 cursor-pointer group',
                         )}
-                        {e.kind !== 'photo' && (
-                          <p className="inline-flex items-center gap-1 text-2xs font-medium text-brand-700">
-                            <FileSearch {...iconProps(11)} /> {e.kind === 'test' ? 'Berkas uji' : 'Dokumen'} · pratinjau simulasi
-                          </p>
+                      >
+                        {/* Visual Thumbnail Rendering */}
+                        {isPhoto && !isUnavailable && (
+                          <div className="relative aspect-video w-full overflow-hidden bg-slate-900 select-none">
+                            {/* Rebar grid simulation */}
+                            <div className="absolute inset-0 flex flex-col justify-around p-2 opacity-50">
+                              <div className="h-1.5 w-full bg-slate-400 rounded-xs" />
+                              <div className="h-1.5 w-full bg-slate-400 rounded-xs" />
+                              <div className="h-1.5 w-full bg-slate-400 rounded-xs" />
+                            </div>
+                            <div className="absolute inset-0 flex justify-around p-2 opacity-50">
+                              <div className="w-1.5 h-full bg-slate-400 rounded-xs" />
+                              <div className="w-1.5 h-full bg-slate-400 rounded-xs" />
+                              <div className="w-1.5 h-full bg-slate-400 rounded-xs" />
+                            </div>
+                            {/* Concrete Decking Spacer */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-7 w-7 rounded-xs bg-stone-300 border border-stone-400 shadow-md flex items-center justify-center font-mono text-[9px] font-bold text-stone-800">
+                              25mm
+                            </div>
+                            {/* Watermark HUD */}
+                            <div className="absolute top-1.5 left-1.5 font-mono text-[8px] bg-black/75 text-emerald-300 px-1.5 py-0.2 rounded font-bold border border-emerald-500/30">
+                              COVER: 25.4mm [OK]
+                            </div>
+                            <div className="absolute bottom-1 right-1.5 font-mono text-[8px] text-white/80 bg-black/70 px-1.5 py-0.2 rounded">
+                              LT.8 GRID A/2
+                            </div>
+                            <div className="absolute inset-0 bg-brand-900/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <span className="rounded-full bg-white text-brand-700 px-2 py-1 text-2xs font-semibold shadow-md flex items-center gap-1">
+                                <Eye {...iconProps(12)} /> Perbesar
+                              </span>
+                            </div>
+                          </div>
                         )}
-                      </figcaption>
-                    </figure>
-                  ))}
+
+                        {isTest && (
+                          <div className="relative aspect-video w-full overflow-hidden bg-white p-2.5 border-b border-line-subtle flex flex-col justify-between select-none">
+                            <div className="flex items-start justify-between border-b border-slate-200 pb-1">
+                              <span className="font-serif text-[9px] font-bold text-slate-800">PT KARYA LAB</span>
+                              <span className="font-mono text-[8px] font-bold text-slate-500">BATCH 118</span>
+                            </div>
+                            <div className="my-auto flex items-center justify-center gap-2">
+                              <span className="font-mono text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                SLUMP: 85 mm
+                              </span>
+                              <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded">
+                                LULUS
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between text-[8px] text-slate-400 font-mono">
+                              <span>SNI 1972:2008</span>
+                              <span className="text-emerald-700 font-semibold">QA APPROVED</span>
+                            </div>
+                            <div className="absolute inset-0 bg-brand-900/15 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <span className="rounded-full bg-white text-brand-700 px-2 py-1 text-2xs font-semibold shadow-md flex items-center gap-1">
+                                <Eye {...iconProps(12)} /> Buka Berita Acara
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        {isDoc && (
+                          <div className="relative aspect-video w-full overflow-hidden bg-white p-2.5 border-b border-line-subtle flex flex-col justify-between select-none">
+                            <div className="flex items-start justify-between border-b border-slate-200 pb-1">
+                              <span className="font-serif text-[9px] font-bold text-slate-800">SUPERVISI MK</span>
+                              <span className="font-mono text-[8px] font-bold text-brand-700 bg-brand-50 px-1 rounded border border-brand-200/60">LW-08-114</span>
+                            </div>
+                            <div className="space-y-0.5 my-auto">
+                              <p className="text-[10px] font-semibold text-slate-800 line-clamp-1">Pengawasan Pembesian Pelat L8</p>
+                              <p className="text-[9px] text-slate-500">CV Mitra Teknik (38 Pekerja)</p>
+                            </div>
+                            <div className="flex items-center justify-between text-[8px] text-slate-400">
+                              <span>14 Nov 2026</span>
+                              <span className="text-slate-600 font-medium">Hendra Kusuma, ST</span>
+                            </div>
+                            <div className="absolute inset-0 bg-brand-900/15 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <span className="rounded-full bg-white text-brand-700 px-2 py-1 text-2xs font-semibold shadow-md flex items-center gap-1">
+                                <Eye {...iconProps(12)} /> Buka Laporan
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        {isUnavailable && (
+                          <div className="flex aspect-video items-center justify-center bg-red-50 text-red-500 border-b border-red-200">
+                            <TriangleAlert {...iconProps(24)} strokeWidth={1.8} />
+                          </div>
+                        )}
+
+                        <figcaption className="space-y-1 p-2.5 flex-1 flex flex-col justify-between">
+                          <div>
+                            <p className={cn('text-xs font-semibold leading-snug', isUnavailable ? 'text-red-800' : 'text-ink group-hover:text-brand-700 transition-colors')}>{e.title}</p>
+                            <p className="text-2xs leading-relaxed text-ink-muted mt-0.5">{e.meta}</p>
+                          </div>
+                          {isUnavailable ? (
+                            <p className="rounded bg-red-100 px-1.5 py-0.5 text-2xs font-bold text-red-800 mt-1">
+                              Lampiran tidak tersedia
+                            </p>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-2xs font-semibold text-brand-700 mt-1">
+                              <Eye {...iconProps(11)} /> Klik untuk pratinjau penuh
+                            </span>
+                          )}
+                        </figcaption>
+                      </figure>
+                    )
+                  })}
                   {ins.evidence.length === 0 && <p className="col-span-3 text-sm text-ink-muted">Belum ada bukti terlampir.</p>}
                 </div>
               </CardBody>
@@ -572,9 +731,10 @@ export function InspeksiDetail() {
                       <Stamp {...iconProps(12)} /> Keputusan terakhir
                     </p>
                     <p className="mt-1.5 text-sm font-semibold text-ink">{ins.decision.outcome}</p>
-                    <p className="text-xs text-ink-secondary">
-                      {ins.decision.by} · {ins.decision.role}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-1.5 text-xs text-ink-secondary">
+                      <span className="font-semibold text-ink">{ins.decision.by}</span>
+                      <span className="rounded bg-surface px-1.5 py-0.5 text-2xs text-ink-muted border border-line-subtle">{ins.decision.role}</span>
+                    </div>
                     <p className="tnum text-xs text-ink-muted">{ins.decidedAt ? formatDateTime(ins.decidedAt) : ''}</p>
                     <p className="mt-1.5 text-xs text-ink-muted"><span className="text-ink-secondary">Lingkup:</span> {ins.decision.scope}</p>
                     <p className="mt-1 border-l-2 border-line-strong pl-2 text-xs italic text-ink-secondary">“{ins.decision.comment}”</p>
@@ -617,9 +777,13 @@ export function InspeksiDetail() {
                     </ul>
                   )}
                   {cp.witness && (
-                    <p className="rounded-md bg-sky-50 px-2.5 py-2 text-xs text-sky-900">
-                      Witness: {cp.witness.party} · {formatDateTime(cp.witness.scheduledAt)} · {cp.witness.note}
-                    </p>
+                    <div className="rounded-lg bg-sky-50 p-2.5 text-xs text-sky-950 border border-sky-200 space-y-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-semibold text-sky-900">Witness: {cp.witness.party}</span>
+                        <span className="font-mono text-2xs text-sky-700 bg-sky-100/70 px-1.5 py-0.5 rounded">{formatDateTime(cp.witness.scheduledAt)}</span>
+                      </div>
+                      <p className="text-sky-800 text-2xs leading-normal">{cp.witness.note}</p>
+                    </div>
                   )}
                   {archived ? (
                     <p className="text-xs text-ink-muted">Rekam arsip, rilis tidak tersedia.</p>
@@ -683,6 +847,11 @@ export function InspeksiDetail() {
 
       <DecisionDialog ins={ins} outcome={outcome} onClose={() => setOutcome(null)} authorized={authorized} />
       {cp && releaseOpen && <ReleaseDialog cpId={cp.id} onClose={() => setReleaseOpen(false)} />}
+      <EvidenceViewerModal
+        open={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        initialType={viewerType}
+      />
     </>
   )
 }

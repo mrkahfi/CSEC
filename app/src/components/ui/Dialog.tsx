@@ -11,10 +11,10 @@ export interface DialogProps {
   description?: ReactNode
   children?: ReactNode
   footer?: ReactNode
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 }
 
-const SIZES = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl' } as const
+const SIZES = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl', '2xl': 'max-w-5xl' } as const
 
 /**
  * Dialog modal. Aksi berdampak tinggi (penolakan, rilis hold point)

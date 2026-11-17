@@ -16,7 +16,7 @@ import { useSimulatedLoading } from '@/demo/hooks'
 import { INSPECTIONS, PROJECTS, findingsOfProject, inspectionsOfProject, projectCode, projectName, projectPulse } from '@/demo/data'
 
 /* ------------------------------------------------------------
- * Pratinjau cetak rekor inspeksi (FR-RE-03) — dokumen simulasi.
+ * Pratinjau cetak rekor inspeksi (FR-RE-03): dokumen simulasi.
  * ------------------------------------------------------------ */
 
 function PrintPreview({ insId, onClose }: { insId: string; onClose: () => void }) {
@@ -27,8 +27,13 @@ function PrintPreview({ insId, onClose }: { insId: string; onClose: () => void }
       open
       onClose={onClose}
       size="lg"
-      title="Pratinjau Cetak · Rekor Inspeksi"
-      description={`${ins.ref} · data demo`}
+      title="Pratinjau Cetak: Rekor Inspeksi"
+      description={
+        <span className="flex items-center gap-2">
+          <span className="rounded bg-sunken px-2 py-0.5 font-mono text-xs font-semibold text-ink">{ins.ref}</span>
+          <span className="text-ink-muted">Data demo</span>
+        </span>
+      }
       footer={
         <>
           <Button variant="ghost" onClick={onClose}>Tutup</Button>
@@ -42,7 +47,7 @@ function PrintPreview({ insId, onClose }: { insId: string; onClose: () => void }
       <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-line-subtle bg-white p-6 text-gray-900">
         <div className="flex items-start justify-between border-b-2 border-gray-900 pb-3">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest">SiteOps · Pratinjau Rekor Inspeksi</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-800">SiteOps: Pratinjau Rekor Inspeksi</p>
             <p className="mt-0.5 font-mono text-sm font-semibold">{ins.ref}</p>
           </div>
           <div className="text-right text-2xs leading-4 text-gray-600">
@@ -56,7 +61,7 @@ function PrintPreview({ insId, onClose }: { insId: string; onClose: () => void }
           {[
             ['Lingkup', ins.title],
             ['Lokasi', ins.location],
-            ['Titik / ITP', `${POINT_TYPE[ins.pointType].label} · ${ins.itpRef}`],
+            ['Titik / ITP', `${POINT_TYPE[ins.pointType].label} (${ins.itpRef})`],
             ['Status', INSPECTION_STATUS[ins.status].label],
             ['Pengirim', ins.submitter.name],
             ['Reviewer', ins.reviewer],
@@ -68,7 +73,7 @@ function PrintPreview({ insId, onClose }: { insId: string; onClose: () => void }
         {ins.decision && (
           <div className="mt-4 rounded border border-gray-300 bg-gray-50 p-3 text-xs">
             <p className="font-bold uppercase tracking-wide">Keputusan: {ins.decision.outcome}</p>
-            <p className="mt-1">{ins.decision.by} · {ins.decision.role} · lingkup: {ins.decision.scope}</p>
+            <p className="mt-1 font-medium">{ins.decision.by} <span className="font-normal text-gray-600">({ins.decision.role})</span> [Lingkup: {ins.decision.scope}]</p>
             <p className="mt-1 italic">“{ins.decision.comment}”</p>
           </div>
         )}
@@ -85,7 +90,11 @@ function PrintPreview({ insId, onClose }: { insId: string; onClose: () => void }
 
         <p className="mt-4 text-xs font-bold uppercase tracking-wide">Indeks bukti</p>
         <ol className="mt-1.5 list-decimal space-y-0.5 pl-4 text-xs">
-          {ins.evidence.map((e) => <li key={e.id}>{e.title} · {e.meta}{e.unavailable && ' (tidak tersedia)'}</li>)}
+          {ins.evidence.map((e) => (
+            <li key={e.id}>
+              <span className="font-medium">{e.title}</span> <span className="font-mono text-gray-500 text-2xs">({e.meta})</span>{e.unavailable && ' (tidak tersedia)'}
+            </li>
+          ))}
           {ins.evidence.length === 0 && <li className="list-none">Tidak ada bukti terlampir.</li>}
         </ol>
 
@@ -103,7 +112,7 @@ export function Laporan() {
   const loading = useSimulatedLoading()
   const [printId, setPrintId] = useState<string | null>(null)
 
-  /** Aging inspeksi terbuka per proyek — kalender, bukan jam kerja (§12.1). */
+  /** Aging inspeksi terbuka per proyek: kalender, bukan jam kerja (§12.1). */
   const rows = useMemo(() => PROJECTS.map((p) => {
     const ins = inspectionsOfProject(p.id)
     const open = ins.filter((i) => !['accepted', 'withdrawn', 'cancelled'].includes(i.status))
@@ -189,9 +198,9 @@ export function Laporan() {
             <CardHeader title="First-pass acceptance & re-inspection" />
             <CardBody className="space-y-4 pt-3">
               {[
-                { icon: BadgeCheck, k: 'First-pass acceptance', v: '78%', def: 'Diterima pada keputusan pertama · n=14' },
+                { icon: BadgeCheck, k: 'First-pass acceptance', v: '78%', def: 'Diterima pada keputusan pertama (n=14)' },
                 { icon: RefreshCw, k: 'Re-inspection rate', v: '17%', def: 'Permintaan dengan ≥1 re-inspeksi' },
-                { icon: FileWarning, k: 'Siklus tindakan (median)', v: '6 hari', def: 'Penugasan → verifikasi · n=12' },
+                { icon: FileWarning, k: 'Siklus tindakan (median)', v: '6 hari', def: 'Penugasan ke verifikasi (n=12)' },
               ].map((m) => (
                 <div key={m.k} className="flex items-start gap-3 border-b border-line-subtle pb-3.5 last:border-0 last:pb-0">
                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
@@ -218,8 +227,11 @@ export function Laporan() {
                   <li key={i.id} className="flex items-center gap-3 py-2.5 first:pt-0">
                     <ClipboardList {...iconProps(16)} className="shrink-0 text-ink-muted" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-ink"><span className="font-mono text-xs">{i.ref}</span> · {i.title}</p>
-                      <p className="text-xs text-ink-muted">{projectCode(i.projectId)} · {i.location}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="rounded bg-brand-50 px-1.5 py-0.5 font-mono text-2xs font-semibold text-brand-700">{i.ref}</span>
+                        <p className="truncate text-sm font-medium text-ink">{i.title}</p>
+                      </div>
+                      <p className="mt-0.5 text-xs text-ink-muted">{projectCode(i.projectId)}: {i.location}</p>
                     </div>
                     <Button size="xs" variant="secondary" onClick={() => setPrintId(i.id)}>
                       <Printer {...iconProps(13)} /> Pratinjau

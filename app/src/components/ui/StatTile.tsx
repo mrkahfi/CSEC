@@ -23,10 +23,17 @@ const VALUE_EMPHASIS = {
   neutral: 'text-ink',
   warning: 'text-amber-700',
   danger: 'text-red-700',
-  success: 'text-green-700',
+  success: 'text-emerald-700',
 } as const
 
-/** Petak metrik portofolio — angka + definisi, bukan grafik dekoratif. */
+const ICON_TONES = {
+  neutral: 'bg-slate-100 text-slate-600 border border-slate-200/70',
+  warning: 'bg-amber-50 text-amber-700 border border-amber-200/80',
+  danger: 'bg-red-50 text-red-700 border border-red-200/80',
+  success: 'bg-emerald-50 text-emerald-700 border border-emerald-200/80',
+} as const
+
+/** Petak metrik portofolio — angka + definisi dengan isyarat visual non-text. */
 export function StatTile({
   label,
   value,
@@ -39,29 +46,29 @@ export function StatTile({
 }: StatTileProps) {
   const content = (
     <>
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-2xs font-semibold tracking-wider text-ink-muted uppercase">
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-[11px] font-bold tracking-wider text-ink-muted uppercase leading-tight line-clamp-2">
           {label}
         </span>
         {IconCmp && (
-          <span className="text-ink-disabled">
-            <Icon as={IconCmp} {...iconProps(16)} />
+          <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-2xs', ICON_TONES[emphasis])}>
+            <Icon as={IconCmp} {...iconProps(16)} strokeWidth={2} />
           </span>
         )}
       </div>
-      <div className="mt-1 flex items-baseline gap-2">
-        <span className={cn('tnum text-2xl font-semibold tracking-tight', VALUE_EMPHASIS[emphasis])}>
+      <div className="mt-2 flex items-baseline gap-2">
+        <span className={cn('tnum font-mono text-2xl font-bold tracking-tight', VALUE_EMPHASIS[emphasis])}>
           {value}
         </span>
         {delta && (
           <span
             className={cn(
-              'inline-flex items-center gap-0.5 text-xs font-medium',
+              'inline-flex items-center gap-0.5 text-xs font-semibold',
               delta.neutral
                 ? 'text-ink-muted'
                 : delta.direction === 'up'
                   ? 'text-red-600'
-                  : 'text-green-700',
+                  : 'text-emerald-700',
             )}
           >
             {delta.direction === 'up' ? (
@@ -73,7 +80,7 @@ export function StatTile({
           </span>
         )}
       </div>
-      {footnote && <p className="mt-1 text-xs text-ink-muted">{footnote}</p>}
+      {footnote && <p className="mt-1 text-2xs text-ink-muted">{footnote}</p>}
     </>
   )
 

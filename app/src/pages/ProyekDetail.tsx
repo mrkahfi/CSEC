@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
-  ArrowRight,
+  Building2,
+  CalendarClock,
   Camera,
   ClipboardList,
   Eye,
@@ -52,49 +53,83 @@ import {
 
 type TabId = 'ringkasan' | 'inspeksi' | 'temuan' | 'titik' | 'aktivitas'
 
-/** Ringkasan satu titik kendali (hold/witness/review) — FR-HP-01/02. */
+import { useDemo } from '@/demo/DemoContext'
+
+/** Ringkasan satu titik kendali (hold/witness/review): FR-HP-01/02. */
 function ControlPointRow({ cp, highlight }: { cp: (typeof CONTROL_POINTS)[number]; highlight?: boolean }) {
+  const { scenario } = useDemo()
+  const isReleased = cp.id === 'hp-ar-02' && scenario.holdPointReleased
   const pt = POINT_TYPE[cp.pointType]
-  const hp = HOLD_POINT_STATUS[cp.status]
+  const hp = isReleased ? HOLD_POINT_STATUS['released'] : HOLD_POINT_STATUS[cp.status]
   return (
-    <div className={cn('rounded-lg border bg-surface p-3.5', highlight ? 'border-amber-300 shadow-xs ring-2 ring-amber-100' : 'border-line-subtle')}>
-      <div className="flex flex-wrap items-center gap-2">
-        <span className={cn('flex h-6 w-6 items-center justify-center rounded-md', TS[pt.tone].badge)}>
-          <pt.icon {...iconProps(14)} strokeWidth={2} />
+    <div className={cn('rounded-xl border bg-surface p-4 shadow-2xs', highlight ? 'border-amber-300 ring-2 ring-amber-100' : 'border-line-subtle')}>
+      <div className="flex flex-wrap items-center gap-2.5">
+        <span className={cn('flex h-7 w-7 items-center justify-center rounded-lg shadow-2xs', TS[pt.tone].badge)}>
+          <pt.icon {...iconProps(15)} strokeWidth={2} />
         </span>
-        <span className="font-mono text-xs text-ink-muted">{cp.ref}</span>
-        <span className="text-sm font-medium text-ink">{cp.title}</span>
+        <span className="font-mono text-xs font-bold text-ink-secondary bg-sunken px-1.5 py-0.5 rounded border border-line-subtle">{cp.ref}</span>
+        <span className="text-sm font-bold text-ink">{cp.title}</span>
         <span className="ml-auto"><StatusBadge status={hp} size="sm" emphasis={cp.pointType === 'hold' && hp.tone === 'danger' ? 'strong' : 'subtle'} /></span>
       </div>
-      <div className="mt-2 grid gap-x-6 gap-y-1 text-xs text-ink-muted sm:grid-cols-2">
-        <span><span className="text-ink-secondary">Otoritas rilis:</span> {cp.releaseAuthority}</span>
-        <span><span className="text-ink-secondary">Referensi:</span> <span className="font-mono">{cp.itpRef}</span></span>
-        {cp.nextActivity && <span className="sm:col-span-2"><span className="text-ink-secondary">Aktivitas berikutnya:</span> {cp.nextActivity}</span>}
-        {cp.witness && (
-          <span className="sm:col-span-2">
-            <span className="text-ink-secondary">Pihak saksi:</span> {cp.witness.party} · jadwal {formatDateTime(cp.witness.scheduledAt)} ({cp.witness.attendance === 'rescheduled' ? 'dijadwalkan ulang' : cp.witness.attendance})
-          </span>
+      <div className="mt-3 grid gap-3 text-xs sm:grid-cols-2 border-t border-line-subtle pt-2.5">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted block">Otoritas Rilis</span>
+          <span className="font-semibold text-ink">{cp.releaseAuthority}</span>
+        </div>
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted block">Referensi ITP</span>
+          <span className="font-mono font-medium text-ink-secondary">{cp.itpRef}</span>
+        </div>
+        {cp.nextActivity && (
+          <div className="sm:col-span-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted block">Aktivitas Berikutnya</span>
+            <span className="font-medium text-ink">{cp.nextActivity}</span>
+          </div>
         )}
-        {cp.note && <span className="sm:col-span-2 italic">{cp.note}</span>}
+        {cp.witness && (
+          <div className="sm:col-span-2 flex flex-wrap items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Saksi:</span>
+            <span className="font-semibold text-ink">{cp.witness.party}</span>
+            <span className="rounded bg-sunken px-1.5 py-0.2 font-mono text-2xs text-ink-muted border border-line-subtle">
+              {formatDateTime(cp.witness.scheduledAt)}
+            </span>
+          </div>
+        )}
+        {cp.note && <span className="sm:col-span-2 italic text-ink-muted">{cp.note}</span>}
       </div>
       {cp.conditions && (
         <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 border-t border-line-subtle pt-2.5">
-          {cp.conditions.map((c) => (
-            <span key={c.id} className={cn('inline-flex items-center gap-1.5 text-xs', c.met ? 'text-green-700' : 'font-medium text-red-700')}>
-              <span aria-hidden className={cn('h-1.5 w-1.5 rounded-full', c.met ? 'bg-green-500' : 'bg-red-500')} />
-              {c.label}
-            </span>
-          ))}
+          {cp.conditions.map((c) => {
+            const isMet = isReleased ? true : c.met
+            return (
+              <span key={c.id} className={cn('inline-flex items-center gap-1.5 text-xs', isMet ? 'text-green-700' : 'font-medium text-red-700')}>
+                <span aria-hidden className={cn('h-1.5 w-1.5 rounded-full', isMet ? 'bg-green-500' : 'bg-red-500')} />
+                {c.label} {isReleased && '(Terpenuhi)'}
+              </span>
+            )
+          })}
         </div>
       )}
     </div>
   )
 }
 
-/** Progres vs rencana + kesehatan proyek + alasannya — sumber: laporan harian. */
+/** Progres vs rencana + kesehatan proyek + alasannya: sumber laporan harian. */
 function ProgresKesehatanCard({ project }: { project: Project }) {
   const navigate = useNavigate()
-  const health = healthOf(project.id)
+  const { scenario } = useDemo()
+  const isAruReleased = project.id === 'aru' && scenario.holdPointReleased
+  const baseHealth = healthOf(project.id)
+  const health = isAruReleased
+    ? {
+        healthId: 'on_track' as const,
+        headline: 'Siklus cor lantai 8 telah dirilis oleh Quality Manager. Pekerjaan cor siap dieksekusi.',
+        reasons: [
+          { id: 'r1', severity: 'info' as const, refLabel: 'HP-AR-02', label: 'Rilis resmi hold point telah dicatat oleh Ratna Dewi.', to: '/dashboard/proyek/aru?titik=hp-ar-02' },
+          { id: 'r2', severity: 'info' as const, refLabel: 'WIR-AR-2026-0142', label: 'Inspeksi tulangan pelat L8 telah disetujui (diterima).', to: '/dashboard/inspeksi/wir-ar-0142' },
+        ],
+      }
+    : baseHealth
   const hst = PROJECT_HEALTH[health.healthId]
   const prog = progressOf(project.id)
   const archived = project.status === 'closed'
@@ -117,15 +152,15 @@ function ProgresKesehatanCard({ project }: { project: Project }) {
                 <PlanActualDelta plan={prog.planPct} actual={prog.actualPct} className="mt-0.5" />
               </div>
               <p className="text-2xs leading-4 text-ink-muted">
-                Per {formatDate(prog.asOf)} · direkap dari laporan harian{' '}
-                <span className="font-mono">{prog.sourceRef}</span> · {prog.reporter}
+                Per {formatDate(prog.asOf)} dari <span className="font-mono">{prog.sourceRef}</span>
+                <span className="ml-1 text-ink-disabled">— {prog.reporter}</span>
               </p>
             </div>
             <PlanActualChart points={prog.weekly} />
           </>
         ) : (
           <p className="text-sm text-ink-muted">
-            {archived ? 'Proyek arsip — rekaman progres historis (100%).' : 'Belum ada rekapan progres pada periode demo.'}
+            {archived ? 'Proyek arsip: rekaman progres historis (100%).' : 'Belum ada rekapan progres pada periode demo.'}
           </p>
         )}
 
@@ -138,7 +173,7 @@ function ProgresKesehatanCard({ project }: { project: Project }) {
                   <>
                     <span aria-hidden className={cn('mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full', TS[r.severity].dot)} />
                     <span className="min-w-0">
-                      {r.refLabel && <span className="font-mono text-2xs text-ink-muted">{r.refLabel} · </span>}
+                      {r.refLabel && <span className="mr-1.5 inline-block rounded bg-sunken px-1.5 py-0.5 font-mono text-2xs text-ink-muted">{r.refLabel}</span>}
                       {r.label}
                     </span>
                   </>
@@ -167,7 +202,7 @@ function ProgresKesehatanCard({ project }: { project: Project }) {
   )
 }
 
-/** Laporan harian terbaru — jejak lapangan yang menjadi sumber kondisi. */
+/** Laporan harian terbaru: jejak lapangan yang menjadi sumber kondisi. */
 function LaporanHarianCard({ projectId }: { projectId: string }) {
   const navigate = useNavigate()
   const reports = reportsOfProject(projectId)
@@ -175,14 +210,14 @@ function LaporanHarianCard({ projectId }: { projectId: string }) {
   return (
     <Card>
       <CardHeader
-        title="Laporan harian lapangan"
-        description="Sumber progres & kondisi lapangan — disusun pengawas proyek."
+        icon={FileText}
+        title="Laporan Harian Lapangan"
       />
       <CardBody className="space-y-3 pt-3">
         {stale && reports.length > 0 && (
           <p className="flex items-start gap-1.5 rounded-md bg-sunken px-2.5 py-1.5 text-xs text-ink-muted">
             <Info {...iconProps(13)} className="mt-0.5 shrink-0" />
-            Laporan hari ini belum diterima — terakhir diterima {formatRelative(reports[0].at)}.
+            Laporan hari ini belum diterima (terakhir diterima {formatRelative(reports[0].at)}).
           </p>
         )}
         {reports.length === 0 && <p className="text-sm text-ink-muted">Tidak ada laporan harian pada periode demo.</p>}
@@ -192,7 +227,10 @@ function LaporanHarianCard({ projectId }: { projectId: string }) {
               <FileText {...iconProps(14)} className="shrink-0 text-ink-muted" />
               <span className="font-mono text-xs text-ink-muted">{r.ref}</span>
               <span className="tnum text-xs text-ink-muted">{formatDate(r.at)}</span>
-              <span className="ml-auto text-2xs text-ink-disabled">{r.author} · {r.authorOrg}</span>
+              <span className="ml-auto text-right">
+                <span className="block text-2xs font-medium text-ink-secondary">{r.author}</span>
+                <span className="block text-2xs text-ink-disabled">{r.authorOrg}</span>
+              </span>
             </div>
             <p className="mt-2 text-sm font-medium text-ink">{r.progressNote}</p>
             <ul className="mt-1.5 space-y-1">
@@ -251,16 +289,17 @@ function MilestoneCard({ projectId }: { projectId: string }) {
   const ms = milestonesOfProject(projectId)
   return (
     <Card>
-      <CardHeader title="Aktivitas & milestone berikutnya" />
+      <CardHeader icon={CalendarClock} title="Milestone Berikutnya" />
       <CardBody className="space-y-2.5 pt-2">
         {ms.length === 0 && <p className="text-sm text-ink-muted">Tidak ada milestone terjadwal pada periode demo.</p>}
         {ms.map((m) => (
-          <div key={m.id} className="rounded-lg border border-line-subtle p-3">
+          <div key={m.id} className="rounded-lg border border-line-subtle p-3 bg-sunken/40 hover:bg-surface transition-colors">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="tnum rounded bg-sunken px-1.5 py-0.5 text-2xs font-medium text-ink-secondary">
-                {formatDate(m.date)} · {formatRelative(m.date)}
+              <span className="tnum rounded bg-surface px-1.5 py-0.5 text-2xs font-semibold text-ink-secondary border border-line-subtle font-mono">
+                {formatDate(m.date)}
               </span>
-              <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{m.title}</span>
+              <span className="text-2xs text-ink-muted">({formatRelative(m.date)})</span>
+              <span className="min-w-0 flex-1 truncate text-xs font-semibold text-ink">{m.title}</span>
               <StatusBadge status={MILESTONE_STATUS[m.statusId]} size="sm" />
             </div>
             <p className="mt-1 text-xs text-ink-muted">{m.note}</p>
@@ -271,7 +310,7 @@ function MilestoneCard({ projectId }: { projectId: string }) {
                     key={l.id}
                     type="button"
                     onClick={() => navigate(l.to)}
-                    className="cursor-pointer rounded-full border border-line-subtle bg-sunken px-2 py-0.5 font-mono text-2xs text-ink-secondary transition-colors hover:border-line-strong hover:text-brand-700"
+                    className="cursor-pointer rounded-full border border-line-subtle bg-surface px-2 py-0.5 font-mono text-2xs text-ink-secondary transition-colors hover:border-line-strong hover:text-brand-700"
                   >
                     {l.label}
                   </button>
@@ -285,13 +324,17 @@ function MilestoneCard({ projectId }: { projectId: string }) {
   )
 }
 
-/** Isu terbuka proyek — pintasan ke tindak lanjut (temuan). */
+/** Isu terbuka proyek: pintasan ke tindak lanjut (temuan). */
 function IsuTerbukaCard({ projectId }: { projectId: string }) {
   const navigate = useNavigate()
   const fnd = findingsOfProject(projectId).filter((f) => !['closed', 'superseded', 'cancelled'].includes(f.status))
   return (
     <Card>
-      <CardHeader title="Isu terbuka" description={`${fnd.length} temuan menunggu penyelesaian`} />
+      <CardHeader
+        icon={TriangleAlert}
+        title="Isu Terbuka"
+        actions={<Badge tone="warning" size="sm">{fnd.length} temuan</Badge>}
+      />
       <CardBody className="space-y-2 pt-2">
         {fnd.length === 0 && <p className="text-sm text-ink-muted">Tidak ada temuan terbuka.</p>}
         {fnd.map((f) => {
@@ -304,16 +347,16 @@ function IsuTerbukaCard({ projectId }: { projectId: string }) {
               onClick={() => navigate(`/dashboard/temuan/${f.id}`)}
               className="block w-full cursor-pointer rounded-lg border border-line-subtle p-2.5 text-left transition-colors hover:bg-hover"
             >
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-2xs text-ink-muted">{f.ref}</span>
-                <span className="min-w-0 flex-1 truncate text-xs font-medium text-ink">{f.title}</span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-2xs font-semibold text-ink-muted">{f.ref}</span>
                 <StatusBadge status={st} size="sm" />
               </div>
-              <p className="mt-1 text-2xs text-ink-muted">
-                PJ: {f.assignee}
-                {f.dueAt && <> · target {formatRelative(f.dueAt)}</>}
-                {overdue && <span className="font-medium text-red-700"> · terlambat</span>}
-              </p>
+              <p className="mt-1 text-xs font-medium text-ink leading-snug">{f.title}</p>
+              <div className="mt-1 flex flex-wrap items-center gap-1.5 text-2xs text-ink-muted">
+                <span>PJ: {f.assignee}</span>
+                {f.dueAt && <span className="rounded bg-sunken px-1.5 py-0.5 font-mono text-ink-secondary">target {formatRelative(f.dueAt)}</span>}
+                {overdue && <span className="rounded bg-red-100 px-1.5 py-0.5 font-bold text-red-700">Terlambat</span>}
+              </div>
             </button>
           )
         })}
@@ -365,7 +408,13 @@ export function ProyekDetail() {
       <PageHeader
         breadcrumbs={[{ label: 'Proyek', to: '/dashboard/proyek' }, { label: project.name }]}
         title={project.name}
-        description={`${project.client} · ${project.location} · ${project.type}`}
+        description={
+          <span className="flex flex-wrap items-center gap-2 text-sm text-ink-secondary">
+            <span className="flex items-center gap-1"><Building2 {...iconProps(13)} className="text-ink-muted" />{project.client}</span>
+            <span className="flex items-center gap-1"><MapPin {...iconProps(13)} className="text-ink-muted" />{project.location}</span>
+            <span className="rounded bg-sunken px-2 py-0.5 text-xs font-medium text-ink-secondary">{project.type}</span>
+          </span>
+        }
         meta={
           <>
             <Badge tone="neutral" size="sm" className="font-mono">{project.code}</Badge>
@@ -389,7 +438,7 @@ export function ProyekDetail() {
                 onClick={() => navigate('/dashboard/laporan')}
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-brand-600 px-3 text-sm font-medium text-white shadow-xs transition-colors hover:bg-brand-700"
               >
-                Ringkasan kualitas <ArrowRight {...iconProps(15)} strokeWidth={2.1} />
+                Ringkasan Kualitas
               </button>
             </>
           )
@@ -476,7 +525,13 @@ export function ProyekDetail() {
             <div className="space-y-4">
               <IsuTerbukaCard projectId={id} />
               <Card>
-                <CardHeader title="Titik kendali" description={`${pts.filter((p) => p.pointType === 'hold').length} hold · ${pts.filter((p) => p.pointType === 'witness').length} witness · ${pts.filter((p) => p.pointType === 'review').length} review`} />
+                <CardHeader title="Titik kendali" actions={
+                  <div className="flex items-center gap-1.5">
+                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">{pts.filter((p) => p.pointType === 'hold').length} Hold</span>
+                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-800">{pts.filter((p) => p.pointType === 'witness').length} Witness</span>
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700">{pts.filter((p) => p.pointType === 'review').length} Review</span>
+                  </div>
+                } />
                 <CardBody className="space-y-2.5 pt-2">
                   {pts.length === 0 && <p className="text-sm text-ink-muted">Tidak ada titik kendali pada proyek ini.</p>}
                   {pts.slice(0, 3).map((cp) => (
@@ -506,7 +561,10 @@ export function ProyekDetail() {
                             </span>
                             <div className="min-w-0 flex-1">
                               <p className="truncate text-xs font-medium text-ink group-hover:text-brand-700">{a.title}</p>
-                              <p className="tnum text-2xs text-ink-muted">{a.actor} · {formatRelative(a.at)}</p>
+                              <div className="mt-0.5 flex items-center gap-1.5 text-2xs text-ink-muted">
+                                <span className="font-medium text-ink-secondary">{a.actor}</span>
+                                <span className="rounded bg-sunken px-1.5 py-0.5 tnum">{formatRelative(a.at)}</span>
+                              </div>
                             </div>
                           </Link>
                         </li>
@@ -515,8 +573,8 @@ export function ProyekDetail() {
                     {acts.length === 0 && <li className="py-2 text-sm text-ink-muted">Belum ada aktivitas tercatat pada periode demo.</li>}
                   </ul>
                   {acts.length > 5 && (
-                    <button type="button" onClick={() => setTab('aktivitas')} className="mt-2 text-xs font-medium text-brand-700 hover:text-brand-800">
-                      Lihat semua aktivitas →
+                    <button type="button" onClick={() => setTab('aktivitas')} className="mt-2 text-xs font-medium text-brand-700 hover:text-brand-800 hover:underline">
+                      Lihat semua aktivitas
                     </button>
                   )}
                 </CardBody>
@@ -565,7 +623,7 @@ export function ProyekDetail() {
                         {i.nextAction ? (
                           <div className="text-xs">
                             <p className="text-ink-secondary">{i.nextAction.label}</p>
-                            <p className="text-ink-muted">{i.nextAction.owner}{i.nextAction.dueAt ? ` · target ${formatRelative(i.nextAction.dueAt)}` : ''}</p>
+                            <p className="text-ink-muted">{i.nextAction.owner}{i.nextAction.dueAt && <span className="ml-1.5 rounded bg-sunken px-1.5 py-0.5 font-mono text-2xs">target {formatRelative(i.nextAction.dueAt)}</span>}</p>
                           </div>
                         ) : (
                           <span className="text-xs text-ink-disabled">-</span>
@@ -599,10 +657,11 @@ export function ProyekDetail() {
                   {f.actions.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {f.actions.map((a) => (
-                        <span key={a.id} className="inline-flex items-center gap-1 rounded-full border border-line-subtle bg-sunken px-2 py-0.5 text-2xs text-ink-secondary">
-                          <span className="font-mono">{a.ref}</span> · {a.assignee}
+                        <span key={a.id} className="inline-flex items-center gap-1.5 rounded-full border border-line-subtle bg-sunken px-2 py-0.5 text-2xs text-ink-secondary">
+                          <span className="font-mono text-ink-muted">{a.ref}</span>
+                          <span>{a.assignee}</span>
                           {new Date(a.dueAt).getTime() < Date.now() && !['verified'].includes(a.status) && (
-                            <span className="font-medium text-red-700">· terlambat</span>
+                            <span className="rounded bg-red-100 px-1 font-bold text-red-700">Terlambat</span>
                           )}
                         </span>
                       ))}
@@ -649,7 +708,13 @@ export function ProyekDetail() {
                         {a.title} <Link to={a.link} className="font-mono text-xs text-brand-700 hover:underline">{a.ref}</Link>
                       </span>
                     ),
-                    meta: `${a.actor} · ${a.role} · ${formatDateTime(a.at)}`,
+                    meta: (
+                      <span className="flex flex-wrap items-center gap-1.5 text-2xs text-ink-muted">
+                        <span className="font-medium text-ink-secondary">{a.actor}</span>
+                        <span className="rounded bg-sunken px-1.5 py-0.5">{a.role}</span>
+                        <span className="tnum">{formatDateTime(a.at)}</span>
+                      </span>
+                    ),
                     note: a.note,
                   }))}
                 />

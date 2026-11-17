@@ -27,7 +27,7 @@ import { DemoProvider } from '@/demo/DemoContext'
  * - `/field`      : Field Operations App (mobile, dalam phone frame)
  */
 
-/** Modul dashboard web — rute lama dinaikkan di bawah /dashboard. */
+/** Modul dashboard web: rute utama di bawah /dashboard. */
 function DashboardModule() {
   return (
     <AppShell>

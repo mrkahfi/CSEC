@@ -3,6 +3,8 @@ import { PanelLeft } from 'lucide-react'
 import { Sidebar } from '@/layout/Sidebar'
 import { Topbar } from '@/layout/Topbar'
 import { SearchPalette } from '@/layout/SearchPalette'
+import { DemoTour } from '@/demo/DemoTour'
+import { GlossaryModal } from '@/components/GlossaryModal'
 import { IconButton } from '@/components/ui/IconButton'
 import { cn } from '@/lib/cn'
 
@@ -14,6 +16,7 @@ import { cn } from '@/lib/cn'
 export function AppShell({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [glossaryOpen, setGlossaryOpen] = useState(false)
 
   /* ⌘K / Ctrl+K membuka palet pencarian global (FR-SE-04). */
   useEffect(() => {
@@ -31,7 +34,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="flex h-dvh overflow-hidden bg-canvas">
       {/* Sidebar desktop */}
       <aside className="hidden lg:block">
-        <Sidebar />
+        <Sidebar onOpenGlossary={() => setGlossaryOpen(true)} />
       </aside>
 
       {/* Drawer tablet */}
@@ -52,12 +55,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             drawerOpen ? 'translate-x-0' : '-translate-x-full',
           )}
         >
-          <Sidebar onNavigate={() => setDrawerOpen(false)} />
+          <Sidebar
+            onNavigate={() => setDrawerOpen(false)}
+            onOpenGlossary={() => setGlossaryOpen(true)}
+          />
         </div>
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Topbar — tetap di atas; konten menggulir di bawahnya */}
+        {/* Topbar: tetap di atas; konten menggulir di bawahnya */}
         <div className="z-30 flex shrink-0 items-center">
           <div className="pl-2 lg:hidden">
             <IconButton label="Buka navigasi" icon={PanelLeft} onClick={() => setDrawerOpen(true)} />
@@ -65,12 +71,18 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Topbar onOpenSearch={() => setSearchOpen(true)} />
         </div>
 
+        {/* Modul Otomasi & Panduan Demo §15.3 */}
+        <DemoTour onOpenGlossary={() => setGlossaryOpen(true)} />
+
         {/* Konten halaman */}
         <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
       </div>
 
       {/* Palet pencarian global (⌘K) */}
       <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      {/* Panduan Istilah & Konvensi Proyek */}
+      <GlossaryModal open={glossaryOpen} onClose={() => setGlossaryOpen(false)} />
     </div>
   )
 }

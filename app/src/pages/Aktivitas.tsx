@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { History } from 'lucide-react'
+import { Building2, Calendar, History, User } from 'lucide-react'
+import { iconProps } from '@/components/Icon'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { PageBody } from '@/components/ui/PageBody'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
@@ -81,7 +82,7 @@ export function Aktivitas() {
           />
         ) : (
           <Card>
-            <CardHeader title="Linimasa" />
+            <CardHeader icon={History} title="Linimasa Peristiwa" />
             <CardBody className="pt-4">
               <Timeline
                 items={rows.map((a) => ({
@@ -89,15 +90,35 @@ export function Aktivitas() {
                   icon: EVENT_ICON[a.kind],
                   tone: EVENT_TONE[a.kind],
                   title: (
-                    <>
-                      {a.title}{' '}
-                      <Link to={a.link} className="font-mono text-xs font-medium text-brand-700 hover:underline">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-ink">{a.title}</span>
+                      <Link
+                        to={a.link}
+                        className="font-mono text-xs font-bold text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded border border-brand-200/70 hover:underline"
+                      >
                         {a.ref}
-                      </Link>{' '}
-                      <span className="text-xs font-normal text-ink-muted">· {projectName(a.projectId)}</span>
-                    </>
+                      </Link>
+                      <span className="inline-flex items-center gap-1 text-2xs text-ink-muted bg-sunken px-1.5 py-0.5 rounded border border-line-subtle">
+                        <Building2 {...iconProps(11)} className="text-ink-disabled" />
+                        {projectName(a.projectId)}
+                      </span>
+                    </div>
                   ),
-                  meta: `${a.actor} · ${a.role} · ${formatDateTime(a.at)}`,
+                  meta: (
+                    <div className="flex flex-wrap items-center gap-2 text-2xs text-ink-muted">
+                      <span className="inline-flex items-center gap-1 font-medium text-ink">
+                        <User {...iconProps(11)} className="text-ink-disabled" />
+                        {a.actor}
+                      </span>
+                      <span className="rounded bg-sunken px-1.5 py-0.2 font-medium text-ink-secondary border border-line-subtle">
+                        {a.role}
+                      </span>
+                      <span className="inline-flex items-center gap-1 font-mono tnum text-ink-disabled">
+                        <Calendar {...iconProps(11)} />
+                        {formatDateTime(a.at)}
+                      </span>
+                    </div>
+                  ),
                   note: a.note,
                 }))}
               />

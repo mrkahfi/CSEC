@@ -26,7 +26,7 @@ import { formatRelative, formatAge } from '@/lib/format'
 import { useSimulatedLoading } from '@/demo/hooks'
 import { INSPECTIONS, PROJECTS, controlPointById, projectCode, type Inspection } from '@/demo/data'
 
-/** Set tampilan — kosakata status sama dengan katalog (FR-IN-05). */
+/** Set tampilan: kosakata status sama dengan katalog (FR-IN-05). */
 type SetId = 'semua' | 'review' | 'eksternal' | 'jadwal' | 'perbaikan' | 'selesai' | 'arsip'
 const SETS: Record<SetId, { label: string; ids: readonly string[] | null }> = {
   semua: { label: 'Semua', ids: null },
@@ -46,7 +46,7 @@ const SORTS = {
 } as const
 type SortId = keyof typeof SORTS
 
-/** Tampilan tersimpan (simulasi FR-IN-06) — preset filter, bukan fitur persistensi. */
+/** Tampilan tersimpan (simulasi FR-IN-06): preset filter, bukan fitur persistensi. */
 const SAVED_VIEWS: { id: string; label: string; set: SetId }[] = [
   { id: 'sv1', label: 'Perlu keputusan QC', set: 'review' },
   { id: 'sv2', label: 'Menunggu eksternal', set: 'eksternal' },
@@ -121,7 +121,7 @@ export function InspeksiRegister() {
           >
             <option value="">Semua proyek</option>
             {PROJECTS.map((p) => (
-              <option key={p.id} value={p.id}>{p.code} · {p.name}</option>
+              <option key={p.id} value={p.id}>[{p.code}] {p.name}</option>
             ))}
           </Select>
           <Select
@@ -156,7 +156,7 @@ export function InspeksiRegister() {
               count: SETS[k].ids ? INSPECTIONS.filter((i) => SETS[k].ids!.includes(i.status)).length : undefined,
             }))}
           />
-          {/* Tampilan tersimpan — simulasi (FR-IN-06) */}
+          {/* Tampilan tersimpan: simulasi (FR-IN-06) */}
           <span className="ml-2 hidden items-center gap-1.5 md:inline-flex" title="Simulasi tampilan tersimpan, tidak ada persistensi">
             <Bookmark {...iconProps(13)} className="text-ink-muted" />
             {SAVED_VIEWS.map((v) => (
@@ -203,7 +203,7 @@ export function InspeksiRegister() {
                   <TableHeaderCell width="270px">Lingkup & lokasi</TableHeaderCell>
                   <TableHeaderCell width="140px" className="hidden lg:table-cell">Titik</TableHeaderCell>
                   <TableHeaderCell width="235px">Status</TableHeaderCell>
-                  <TableHeaderCell width="160px" className="hidden 2xl:table-cell">Pengirim → reviewer</TableHeaderCell>
+                  <TableHeaderCell width="160px" className="hidden 2xl:table-cell">Pengirim & peninjau</TableHeaderCell>
                   <TableHeaderCell width="190px">Tindakan berikutnya</TableHeaderCell>
                 </TableRow>
               </TableHead>
@@ -244,18 +244,27 @@ export function InspeksiRegister() {
                         <StatusBadge status={INSPECTION_STATUS[i.status]} size="sm" />
                       </TableCell>
                       <TableCell className="hidden 2xl:table-cell">
-                        <p className="text-xs text-ink-secondary">{i.submitter.name}</p>
-                        <p className="text-xs text-ink-muted">→ {i.reviewer}</p>
+                        <div className="flex flex-col text-xs">
+                          <span className="font-semibold text-ink">{i.submitter.name}</span>
+                          <span className="text-2xs text-ink-muted flex items-center gap-1 mt-0.5">
+                            <span className="text-ink-disabled font-medium">ke</span>
+                            <span className="font-medium text-ink-secondary">{i.reviewer}</span>
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell>
                         {i.nextAction ? (
                           <div className="text-xs">
-                            <p className="max-w-44 truncate text-ink-secondary">{i.nextAction.label}</p>
-                            <p className={cn('tnum mt-0.5 flex items-center gap-1', overdue ? 'font-medium text-red-700' : 'text-ink-muted')}>
-                              {overdue && <OctagonAlert {...iconProps(11)} strokeWidth={2.2} />}
-                              {i.nextAction.owner.split('(')[0].trim()}
-                              {i.nextAction.dueAt && ` · ${formatRelative(i.nextAction.dueAt)}`}
-                            </p>
+                            <p className="max-w-44 truncate font-medium text-ink">{i.nextAction.label}</p>
+                            <div className={cn('tnum mt-1 flex flex-wrap items-center gap-1.5', overdue ? 'text-red-700' : 'text-ink-muted')}>
+                              {overdue && <OctagonAlert {...iconProps(11)} strokeWidth={2.4} />}
+                              <span className="font-medium text-ink-secondary">{i.nextAction.owner.split('(')[0].trim()}</span>
+                              {i.nextAction.dueAt && (
+                                <span className={cn('rounded px-1.5 py-0.2 font-mono text-2xs', overdue ? 'bg-red-50 text-red-700 font-bold border border-red-200' : 'bg-sunken text-ink-muted border border-line-subtle')}>
+                                  {formatRelative(i.nextAction.dueAt)}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         ) : (
                           <span className="text-xs text-ink-disabled">-</span>

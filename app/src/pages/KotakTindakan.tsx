@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, Inbox, Mail, OctagonAlert } from 'lucide-react'
+import { ExternalLink, Inbox, Mail, OctagonAlert } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { iconProps } from '@/components/Icon'
 import { ROLE } from '@/components/status'
@@ -17,7 +17,7 @@ import { ACTION_ITEMS, ACTION_KIND, projectCode } from '@/demo/data'
 
 type ScopeId = 'saya' | 'semua'
 
-/** Kotak tindakan per peran simulasi — FR-NO-01..04. */
+/** Kotak tindakan per peran simulasi: FR-NO-01..04. */
 export function KotakTindakan() {
   const loading = useSimulatedLoading()
   const navigate = useNavigate()
@@ -91,16 +91,20 @@ export function KotakTindakan() {
                       <Badge tone="neutral" size="sm" className="font-mono">{projectCode(a.projectId)}</Badge>
                       {overdue && <Badge tone="danger" size="sm" icon={OctagonAlert}>Terlambat</Badge>}
                       {dueSoon && <Badge tone="warning" size="sm">Segera jatuh tempo</Badge>}
-                      <span className="ml-auto hidden items-center gap-1 text-sm font-medium text-brand-700 opacity-0 transition-opacity group-hover:opacity-100 md:inline-flex">
-                        Buka catatan <ArrowRight {...iconProps(14)} strokeWidth={2.2} />
+                      <span className="ml-auto hidden items-center gap-1.5 text-xs font-semibold text-brand-700 opacity-0 transition-opacity group-hover:opacity-100 md:inline-flex rounded-md bg-brand-50 px-2 py-1">
+                        Buka berkas <ExternalLink {...iconProps(12)} strokeWidth={2} />
                       </span>
                     </div>
                     <p className="mt-2.5 text-md font-semibold text-ink">{a.title}</p>
                     <p className="mt-1 text-sm text-ink-secondary">{a.detail}</p>
-                    <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-ink-muted">
+                    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line-subtle pt-2.5 text-xs text-ink-muted">
                       <span className="font-medium text-ink-secondary">{a.owner}</span>
-                      {a.dueAt && <>· target <span className={cn('tnum', overdue && 'font-semibold text-red-700')}>{formatDateTime(a.dueAt)}</span> ({formatRelative(a.dueAt)})</>}
-                    </p>
+                      {a.dueAt && (
+                        <span className={cn('rounded px-1.5 py-0.5 font-mono text-2xs', overdue ? 'bg-red-100 text-red-800 font-semibold' : 'bg-sunken text-ink-secondary')}>
+                          target {formatDateTime(a.dueAt)} ({formatRelative(a.dueAt)})
+                        </span>
+                      )}
+                    </div>
                   </button>
                 </li>
               )

@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
+  Camera,
   CircleCheck,
   CircleX,
   ClipboardCheck,
@@ -30,6 +32,7 @@ import { formatDateTime, formatRelative } from '@/lib/format'
 import { useDemo } from '@/demo/DemoContext'
 import { useSimulatedLoading } from '@/demo/hooks'
 import { EventTimeline } from '@/demo/EventTimeline'
+import { EvidenceViewerModal, type EvidenceType } from '@/components/EvidenceViewerModal'
 import { controlPointsOfProject, findingById, inspectionByRef, projectById, projectName, reportsMentioningFinding } from '@/demo/data'
 import type { CorrectiveAction } from '@/demo/data'
 
@@ -41,7 +44,7 @@ const ACTION_STATUS: Record<CorrectiveAction['status'], { label: string; tone: '
   rejected: { label: 'Verifikasi Ditolak', tone: 'danger', icon: CircleX, description: 'Verifikasi gagal, tindakan kembali aktif dengan alasan.' },
 }
 
-/** Kartu satu tindakan perbaikan — FR-FA-05. */
+/** Kartu satu tindakan perbaikan: FR-FA-05. */
 function ActionCard({ a }: { a: CorrectiveAction }) {
   const toast = useToast()
   const { role } = useDemo()
@@ -68,18 +71,18 @@ function ActionCard({ a }: { a: CorrectiveAction }) {
           <dt className="text-ink-muted">Jatuh tempo</dt>
           <dd className={cn('tnum font-medium', overdue ? 'flex items-center gap-1 text-red-700' : 'text-ink')}>
             {overdue && <OctagonAlert {...iconProps(12)} strokeWidth={2.2} />}
-            {formatDateTime(a.dueAt)} {overdue && '· terlambat'}
+            {formatDateTime(a.dueAt)} {overdue && <span className="ml-0.5 text-[10px] font-bold uppercase tracking-wide">Terlambat</span>}
           </dd>
         </div>
         <div>
           <dt className="text-ink-muted">Verifikator</dt>
-          <dd className="font-medium text-ink">{a.verifiedBy ?? 'QA/QC · menunggu'}</dd>
+          <dd className="font-medium text-ink">{a.verifiedBy ?? <span className="text-ink-muted">QA/QC <span className="ml-1 rounded bg-amber-100 px-1 py-0.5 text-[10px] font-bold text-amber-700">Menunggu</span></span>}</dd>
         </div>
       </dl>
       {a.evidenceNote && (
-        <p className="mt-2 rounded-md bg-sunken px-2.5 py-1.5 text-xs text-ink-secondary">
-          <span className="font-medium text-ink">Bukti diajukan:</span> {a.evidenceNote}
-        </p>
+        <div className="mt-2 flex items-start gap-2 rounded-md bg-sunken px-2.5 py-1.5 text-xs text-ink-secondary">
+          <span className="flex-1"><span className="font-medium text-ink">Bukti diajukan:</span> {a.evidenceNote}</span>
+        </div>
       )}
       {a.rejectionReason && (
         <p className="mt-2 rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs text-red-900">
@@ -105,6 +108,8 @@ export function TemuanDetail() {
   const navigate = useNavigate()
   const loading = useSimulatedLoading()
   const f = findingById(id)
+  const [viewerOpen, setViewerOpen] = useState(false)
+  const [viewerType, setViewerType] = useState<EvidenceType>('photo-before')
 
   if (loading) {
     return (
@@ -188,7 +193,7 @@ export function TemuanDetail() {
         <div className="grid items-start gap-4 lg:grid-cols-3">
           {/* KOLOM UTAMA */}
           <div className="space-y-4 lg:col-span-2">
-            {/* Fakta ≠ dugaan ≠ disposisi — FR-FA-03 */}
+            {/* Fakta ≠ dugaan ≠ disposisi: FR-FA-03 */}
             <Card>
               <CardHeader title="Kondisi teramati" />
               <CardBody className="space-y-3 pt-3">
@@ -213,7 +218,9 @@ export function TemuanDetail() {
                   </div>
                   <div>
                     <dt className="text-xs text-ink-muted">Diidentifikasi</dt>
-                    <dd className="tnum text-sm font-medium text-ink">{formatDateTime(f.identifiedAt)} · {f.identifiedBy}</dd>
+                    <dd className="tnum text-sm font-medium text-ink">{formatDateTime(f.identifiedAt)}
+                      <span className="block text-xs font-normal text-ink-muted">{f.identifiedBy}</span>
+                    </dd>
                   </div>
                   <div>
                     <dt className="text-xs text-ink-muted">Penanggung jawab</dt>
@@ -223,7 +230,7 @@ export function TemuanDetail() {
               </CardBody>
             </Card>
 
-            {/* Tindakan perbaikan — SC-17/18/19 */}
+            {/* Tindakan perbaikan: SC-17/18/19 */}
             <div className="space-y-2.5">
               <div className="flex items-baseline justify-between">
                 <h2 className="text-md font-semibold text-ink">Tindakan perbaikan</h2>
@@ -238,6 +245,64 @@ export function TemuanDetail() {
                 </div>
               )}
             </div>
+
+            {/* Bukti Foto & Dokumen */}
+            <Card>
+              <CardHeader
+                title="Bukti & Dokumentasi"
+                icon={Camera}
+                actions={
+                  <span className="flex items-center gap-1 rounded-full bg-sunken px-2 py-0.5 text-[11px] font-semibold text-ink-muted">
+                    2 berkas
+                  </span>
+                }
+              />
+              <CardBody className="grid grid-cols-2 gap-3 pt-3">
+                {/* Thumbnail: Foto Temuan Awal */}
+                <button
+                  type="button"
+                  onClick={() => { setViewerType('photo-before'); setViewerOpen(true) }}
+                  className="group relative overflow-hidden rounded-lg border border-red-200 bg-red-950 aspect-4/3 cursor-pointer"
+                >
+                  <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,#451a03,#451a03_30px,#78350f_30px,#78350f_60px)] opacity-30" />
+                  <div className="absolute inset-0 flex flex-col justify-around p-2">
+                    <div className="h-2 w-full bg-stone-500 rounded-xs opacity-80 translate-y-2" />
+                    <div className="h-2 w-full bg-stone-500 rounded-xs opacity-80 translate-y-2" />
+                  </div>
+                  <div className="absolute top-1.5 left-1.5 rounded bg-red-600 px-1.5 py-0.5 font-mono text-[9px] font-bold text-white">
+                    F-AR-021 (CACAT)
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50">
+                    <Eye size={20} className="text-white" />
+                  </div>
+                  <p className="absolute bottom-1.5 left-1.5 right-1.5 text-center text-[9px] font-semibold text-white/90 bg-black/60 rounded px-1 py-0.5">
+                    Foto Temuan Awal
+                  </p>
+                </button>
+
+                {/* Thumbnail: Foto Pasca-Koreksi */}
+                <button
+                  type="button"
+                  onClick={() => { setViewerType('photo-rebar'); setViewerOpen(true) }}
+                  className="group relative overflow-hidden rounded-lg border border-emerald-300 bg-slate-950 aspect-4/3 cursor-pointer"
+                >
+                  <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,#78350f,#78350f_30px,#92400e_30px,#92400e_60px)] opacity-20" />
+                  <div className="absolute inset-0 flex flex-col justify-around p-2">
+                    <div className="h-2 w-full bg-slate-400 rounded-xs opacity-80" />
+                    <div className="h-2 w-full bg-slate-400 rounded-xs opacity-80" />
+                  </div>
+                  <div className="absolute top-1.5 left-1.5 rounded bg-emerald-600 px-1.5 py-0.5 font-mono text-[9px] font-bold text-white">
+                    SPACER OK
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50">
+                    <Eye size={20} className="text-white" />
+                  </div>
+                  <p className="absolute bottom-1.5 left-1.5 right-1.5 text-center text-[9px] font-semibold text-white/90 bg-black/60 rounded px-1 py-0.5">
+                    Foto Pasca-Koreksi
+                  </p>
+                </button>
+              </CardBody>
+            </Card>
 
             {/* Riwayat */}
             <Card>
@@ -268,11 +333,14 @@ export function TemuanDetail() {
 
             {blockingHolds.length > 0 && (
               <Callout tone="danger" icon={Scale} title="Temuan memblokir rilis hold point">
-                {blockingHolds.map((c) => (
-                  <span key={c.id}>
-                    <span className="font-mono text-xs">{c.ref}</span> · {c.title}
-                  </span>
-                ))}
+                <div className="space-y-1.5 mt-1">
+                  {blockingHolds.map((c) => (
+                    <div key={c.id} className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-semibold bg-red-100 text-red-800 px-1.5 py-0.5 rounded">{c.ref}</span>
+                      <span className="text-xs font-medium text-red-950">{c.title}</span>
+                    </div>
+                  ))}
+                </div>
               </Callout>
             )}
 
@@ -302,6 +370,11 @@ export function TemuanDetail() {
           </div>
         </div>
       </PageBody>
+      <EvidenceViewerModal
+        open={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        initialType={viewerType}
+      />
     </>
   )
 }

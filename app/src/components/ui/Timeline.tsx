@@ -48,16 +48,16 @@ export function Timeline({ items, className }: { items: TimelineItem[]; classNam
               />
             </span>
             <div className="min-w-0 flex-1 pt-1">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
-                <p className="text-md font-medium text-ink">{item.title}</p>
-                <time className="tnum shrink-0 font-mono text-xs text-ink-muted">{item.meta}</time>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                <div className="text-sm font-semibold text-ink">{item.title}</div>
+                <div className="shrink-0 text-xs text-ink-muted">{item.meta}</div>
               </div>
               {item.note && (
-                <p className="mt-1.5 rounded-md border border-line-subtle bg-gray-25 px-3 py-2 text-sm text-ink-secondary italic">
+                <p className="mt-1.5 rounded-lg border border-line-subtle bg-sunken/60 px-3 py-2 text-xs text-ink-secondary italic">
                   “{item.note}”
                 </p>
               )}
-              {item.detail && <div className="mt-1 text-sm text-ink-muted">{item.detail}</div>}
+              {item.detail && <div className="mt-1 text-xs text-ink-muted">{item.detail}</div>}
             </div>
           </li>
         )

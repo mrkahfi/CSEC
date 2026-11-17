@@ -3,7 +3,7 @@ import { Compass } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/Button'
 
-/** Halaman tidak ditemukan — state dirancang, bukan layar putih. */
+/** Halaman tidak ditemukan: state dirancang, bukan layar putih. */
 export function NotFound() {
   const navigate = useNavigate()
   return (
