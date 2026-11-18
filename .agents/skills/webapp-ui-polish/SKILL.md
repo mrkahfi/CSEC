@@ -1,49 +1,49 @@
 ---
 name: webapp-ui-polish
-description: "Standar Arsitektur & UI/UX Web App: Panduan merancang, membangun (build), dan memoles produk atau fitur web app profesional dari nol. Mencegah jebakan 'website artikel/blog padat teks' dengan menegakkan diferensiasi nilai visual, eliminasi rantai dot-separator (·), integrasi aset visual domain nyata, aksi berbasis ikon, dan tipografi berbobot."
+description: "Web App Architecture & UI/UX Standard: A framework for designing and building professional web app products or features from scratch, and for polishing existing UI. Prevents the 'article/blog website' trap by enforcing visual value differentiation, eliminating dot-separator chains (·), integrating domain-specific visual assets, icon-first actions, and bold typography."
 metadata:
   author: User Feedback & Anti-Slop Engineering
   version: "2.0.0"
   category: SoftwareArchitectureAndUIUX
 ---
 
-# Standar Arsitektur & UI/UX Web App (Build & Polish Framework)
+# Web App Architecture & UI/UX Standard (Build & Polish Framework)
 
-Standar ini adalah panduan baku bagi AI coding agent dan software engineer ketika **merancang dan membangun fitur/produk baru dari nol (greenfield/feature build)** maupun ketika **memoles antarmuka yang sudah ada (polish/refactor)**.
+This is a mandatory standard for AI coding agents and software engineers when **designing and building new features or products from scratch (greenfield/feature build)** and when **polishing or refactoring existing UI**.
 
-Tujuannya adalah memastikan setiap layar, komponen, dan interaksi yang dibangun memiliki karakter **Web Application Profesional berstandar industri** (seperti Linear, Notion, Stripe Dashboard, Jira, GitHub), bukan **website artikel/blog yang monoton, padat teks, dan rempet-rempet**.
+The goal is to ensure every screen, component, and interaction has the character of a **Professional Web Application** (like Linear, Notion, Stripe Dashboard, Jira, GitHub) — not a **monotonous, text-heavy article website**.
 
-Skill ini **industry-agnostic** — berlaku untuk SaaS, fintech, healthcare, logistics, e-commerce, HR, project management, maupun domain manapun.
+This skill is **industry-agnostic** — applicable to SaaS, fintech, healthcare, logistics, e-commerce, HR, project management, or any other domain.
 
 ---
 
-## 1. Paradigma Fundamental: Web App Workspace vs. Website Artikel
+## 1. Core Paradigm: Web App Workspace vs. Article Website
 
-Ketika membangun produk atau fitur baru, selalu gunakan mental model **Workstation / Tool**, bukan **Halaman Bacaan**:
+When building a product or feature, always use the **Workstation / Tool** mental model, not **Reading Page**:
 
-| Dimensi Arsitektur | ❌ Jebakan Website / Artikel (Slop) | ✅ Karakter Web App Profesional (Wajib) |
+| Architecture Dimension | ❌ Article Website Trap (Slop) | ✅ Professional Web App (Required) |
 | :--- | :--- | :--- |
-| **Pola Header** | Judul H1 diikuti 2-3 baris paragraf panjang yang menjelaskan fungsi halaman | Judul padat + badge entitas/status + toolbar aksi langsung (filter, search, view switcher) |
-| **Diferensiasi Data** | Teks seukuran dan monoton, disambung dengan rantai titik (`A · B · C · D`) | Struktur token visual: *stacked layout*, *micro-icon chips*, badge semantik, grid terpisah |
-| **Konteks & Bukti** | Nihil elemen visual; hanya deretan label, angka polos, dan teks link nama berkas | Menghadirkan *domain reality*: thumbnail dokumen, foto preview dengan metadata overlay, kartu laporan visual |
-| **Tombol & Aksi** | Tombol teks panjang berulang ("Tambah Baris", "Hapus Data") & panah dekoratif (`→`) | *Icon-first buttons* (`IconButton`) dengan tooltip aksesibel & affordance semantik (`ExternalLink`) |
-| **Kuantitatif / KPI** | Angka kecil bercampur aduk di dalam paragraf atau tabel datar | Angka masif monospaced (`text-2xl font-mono font-bold`) + *micro-labels* + wadah ikon berwarna semantik |
-| **Panduan & Overlay** | Modal box raksasa 3 kolom yang menutupi separuh layar kerja | HUD Toolbar mengambang yang ramping (*collapsed by default*, icon controls, step pills) |
+| **Header Pattern** | H1 title followed by 2-3 long paragraphs explaining what the page does | Compact title + entity/status badge + direct action toolbar (filter, search, view switcher) |
+| **Data Differentiation** | Same-size monotonous text concatenated with dot chains (`A · B · C · D`) | Visual token structure: *stacked layout*, *micro-icon chips*, semantic badges, separate grids |
+| **Context & Evidence** | No visual elements; just label rows, raw numbers, and plain filename links | *Domain reality*: document thumbnails, photo previews with metadata overlays, visual report cards |
+| **Buttons & Actions** | Long repetitive text buttons ("Add Row", "Delete Item") & decorative arrows (`→`) | *Icon-first buttons* (`IconButton`) with accessible tooltips & semantic affordance (`ExternalLink`) |
+| **Quantitative / KPI** | Small numbers mixed into paragraphs or flat tables | Massive monospaced numbers (`text-2xl font-mono font-bold`) + *micro-labels* + semantically colored icon containers |
+| **Guides & Overlays** | Giant 3-column modal box covering half the workspace | Slim floating HUD toolbar (*collapsed by default*, icon controls, step pills) |
 
 ---
 
-## 2. Blueprint Membangun Fitur Baru (Feature Build Blueprint)
+## 2. Feature Build Blueprint
 
-Gunakan 5 fase ini setiap kali membuat layar, modul, atau komponen baru:
+Use these 5 phases every time you create a new screen, module, or component:
 
-### FASE 1: Scaffolding Layout Workspace (Struktur Layar)
-Saat membuat file halaman baru, bangun layout dengan struktur workspace berikut:
+### PHASE 1: Workspace Layout Scaffolding
+When creating a new page file, build the layout using this workspace structure:
 
 ```tsx
 export function FeatureView() {
   return (
     <>
-      {/* 1. Header Ringkas: Judul + Entity Badge + Aksi Utama (Tanpa paragraf penjelas!) */}
+      {/* 1. Compact Header: Title + Entity Badge + Primary Actions (No explanatory paragraphs!) */}
       <PageHeader
         title="Orders"
         meta={<Badge tone="neutral">14 active</Badge>}
@@ -61,34 +61,35 @@ export function FeatureView() {
         {/* 2. Control Toolbar: Search + Filter Dropdown + Segmented View Switcher */}
         <div className="flex flex-wrap items-center gap-2.5">
           <SearchInput placeholder="Search by ID, name, assignee..." className="w-72" />
-          <Select aria-label="Filter status" wrapperClassName="w-48">
+          <Select aria-label="Filter by status" wrapperClassName="w-48">
             <option value="">All Status</option>
-            {/* Format dropdown enterprise: [CODE] Name */}
+            {/* Enterprise dropdown format: [CODE] Name */}
             <option value="pending">[PENDING] Awaiting Review</option>
+            <option value="approved">[APPROVED] Ready to Ship</option>
           </Select>
           <div className="ml-auto flex items-center gap-2">
             <SegmentedControl options={VIEW_OPTIONS} />
           </div>
         </div>
 
-        {/* 3. Operational KPI Deck: Angka Masif + Micro-labels + Wadah Ikon Berwarna */}
+        {/* 3. Operational KPI Deck: Massive Numbers + Micro-labels + Colored Icon Containers */}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatTile
             label="OVERDUE"
             value={3}
             icon={OctagonAlert}
-            tone="danger" // Wadah ikon merah, angka font-mono tebal
+            tone="danger" // Red icon container, bold font-mono number
           />
-          {/* ...stat tiles lainnya */}
+          {/* ...other stat tiles */}
         </div>
 
-        {/* 4. Area Kerja / Data Workspace (Grid, Split View, atau Master-Detail) */}
+        {/* 4. Data Workspace (Grid, Split View, or Master-Detail) */}
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-3">
-            {/* Kartu data dengan diferensiasi visual */}
+            {/* Data cards with visual differentiation */}
           </div>
           <div className="space-y-3">
-            {/* Inspector / Panel Konteks Samping */}
+            {/* Inspector / Context Side Panel */}
           </div>
         </div>
       </PageBody>
@@ -99,27 +100,27 @@ export function FeatureView() {
 
 ---
 
-### FASE 2: Data Modeling & Entity Tokenization (Anti-Concatenation)
-Saat mendesain *view model* atau merender atribut data, **HARAM** menggabungkan field dengan rantai string titik (` · `). Terapkan 4 pola tokenisasi visual ini:
+### PHASE 2: Data Modeling & Entity Tokenization (Anti-Concatenation)
+When designing a view model or rendering data attributes, **NEVER** join fields with dot-separator chains (` · `). Apply these 4 visual tokenization patterns:
 
-#### Pola 1: Dua Baris Bertingkat (*Stacked Metadata*)
-Gunakan untuk pasangan *Primary Entity* + *Supporting Meta*:
+#### Pattern 1: Two-Row Stacked Metadata
+Use for *Primary Entity* + *Supporting Meta* pairs:
 ```tsx
-// ❌ JANGAN PERNAH MENULIS INI:
+// ❌ NEVER WRITE THIS:
 <p className="text-xs text-ink-muted">{user.name} · {user.role} · {user.department}</p>
 
-// ✅ WAJIB POLA STACKED:
+// ✅ REQUIRED — STACKED PATTERN:
 <div>
   <span className="block text-xs font-semibold text-ink">{user.name}</span>
   <span className="flex items-center gap-1 text-2xs text-ink-muted">
     <span className="font-medium text-ink-secondary">{user.role}</span>
-    <span className="rounded bg-sunken px-1.5 py-0.2">{user.department}</span>
+    <span className="rounded bg-sunken px-1.5 py-0.5">{user.department}</span>
   </span>
 </div>
 ```
 
-#### Pola 2: Micro-Icon + Label Chip
-Gunakan untuk atribut entitas seperti Lokasi, Organisasi, Waktu, atau Kategori:
+#### Pattern 2: Micro-Icon + Label Chip
+Use for entity attributes like Location, Organization, Time, or Category:
 ```tsx
 // ❌ SLOP:
 <p>{project.client} · {project.location} · {project.type}</p>
@@ -138,8 +139,8 @@ Gunakan untuk atribut entitas seperti Lokasi, Organisasi, Waktu, atau Kategori:
 </div>
 ```
 
-#### Pola 3: Status & Deadline Chips Mandiri
-Status dan batas waktu harus memiliki wadah warna semantik, bukan sekadar kata di ujung string:
+#### Pattern 3: Standalone Status & Deadline Chips
+Status and deadlines must have semantically colored containers — not just a word appended to a string:
 ```tsx
 // ❌ SLOP:
 <span>{formatDateTime(task.dueAt)} · overdue</span>
@@ -153,8 +154,8 @@ Status dan batas waktu harus memiliki wadah warna semantik, bukan sekadar kata d
 </div>
 ```
 
-#### Pola 4: Dropdown Selector Enterprise
-Gunakan format kurung siku untuk kode entitas agar terlihat seperti sistem enterprise:
+#### Pattern 4: Enterprise Dropdown Selector
+Use bracket notation for entity codes to give the system an enterprise feel:
 ```tsx
 // ❌ SLOP:
 <option value={item.id}>{item.code} · {item.name}</option>
@@ -165,97 +166,97 @@ Gunakan format kurung siku untuk kode entitas agar terlihat seperti sistem enter
 
 ---
 
-### FASE 3: Integrasi Aset Visual Domain (*Domain Reality*)
-Aplikasi web profesional tidak boleh hanya berisi teks dan tautan unduh. Rancang aset visual konkret yang merefleksikan domain produk sejak awal:
+### PHASE 3: Visual Domain Asset Integration (*Domain Reality*)
+Professional web apps must not consist solely of text and download links. Design concrete visual assets that reflect the product's domain from the start:
 
-#### 1. Thumbnail & Preview Card
-Setiap entitas yang memiliki representasi visual (dokumen, foto, sertifikat, invoice, laporan) wajib ditampilkan sebagai thumbnail yang bisa diklik:
-- **Dokumen**: Preview halaman pertama dengan CSS rendering (kop surat, tabel ringkasan, stempel/cap resmi jika relevan).
-- **Foto / Media**: Grid thumbnail dengan metadata overlay (tanggal, pengunggah, dimensi, ukuran file).
-- **Sertifikat / Approval**: Kartu visual dengan indikator status (cap APPROVED/REJECTED dengan rotasi sudut, warna semantik).
-- **Laporan / Report**: Simulasi format dokumen A4 dengan header organisasi dan ringkasan data.
+#### 1. Thumbnail & Preview Cards
+Every entity with a visual representation (document, photo, certificate, invoice, report) must be shown as a clickable thumbnail:
+- **Documents**: First-page preview rendered with CSS (letterhead, summary table, official stamp if relevant).
+- **Photos / Media**: Thumbnail grid with metadata overlay (date, uploader, dimensions, file size).
+- **Certificates / Approvals**: Visual card with status indicator (APPROVED/REJECTED stamp at an angle, semantic color).
+- **Reports**: Simulated A4 document format with organization header and data summary.
 
 > [!TIP]
-> Gunakan gradien CSS, SVG patterns, dan grid lines untuk membangun thumbnail yang kaya visual tanpa memerlukan aset gambar eksternal. Ini jauh lebih baik daripada sekadar ikon `FileText` dengan nama file di bawahnya.
+> Use CSS gradients, SVG patterns, and grid lines to build visually rich thumbnails without needing external image assets. This is far better than a plain `FileText` icon with a filename underneath.
 
-#### 2. Modal Penampil Berkas Resolusi Penuh (`size="2xl"` / `max-w-5xl`)
-Ketika thumbnail diklik, buka modal berukuran lebar:
-- **Kolom Kiri (60-65%)**: Kanvas visual dokumen atau media utuh.
-- **Kolom Kanan (35-40%)**: Panel inspektur berisi metadata terstruktur, catatan reviewer, versi/histori, dan tombol aksi (unduh, cetak, bagikan).
+#### 2. Full-Resolution File Viewer Modal (`size="2xl"` / `max-w-5xl`)
+When a thumbnail is clicked, open a wide modal:
+- **Left column (60–65%)**: Full visual canvas of the document or media.
+- **Right column (35–40%)**: Inspector panel with structured metadata, reviewer notes, version/history, and action buttons (download, print, share).
 
-#### 3. Ambient Glow pada Empty States & Wadah Ikon KPI
-- Jangan biarkan *empty state* terlihat seperti dead-end: berikan aksen lingkaran cahaya halus (*ambient glow halo*) di belakang ikon dan tombol aksi langsung (*CTA*).
-- Setiap metrik/KPI wajib memiliki wadah ikon dengan tone warna semantik (`emerald`, `amber`, `red`, `blue`), bukan monokrom abu-abu pudar.
+#### 3. Ambient Glow on Empty States & KPI Icon Containers
+- Never let an *empty state* look like a dead-end: add a subtle ambient glow halo behind the icon and a direct CTA button.
+- Every KPI metric must have an icon container with a semantic color tone (`emerald`, `amber`, `red`, `blue`) — never a flat, muted gray.
 
 ---
 
-### FASE 4: Aksi Berbasis Ikon (*Icon-First Actions*) & HUD Overlays
+### PHASE 4: Icon-First Actions & HUD Overlays
 
-#### 1. Tombol Aksi Baris & Toolbar
-Untuk tindakan operasional dengan frekuensi tinggi, prioritaskan `IconButton`:
-- **Tambah Item**: `Plus`
-- **Hapus Item**: `Trash2`
-- **Edit**: `Pencil` atau `Edit3`
-- **Unduh**: `Download`
-- **Cetak / PDF**: `Printer`
-- **Info / Bantuan**: `Info` atau `HelpCircle`
-- **Tutup**: `X`
-- **Lihat Detail**: `Eye`
-- **Bagikan / Share**: `Share2`
-- **Duplikat / Copy**: `Copy`
+#### 1. Row Action Buttons & Toolbars
+For high-frequency operational actions, prefer `IconButton` over text buttons:
+- **Add item**: `Plus`
+- **Delete item**: `Trash2`
+- **Edit**: `Pencil` or `Edit3`
+- **Download**: `Download`
+- **Print / PDF**: `Printer`
+- **Info / Help**: `Info` or `HelpCircle`
+- **Close**: `X`
+- **View detail**: `Eye`
+- **Share**: `Share2`
+- **Duplicate / Copy**: `Copy`
 
 > [!IMPORTANT]
-> Setiap `IconButton` **wajib** memiliki atribut `title` dan `aria-label` yang jelas agar ramah aksesibilitas pembaca layar dan memberikan tooltip saat kursor diarahkan.
+> Every `IconButton` **must** have a `title` and `aria-label` attribute for screen reader accessibility and to show a tooltip on hover.
 
-#### 2. Larangan Panah Dekoratif (`→`, `ArrowRight`)
-- Jangan menambahkan panah `→` atau `ArrowRight` di ujung teks tautan/tombol sekadar sebagai hiasan AI.
-- Jika elemen memicu navigasi ke halaman detail, gunakan ikon fungsional semantik seperti `ExternalLink` atau `ChevronRight` dengan ukuran proporsional (`size={13}`).
+#### 2. No Decorative Arrows (`→`, `ArrowRight`)
+- Do not append `→` or `ArrowRight` to link or button text as pure decoration.
+- If an element triggers navigation to an external detail page, use a functional semantic icon like `ExternalLink` or `ChevronRight` at a proportional size (`size={13}`).
 
-#### 3. Pola Floating HUD Toolbar untuk Fitur Panduan / Tur
-Jika fitur memerlukan tur terpandu (*onboarding* atau demo):
-- **Jangan** buat modal kotak raksasa yang menutupi konten kerja.
-- **Rancang sebagai Floating HUD Toolbar**:
-  - Posisi tetap (*docked*) di atas atau bawah workspace.
-  - *Collapsed by default*: Menampilkan ringkasan status dalam strip pills kecil.
-  - Kontrol navigasi berbasis ikon (`Play`, `Pause`, `Prev`, `Next`, `Reset`, `Info`, `Close`).
-  - Penjelasan langkah detail hanya muncul jika pengguna menekan toggle ikon `Info`.
+#### 3. Floating HUD Toolbar for Guide / Tour Features
+If a feature requires a guided tour (onboarding or demo):
+- **Do not** build a giant modal box that covers the working content.
+- **Design as a Floating HUD Toolbar**:
+  - Fixed position (*docked*) at the top or bottom of the workspace.
+  - *Collapsed by default*: Shows a status summary in a slim pill strip.
+  - Icon-based navigation controls (`Play`, `Pause`, `Prev`, `Next`, `Reset`, `Info`, `Close`).
+  - Step details only expand when the user presses the `Info` icon toggle.
 
 ---
 
-### FASE 5: Higiene Copywriting & Anti-Slop
+### PHASE 5: Copywriting Hygiene & Anti-Slop
 
-#### 1. Nol Toleransi Em-Dash (`—`)
-Dilarang keras memakai em-dash (`—`) pada antarmuka pengguna bahasa Indonesia.
-- Gunakan tanda titik dua (`:`), tanda kurung `(...)`, atau pisahkan menjadi dua baris bertingkat.
+#### 1. Zero Em-Dash Tolerance (`—`)
+Never use em-dash (`—`) in UI strings.
+- Use a colon (`:`), parentheses `(...)`, or split into two stacked lines instead.
 
-#### 2. Ikon Semantik Murni
-- Dilarang memakai ikon dekoratif tanpa makna fungsional seperti `Sparkles`, `Wand`, `Stars`, atau `Zap` pada dashboard dan UI operasional.
-- Setiap ikon harus memiliki makna fungsional yang jelas dan relevan dengan konteks domain.
-- Contoh pemetaan ikon semantik universal:
+#### 2. Semantic Icons Only
+- Never use decorative icons with no functional meaning — `Sparkles`, `Wand`, `Stars`, `Zap` — in operational dashboards or technical UI.
+- Every icon must have a clear, context-relevant functional meaning.
+- Universal semantic icon mapping:
 
-| Fungsi | Ikon yang Tepat |
+| Function | Appropriate Icon |
 | :--- | :--- |
-| Penyimpanan / Data | `Database`, `HardDrive` |
-| Bukti Foto / Media | `Camera`, `Image` |
-| Dokumen Resmi | `FileCheck2`, `FileText` |
-| Laporan / Report | `BarChart3`, `ClipboardList` |
-| Tindakan Perbaikan | `Wrench`, `Settings` |
-| Otorisasi / Approval | `ShieldCheck`, `CheckCircle2` |
-| Pengguna / Profil | `User`, `Users` |
-| Notifikasi | `Bell`, `BellRing` |
-| Kalender / Jadwal | `Calendar`, `Clock` |
-| Pembayaran / Transaksi | `CreditCard`, `Wallet` |
+| Storage / Data | `Database`, `HardDrive` |
+| Photo Evidence / Media | `Camera`, `Image` |
+| Official Document | `FileCheck2`, `FileText` |
+| Report / Analytics | `BarChart3`, `ClipboardList` |
+| Fix / Repair Action | `Wrench`, `Settings` |
+| Authorization / Approval | `ShieldCheck`, `CheckCircle2` |
+| User / Profile | `User`, `Users` |
+| Notification | `Bell`, `BellRing` |
+| Calendar / Schedule | `Calendar`, `Clock` |
+| Payment / Transaction | `CreditCard`, `Wallet` |
 
-#### 3. Konsistensi Tipografi Kuantitatif
-Setiap angka KPI atau metrik utama harus menggunakan treatment tipografi yang membedakannya dari teks biasa:
+#### 3. Quantitative Typography Consistency
+Every KPI or primary metric number must use typography treatment that distinguishes it from body text:
 ```tsx
-// ❌ SLOP: Angka tenggelam di paragraf
-<p>Total pesanan bulan ini: {count}</p>
+// ❌ SLOP: Number buried in a paragraph
+<p>Total orders this month: {count}</p>
 
-// ✅ KPI MASIF:
+// ✅ MASSIVE KPI:
 <div>
   <span className="text-2xs font-semibold uppercase tracking-wider text-ink-muted">
-    Total Pesanan
+    Total Orders
   </span>
   <span className="block text-2xl font-mono font-bold text-ink">{count}</span>
 </div>
@@ -263,17 +264,17 @@ Setiap angka KPI atau metrik utama harus menggunakan treatment tipografi yang me
 
 ---
 
-## 3. Checklist Validasi Fitur Baru (Pre-Flight Feature Checklist)
+## 3. Pre-Flight Feature Checklist
 
-Sebelum menandai pembuatan fitur baru selesai (atau sebelum mengajukan pull request), verifikasi setiap item berikut:
+Before marking a new feature as done (or before opening a pull request), verify every item below:
 
-- [ ] **Karakter Workspace**: Apakah ada paragraf artikel panjang di bawah judul halaman? Jika ada, hapus dan ganti dengan *count badge* atau toolbar kontrol.
-- [ ] **Bebas Dot-Separator**: Apakah seluruh tampilan data sudah bebas dari penggabungan string ` · `? Apakah semua metadata sudah menggunakan stacked meta, micro-icons, atau status chip?
-- [ ] **Kehadiran Aset Visual Domain**: Apakah fitur menampilkan representasi visual nyata dari domain-nya (preview dokumen, thumbnail foto, kartu sertifikat, simulasi laporan)?
-- [ ] **Modal Berukuran Proporsional**: Apakah dialog penampil konten menggunakan ukuran lebar (`size="2xl"`) sehingga nyaman dibaca tanpa terhimpit?
-- [ ] **Tipografi Angka Menonjol**: Apakah nilai kuantitatif/KPI utama menggunakan font monospaced besar (`text-2xl font-mono font-bold`)?
-- [ ] **Aksi Bersih (Icon-First)**: Apakah aksi standar pada baris/tabel (tambah, hapus, unduh, pratinjau) sudah menggunakan `IconButton` dengan tooltip?
-- [ ] **Tanpa Panah Dekoratif**: Apakah seluruh tombol dan link sudah bebas dari panah `→` atau `ArrowRight` tanpa fungsi?
-- [ ] **Higiene Teks**: Apakah seluruh string UI sudah bebas dari em-dash (`—`) dan bebas dari ikon generik AI (`Sparkles`)?
-- [ ] **Empty States Berkualitas**: Apakah setiap halaman kosong memiliki ilustrasi/ikon dengan ambient glow dan CTA yang jelas?
-- [ ] **Responsif**: Apakah layout workspace berfungsi baik di mobile (stack) dan desktop (grid/split)?
+- [ ] **Workspace Character**: Are there any long article paragraphs below the page title? If so, remove them and replace with a *count badge* or control toolbar.
+- [ ] **Dot-Separator Free**: Is every data display free of ` · ` string concatenation? Does all metadata use stacked meta, micro-icons, or status chips?
+- [ ] **Visual Domain Assets Present**: Does the feature display a real visual representation of its domain (document preview, photo thumbnail, certificate card, report simulation)?
+- [ ] **Proportional Modal Size**: Does any content viewer dialog use a wide size (`size="2xl"`) so it's comfortable to read without feeling cramped?
+- [ ] **Bold Quantitative Typography**: Do primary KPI/metric values use large monospaced font (`text-2xl font-mono font-bold`)?
+- [ ] **Clean Actions (Icon-First)**: Do standard row/table actions (add, delete, download, preview) use `IconButton` with tooltips?
+- [ ] **No Decorative Arrows**: Are all buttons and links free of `→` or `ArrowRight` with no functional purpose?
+- [ ] **Text Hygiene**: Is all UI text free of em-dash (`—`) and generic AI icons (`Sparkles`)?
+- [ ] **Quality Empty States**: Does every empty-state screen have an icon/illustration with ambient glow and a clear CTA?
+- [ ] **Responsive**: Does the workspace layout work correctly on mobile (stacked) and desktop (grid/split)?
