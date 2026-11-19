@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Building2, Calendar, History, User } from 'lucide-react'
+import { cn } from '@/lib/cn'
 import { iconProps } from '@/components/Icon'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { PageBody } from '@/components/ui/PageBody'
@@ -91,7 +92,27 @@ export function Aktivitas() {
                   tone: EVENT_TONE[a.kind],
                   title: (
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-ink">{a.title}</span>
+                      {a.actionDetail ? (
+                        <>
+                          <span className={cn(
+                            "rounded px-1.5 py-0.2 text-[10px] font-bold border",
+                            a.actionDetail.tone === 'danger' ? 'bg-red-50 text-red-700 border-red-200' :
+                            a.actionDetail.tone === 'warning' ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                            a.actionDetail.tone === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
+                            'bg-brand-50 text-brand-700 border-brand-200'
+                          )}>
+                            {a.actionDetail.actionLabel}
+                          </span>
+                          <span className="font-semibold text-xs text-ink">{a.actionDetail.targetScope}</span>
+                          {a.actionDetail.statusOutcome && (
+                            <span className="rounded bg-sunken px-1.5 py-0.2 font-mono text-2xs text-ink-secondary border border-line-subtle">
+                              {a.actionDetail.statusOutcome}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="font-semibold text-ink">{a.title}</span>
+                      )}
                       <Link
                         to={a.link}
                         className="font-mono text-xs font-bold text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded border border-brand-200/70 hover:underline"

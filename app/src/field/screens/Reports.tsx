@@ -147,7 +147,7 @@ export function ReportWizard() {
   const [hasDelivery, setHasDelivery] = useState(false)
   const [delivery, setDelivery] = useState({ supplier: '', material: '', condition: 'diterima' as FReport['sections']['deliveries'][number]['condition'] })
   const [hasDelay, setHasDelay] = useState(false)
-  const [delay, setDelay] = useState({ category: 'cuaca', desc: '' })
+  const [delay, setDelay] = useState({ category: 'cuaca', affected: '', duration: '', impact: '', desc: '' })
 
   // Langkah 5: penutup
   const [toolbox, setToolbox] = useState<'ya' | 'tidak'>('ya')
@@ -191,8 +191,16 @@ export function ReportWizard() {
         deliveries: hasDelivery && delivery.supplier.trim()
           ? [{ id: 'd-new', supplier: delivery.supplier, suratJalan: 'SJ (diisi admin)', material: delivery.material || 'Sesuai PO', expected: 'Sesuai PO', received: 'Sesuai PO', time: '09:00', condition: delivery.condition, location: 'Yard' }]
           : [],
-        delays: hasDelay && delay.desc.trim()
-          ? [{ id: 'dl-new', category: delay.category as 'cuaca', affected: 'Aktivitas berjalan', time: 'Hari ini', desc: delay.desc }]
+        delays: hasDelay && (delay.affected.trim() || delay.desc.trim() || delay.impact.trim())
+          ? [{
+              id: 'dl-new',
+              category: delay.category as FReport['sections']['delays'][number]['category'],
+              affected: delay.affected.trim() || 'Aktivitas berjalan',
+              time: 'Hari ini',
+              duration: delay.duration.trim() || undefined,
+              impact: delay.impact.trim() || undefined,
+              desc: delay.desc.trim() || `${delay.category} pada ${delay.affected || 'area kerja'}`,
+            }]
           : [],
         visitors: [],
         toolbox,
@@ -412,7 +420,7 @@ export function ReportWizard() {
                 <span className="inline-flex items-center gap-1"><TriangleAlert {...iconProps(12)} /> Kendala & hambatan</span>
               </SectionTitle>
               {hasDelay ? (
-                <MCard className="space-y-2 p-3">
+                <MCard className="space-y-3 p-3">
                   <Field label="Kategori">
                     <Segmented
                       value={delay.category}
@@ -425,7 +433,29 @@ export function ReportWizard() {
                       ]}
                     />
                   </Field>
-                  <Field label="Uraian singkat"><Textarea value={delay.desc} onChange={(e) => setDelay((d) => ({ ...d, desc: e.target.value }))} rows={2} placeholder="Hujan menghentikan pekerjaan ketinggian 1 jam." /></Field>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Field label="Area / Unit terdampak">
+                      <Input
+                        value={delay.affected}
+                        onChange={(e) => setDelay((d) => ({ ...d, affected: e.target.value }))}
+                        placeholder="Contoh: Unit C-04"
+                      />
+                    </Field>
+                    <Field label="Durasi">
+                      <Input
+                        value={delay.duration}
+                        onChange={(e) => setDelay((d) => ({ ...d, duration: e.target.value }))}
+                        placeholder="Contoh: 1,5 Jam"
+                      />
+                    </Field>
+                  </div>
+                  <Field label="Dampak pekerjaan">
+                    <Input
+                      value={delay.impact}
+                      onChange={(e) => setDelay((d) => ({ ...d, impact: e.target.value }))}
+                      placeholder="Contoh: Cor sloof ditunda ke esok hari"
+                    />
+                  </Field>
                 </MCard>
               ) : (
                 <p className="text-xs text-ink-muted">Tidak ada kendala dicatat.</p>
@@ -460,7 +490,7 @@ export function ReportWizard() {
             </Field>
 
             <Field label="Rencana esok hari" hint="Wajib sebelum laporan bisa dikirim.">
-              <Textarea value={nextPlan} onChange={(e) => setNextPlan(e.target.value)} rows={3} placeholder="Lanjut ikatan tulangan Grid E-F; persiapan re-inspeksi." />
+              <Textarea value={nextPlan} onChange={(e) => setNextPlan(e.target.value)} rows={3} placeholder="Lanjut pembesian Unit A-06; persiapan verifikasi Unit A-05." />
             </Field>
 
             <div className="flex items-start gap-2.5 rounded-xl border border-line-subtle bg-sunken p-3.5">
@@ -657,13 +687,27 @@ export function ReportDetail() {
             <SectionTitle>Kendala & hambatan</SectionTitle>
             <MCard className="divide-y divide-line-subtle">
               {s.delays.map((d) => (
-                <div key={d.id} className="flex items-start gap-2.5 p-3">
-                  <TriangleAlert {...iconProps(14)} className="mt-0.5 shrink-0 text-amber-600" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-ink capitalize">{d.category} · {d.affected}</p>
-                    <p className="mt-0.5 text-xs text-ink-muted"><span className="tnum">{d.time}</span></p>
-                    <p className="mt-0.5 text-sm leading-5 text-ink-secondary">{d.desc}</p>
+                <div key={d.id} className="p-3 space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-900">
+                      {d.category}
+                    </span>
+                    {d.duration && (
+                      <span className="rounded bg-amber-50 px-1.5 py-0.5 font-mono text-2xs font-bold text-amber-800 border border-amber-200">
+                        {d.duration}
+                      </span>
+                    )}
+                    <span className="font-semibold text-xs text-ink">{d.affected}</span>
                   </div>
+                  {d.impact ? (
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <span className="text-ink-muted">Dampak:</span>
+                      <span className="font-medium text-amber-950">{d.impact}</span>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-ink-secondary">{d.desc}</p>
+                  )}
+                  <span className="tnum font-mono text-2xs text-ink-muted block">{d.time}</span>
                 </div>
               ))}
             </MCard>

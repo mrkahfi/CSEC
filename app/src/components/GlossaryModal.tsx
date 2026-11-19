@@ -12,40 +12,46 @@ interface GlossaryItem {
 
 const GLOSSARY_ITEMS: GlossaryItem[] = [
   {
-    term: 'WIR',
-    fullName: 'Work Inspection Request (Permintaan Inspeksi Pekerjaan)',
-    desc: 'Pengajuan resmi dari pelaksana/kontraktor kepada tim QA/QC dan pengawas untuk memeriksa pekerjaan sebelum tahap berikutnya dimulai.',
-    example: 'Contoh: WIR-AR-2026-0142 untuk pembesian pelat lantai 8 sebelum pengecoran.',
+    term: 'Ajukan Pemeriksaan',
+    fullName: 'Work Inspection Request (WIR)',
+    desc: 'Pengajuan dari pelaksana lapangan/kontraktor kepada pengawas kualitas untuk memeriksa kesiapan pekerjaan fisik sebelum tahap berikutnya dilanjutkan.',
+    example: 'Contoh: INSP-NW-2026-0142 untuk pemeriksaan pembesian balok & pelat Unit A-05 sebelum cor.',
   },
   {
-    term: 'Hold Point',
-    fullName: 'Titik Tahan (Mandatory Hold)',
-    desc: 'Titik verifikasi kritis dalam rencana mutu (ITP). Pekerjaan fisik tidak boleh dilanjutkan melewati titik ini sebelum ada otorisasi tertulis dari personel berwenang.',
-    example: 'Contoh: Pengecoran beton struktural ditahan sampai pembesian dan bekisting disetujui.',
+    term: 'Checklist / Acuan Periksa',
+    fullName: 'Inspection and Test Plan (ITP) & Checklist',
+    desc: 'Daftar parameter mutu spesifik dan kriteria keberterimaan (dimensi, toleransi, pemasangan) yang menjadi acuan pengecekan lapangan.',
+    example: 'Contoh: Checklist Struktur Beton Item 4.2 (diameter besi D13/D10, selimut beton 25 mm).',
   },
   {
-    term: 'Witness Point',
-    fullName: 'Titik Saksi',
-    desc: 'Titik inspeksi di mana pengawas atau konsultan diundang untuk menyaksikan pengujian atau proses pelaksanaan, namun pekerjaan dapat berlanjut bila pengawas tidak hadir sesuai pemberitahuan tertulis.',
-    example: 'Contoh: Uji slump beton atau pemadatan lapisan tanah (subbase).',
+    term: 'Temuan Pekerjaan / Punch List',
+    fullName: 'Non-Conformance / Field Finding',
+    desc: 'Catatan pekerjaan yang belum rapi, cacat minor (punch list), atau ketidaksesuaian fisik terhadap gambar kerja yang harus diperbaiki.',
+    example: 'Contoh: F-NW-021 mengenai selimut beton balok B2 Unit A-05 terukur 20 mm (spesifikasi 25 mm).',
   },
   {
-    term: 'ITP',
-    fullName: 'Inspection and Test Plan (Rencana Inspeksi & Pengujian)',
-    desc: 'Dokumen acuan kendali mutu yang merinci item pekerjaan, metode uji, kriteria keberterimaan, frekuensi, serta peran verifikator.',
-    example: 'Contoh: ITP-ARU-STR Rev C klausul 4.2 untuk pembesian pelat dan balok.',
+    term: 'Tindak Lanjut Perbaikan',
+    fullName: 'Corrective Action',
+    desc: 'Langkah nyata yang dilakukan tim lapangan untuk mengoreksi temuan atau cacat pekerjaan, dilengkapi dokumentasi foto hasil perbaikan.',
+    example: 'Contoh: CA-021-1 berupa penggantian dan pemasangan ulang spacer beton 25 mm tiap jarak 60 cm.',
   },
   {
-    term: 'NCR / Temuan',
-    fullName: 'Non-Conformance Report (Laporan Ketidaksesuaian)',
-    desc: 'Catatan resmi atas ketidaksesuaian hasil fisik pekerjaan atau material terhadap gambar kerja atau spesifikasi teknis.',
-    example: 'Contoh: F-AR-021 mengenai ketebalan selimut beton (cover) kurang dari spesifikasi 25 mm.',
+    term: 'Verifikasi Perbaikan',
+    fullName: 'Re-inspection / Verification',
+    desc: 'Pengecekan ulang langsung di lokasi oleh pengawas kualitas untuk memastikan hasil perbaikan telah sesuai sebelum pekerjaan dilanjutkan.',
+    example: 'Contoh: Pengawas memeriksa langsung spacer 25 mm di balok B2 Unit A-05 dan menyatakan sesuai.',
   },
   {
-    term: 'Tindakan Perbaikan (CA)',
-    fullName: 'Corrective Action (Tindakan Korektif)',
-    desc: 'Langkah nyata yang diambil oleh pelaksana untuk mengoreksi ketidaksesuaian dan mencegah pengulangan masalah, dibuktikan dengan dokumentasi foto dan uji ulang.',
-    example: 'Contoh: CA-021-1 berupa pemasangan tahu beton/spacer standar setebal 25 mm.',
+    term: 'Menunggu Persetujuan / Izin Tahap Kritis',
+    fullName: 'Hold Point / Milestone Release',
+    desc: 'Titik pemberhentian wajib sebelum pekerjaan kritis (mis. pengecoran beton). Pekerjaan tidak boleh berjalan sebelum seluruh syarat checklist dan temuan selesai diverifikasi.',
+    example: 'Contoh: CP-NW-02 izin pengecoran pelat & balok Unit A-05 menunggu verifikasi selimut beton.',
+  },
+  {
+    term: 'Hasil Pemeriksaan',
+    fullName: 'Inspection Outcome',
+    desc: 'Keputusan objektif hasil evaluasi checklist di lapangan: Sesuai, Perlu Perbaikan, Perlu Klarifikasi, atau Belum Diperiksa.',
+    example: 'Contoh: Hasil pemeriksaan balok B2 dinyatakan "Perlu Perbaikan" sebelum diganti spacer standar.',
   },
 ]
 
@@ -58,10 +64,10 @@ export function GlossaryModal({ open, onClose }: { open: boolean; onClose: () =>
       title={
         <div className="flex items-center gap-2">
           <BookOpen {...iconProps(20)} className="text-brand-600" />
-          <span>Panduan Istilah &amp; Konvensi Mutu Lapangan</span>
+          <span>Panduan Istilah Operasional &amp; Kontrol Kualitas</span>
         </div>
       }
-      description="Glosarium standar alur kendali eksekusi proyek (CSEC) sesuai PRD §14 dan §15."
+      description="Glosarium istilah operasional konstruksi untuk pemantauan lapangan, pemeriksaan kualitas, dan tindak lanjut perbaikan."
       footer={
         <Button variant="secondary" onClick={onClose}>
           Tutup Panduan
@@ -70,9 +76,9 @@ export function GlossaryModal({ open, onClose }: { open: boolean; onClose: () =>
     >
       <div className="space-y-4 py-2">
         <div className="rounded-lg border border-brand-200 bg-brand-50/60 p-3 text-xs text-brand-900">
-          <p className="font-semibold">Konvensi Workflow:</p>
+          <p className="font-semibold">Alur Operasional Lapangan:</p>
           <p className="mt-1 leading-relaxed text-brand-800">
-            Sistem membedakan secara tegas antara permintaan inspeksi yang belum disetujui (WIR) dengan temuan inkonformitas resmi (NCR). Penerimaan WIR tidak otomatis merilis Titik Tahan (Hold Point) tanpa otorisasi terpisah dari pihak berwenang.
+            Sistem menghubungkan pelaporan progres harian, pengajuan pemeriksaan kualitas, pencatatan temuan/punch list, dan verifikasi perbaikan dalam satu alur terpadu. Istilah formal seperti ITP/NCR tetap didukung secara fleksibel untuk proyek yang menggunakannya.
           </p>
         </div>
 

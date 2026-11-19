@@ -1,42 +1,36 @@
 # Product Requirements Document (PRD)
 # Field Operations App — Mobile-first
 
-**Product concept:** Construction Site Execution & Quality Workflow  
+**Product concept:** Site Operations & Project Quality Control (Mobile Field App)  
 **Document type:** UI Demo / Interactive Prototype PRD  
-**Version:** 1.0  
-**Date:** 31 October 2026  
-**Primary market hypothesis:** Medium-sized Indonesian building and civil contractors with active field teams  
-**Primary users:** Site Engineer / Supervisor and QA/QC Inspector  
+**Version:** 1.1  
+**Date:** 31 October 2026 (diperbarui 18 November 2026)  
+**Primary market hypothesis:** Kontraktor bangunan skala kecil-menengah mapan dan kontraktor menengah di Indonesia yang mengerjakan klaster perumahan (cluster), ruko/shophouse, dan gedung komersial lokal dengan tim lapangan terstruktur  
+**Primary users:** Site Supervisor / Site Engineer (Andi Pratama) dan Pengawas Kualitas / QC (Rina Maharani) — PT Tri Daya Bangun  
 **Related product:** Site Operations Dashboard — Web
 
 ---
 
 ## 0. How to use this PRD
 
-This document specifies the **screens, information architecture, visible features, content, user journeys, prototype interactions, and representative field scenarios** for a mobile-first UI demo.
+This document specifies the **screens, information architecture, visible features, content, user journeys, prototype interactions, and representative field scenarios** for a mobile-first UI demo targeted at Indonesian building contractors.
 
-It is deliberately **not** a production software specification.
+### Core Product Positioning & Promise
 
-### Explicit prototype boundaries
+**Posisi Produk:** *Site Operations & Project Quality Control*  
+**Janji Produk Utama:**
+> *"Pantau progres proyek, dokumentasikan pekerjaan lapangan, lakukan pemeriksaan kualitas, dan tindak lanjuti pekerjaan yang perlu diperbaiki dalam satu alur."*
 
-The prototype is intended to communicate:
-- what field personnel see when they open the app;
-- how they navigate between projects, work activities, inspections, findings, and daily reports;
-- what information they are asked to capture or review;
-- how the work of a Site Engineer/Supervisor connects to the work of a QA/QC Inspector;
-- how field records appear in the companion Site Operations Dashboard.
-
-The prototype does **not** need to implement:
-- backend services, database persistence, API contracts, or synchronization;
-- real authentication, access control, or permission enforcement;
-- actual business rules, calculations, workflow engines, or validation logic;
-- real camera, geolocation, file storage, or offline synchronization;
-- real push notifications, email, WhatsApp, or third-party integrations;
-- legally binding signatures or formal contractual approvals.
-
-Buttons and controls may navigate to screens, open modals, change mock UI state, or play a predefined demo sequence. All records and notifications are illustrative. The UI must be clearly labelled as demo data.
-
-A visually represented status is for illustrating the workflow. It must not be presented as a real system decision or as permission to proceed with construction work.
+Aplikasi lapangan ini dirancang khusus untuk penggunaan cepat dan praktis oleh tim lapangan (Site Supervisor, Site Engineer, Pengawas Mutu):
+- **Buat Laporan Harian** secara ringkas dan praktis (tidak mewajibkan birokrasi tenaga kerja/alat rumit di setiap entri).
+- **Update Progres Pekerjaan** per blok dan unit.
+- **Dokumentasikan Pekerjaan** dengan foto langsung dari lapangan.
+- **Catat Kendala** (cuaca, material, alat, akses).
+- **Catat Material Datang** (semen, pasir, besi beton, bata ringan).
+- **Ajukan Pemeriksaan** kesiapan pekerjaan menggunakan checklist acuan.
+- **Catat Temuan** (punch list / cacat pekerjaan yang butuh perbaikan).
+- **Kirim Bukti Perbaikan** dengan foto setelah dikerjakan subkon/mandor.
+- **Lihat Status Pemeriksaan** dan izin kelanjutan pekerjaan.
 
 ---
 
@@ -44,39 +38,32 @@ A visually represented status is for illustrating the workflow. It must not be p
 
 ## 1.1 Product summary
 
-Field Operations App is a mobile-first interface for people working at construction sites. It provides a focused place to:
+Field Operations App adalah aplikasi mobile-first yang dioptimalkan untuk perangkat ponsel pintar pengawas lapangan. Aplikasi ini menyatukan dua peran kerja lapangan utama dalam satu alur terpadu:
 
-1. record daily site activity and conditions;
-2. report work progress by activity and physical location;
-3. submit work for inspection;
-4. carry out and document inspections;
-5. record observations and findings;
-6. submit corrective-work evidence and request re-inspection;
-7. view project references and the current status of field work.
+1. **Site Engineer / Site Supervisor (Andi Pratama):**
+   - Mengisi laporan harian lapangan dengan cepat.
+   - Mengunggah progres pekerjaan per unit (misal: *Blok A — Unit A-05*, *Blok B — Unit B-12*, *Ruko 03 — Lantai 2*).
+   - Mengajukan pemeriksaan pekerjaan ketika suatu tahapan selesai (misal: pembesian balok & pelat sebelum cor).
+   - Mengirimkan bukti foto perbaikan atas temuan/punch list yang telah ditindaklanjuti mandor.
 
-The same app presents different home screens and task shortcuts for two primary personas:
+2. **Pengawas Kualitas / QC Inspector (Rina Maharani):**
+   - Melihat antrean pemeriksaan terjadwal hari ini.
+   - Memeriksa pekerjaan menggunakan checklist acuan proyek.
+   - Merekam hasil pemeriksaan: *Sesuai*, *Perlu Perbaikan*, *Perlu Klarifikasi*, atau *Belum Diperiksa*.
+   - Mencatat temuan pekerjaan langsung dengan foto, lokasi spesifik, dan tenggat waktu.
+   - Memverifikasi bukti perbaikan di lapangan.
 
-- **Site Engineer / Supervisor:** records site activity, reports completed work, submits inspection requests, responds to findings, and tracks their submissions.
-- **QA/QC Inspector:** views assigned inspections, reviews the submission package, carries out checklist-based inspections, records observations/findings, and documents inspection outcomes.
+## 1.2 Familiar Location Context & Terminology
 
-For the UI demo, the presenter can switch between these personas. This is a demonstration device, not a production access-control feature.
-
-## 1.2 Product positioning
-
-The app is not:
-- a complete construction project-management app;
-- a replacement for Primavera, Microsoft Project, BIM, ERP, accounting, procurement, or inventory software;
-- a generic form builder;
-- a complete safety-management or permit-to-work system;
-- a formal document-management system.
-
-It is a **field execution and quality workflow interface**. Its strongest story is how an activity at a specific site location is reported, presented for inspection, reviewed, corrected when necessary, and made visible to the project team.
-
-## 1.3 Product promise
-
-“Catat pekerjaan di lapangan, ajukan inspeksi, tindak lanjuti temuan, dan ketahui status pekerjaan tanpa harus mencari informasi di banyak tempat.”
-
-This is a product concept statement, not a guarantee that a particular contractor currently has fragmented records or will achieve a specific productivity gain.
+Aplikasi menggunakan struktur lokasi dan istilah yang lazim di proyek perumahan dan bangunan komersial Indonesia:
+- **Lokasi familiar:** *Blok A — Unit A-05*, *Blok B — Unit B-12*, *Ruko 03 — Lantai 2*, *Area Parkir — Zona Timur*.
+- **Tahapan konstruksi:** *Pondasi & Sloof*, *Struktur Beton*, *Dinding & Plesteran*, *Atap Baja Ringan*, *Instalasi MEP*, *Lantai & Keramik*, *Pengecatan*, *Finishing & Serah Terima (Punch List)*.
+- **Bahasa operasional sederhana:**
+  - *Ajukan Pemeriksaan* (bukan WIR kaku).
+  - *Checklist Pemeriksaan / Acuan Pemeriksaan* (bukan formal ITP).
+  - *Temuan Pekerjaan / Daftar Temuan (Punch List)* (bukan NCR otomatis).
+  - *Tindak Lanjut Perbaikan & Verifikasi Perbaikan*.
+  - *Izin Tahap Kritis* (fitur Advanced QC opsional untuk pengecoran struktur).
 
 ---
 

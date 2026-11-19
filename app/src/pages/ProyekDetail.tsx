@@ -4,6 +4,7 @@ import {
   Building2,
   CalendarClock,
   Camera,
+  ChevronRight,
   ClipboardList,
   Eye,
   FileText,
@@ -12,8 +13,12 @@ import {
   Info,
   Lock,
   MapPin,
+  TrendingUp,
   TriangleAlert,
+  User,
 } from 'lucide-react'
+import { UnitDetailModal } from '@/components/UnitDetailModal'
+import type { ProjectUnit } from '@/demo/data'
 import { cn } from '@/lib/cn'
 import { iconProps } from '@/components/Icon'
 import { TONE_STYLES as TS, HOLD_POINT_STATUS, POINT_TYPE, FINDING_STATUS, FINDING_CLASSIFICATION, INSPECTION_STATUS } from '@/components/status'
@@ -48,10 +53,22 @@ import {
   projectPulse,
   reportDueToday,
   reportsOfProject,
+  unitsOfProject,
   type Project,
 } from '@/demo/data'
 
 type TabId = 'ringkasan' | 'inspeksi' | 'temuan' | 'titik' | 'aktivitas'
+
+/** Compute block-level rollup from units for the sidebar summary */
+function blockRollupsOf(units: ProjectUnit[]) {
+  const zones = [...new Set(units.map((u) => u.blockOrZone))]
+  return zones.map((zone) => {
+    const zUnits = units.filter((u) => u.blockOrZone === zone)
+    const needAction = zUnits.filter((u) => u.status !== 'normal').length
+    const avg = Math.round(zUnits.reduce((s, u) => s + u.progressPct, 0) / zUnits.length)
+    return { zone, count: zUnits.length, needAction, avg }
+  })
+}
 
 import { useDemo } from '@/demo/DemoContext'
 
@@ -77,7 +94,7 @@ function ControlPointRow({ cp, highlight }: { cp: (typeof CONTROL_POINTS)[number
           <span className="font-semibold text-ink">{cp.releaseAuthority}</span>
         </div>
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted block">Referensi ITP</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted block">Referensi Acuan Pemeriksaan / ITP</span>
           <span className="font-mono font-medium text-ink-secondary">{cp.itpRef}</span>
         </div>
         {cp.nextActivity && (
@@ -95,7 +112,12 @@ function ControlPointRow({ cp, highlight }: { cp: (typeof CONTROL_POINTS)[number
             </span>
           </div>
         )}
-        {cp.note && <span className="sm:col-span-2 italic text-ink-muted">{cp.note}</span>}
+        {cp.note && (
+          <div className="sm:col-span-2 flex items-start gap-1.5 text-xs text-ink-secondary">
+            <span className="font-semibold text-ink-muted">Catatan:</span>
+            <span>{cp.note}</span>
+          </div>
+        )}
       </div>
       {cp.conditions && (
         <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 border-t border-line-subtle pt-2.5">
@@ -137,10 +159,43 @@ function ProgresKesehatanCard({ project }: { project: Project }) {
     <Card>
       <CardHeader
         title="Progres & kesehatan"
-        description={health.headline || undefined}
         actions={<StatusBadge status={hst} size="sm" emphasis={health.healthId === 'behind' ? 'strong' : 'subtle'} />}
       />
       <CardBody className="space-y-4 pt-3">
+        {health.blockerSummary && (
+          <div className={cn(
+            'flex flex-wrap items-center justify-between gap-2.5 rounded-lg p-2.5 text-xs border',
+            health.healthId === 'behind'
+              ? 'bg-red-50/70 border-red-200 text-red-950'
+              : health.healthId === 'at_risk'
+                ? 'bg-amber-50/70 border-amber-200 text-amber-950'
+                : 'bg-emerald-50/70 border-emerald-200 text-emerald-950'
+          )}>
+            <div className="flex flex-wrap items-center gap-2 min-w-0">
+              <span className={cn(
+                "rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+                health.blockerSummary.tone === 'danger' ? 'bg-red-100 text-red-800' :
+                health.blockerSummary.tone === 'warning' ? 'bg-amber-100 text-amber-900' :
+                health.blockerSummary.tone === 'success' ? 'bg-emerald-100 text-emerald-900' :
+                'bg-brand-100 text-brand-900'
+              )}>
+                {health.blockerSummary.badgeLabel}
+              </span>
+              <span className="font-mono text-xs font-bold text-ink">{health.blockerSummary.targetUnit}</span>
+              <span className="text-xs text-ink-secondary">{health.blockerSummary.component}</span>
+            </div>
+            {health.blockerSummary.prerequisiteRef && (
+              <div className="flex items-center gap-1.5 shrink-0 text-2xs">
+                <span className="text-ink-muted">Syarat:</span>
+                <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-surface border border-line-subtle text-brand-700">
+                  {health.blockerSummary.prerequisiteRef}
+                </span>
+                <span className="text-ink-secondary font-medium">{health.blockerSummary.prerequisiteAction}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {prog && prog.weekly.length > 0 ? (
           <>
             <div className="flex flex-wrap items-end justify-between gap-3">
@@ -165,36 +220,52 @@ function ProgresKesehatanCard({ project }: { project: Project }) {
         )}
 
         {health.reasons.length > 0 && (
-          <div className="rounded-lg border border-line-subtle bg-sunken p-3">
-            <p className="text-2xs font-semibold uppercase tracking-wider text-ink-muted">Mengapa status ini</p>
-            <ul className="mt-2 space-y-1.5">
+          <div className="rounded-lg border border-line-subtle bg-sunken/60 p-3">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">
+              Faktor Penentu Status
+            </span>
+            <div className="mt-2 space-y-1.5">
               {health.reasons.map((r) => {
                 const body = (
-                  <>
-                    <span aria-hidden className={cn('mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full', TS[r.severity].dot)} />
-                    <span className="min-w-0">
-                      {r.refLabel && <span className="mr-1.5 inline-block rounded bg-sunken px-1.5 py-0.5 font-mono text-2xs text-ink-muted">{r.refLabel}</span>}
-                      {r.label}
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span aria-hidden className={cn('h-1.5 w-1.5 shrink-0 rounded-full', TS[r.severity].dot)} />
+                    {r.refLabel && (
+                      <span className="shrink-0 rounded bg-surface px-1.5 py-0.5 font-mono text-[10px] font-bold text-ink border border-line-subtle">
+                        {r.refLabel}
+                      </span>
+                    )}
+                    {r.targetScope && (
+                      <span className="rounded bg-sunken px-1.5 py-0.5 font-mono text-[10px] text-ink-muted border border-line-subtle">
+                        {r.targetScope}
+                      </span>
+                    )}
+                    <span className="text-2xs font-semibold text-ink-secondary">
+                      {r.issueCategory ?? r.label.replace(/^[^:]+:\s*/, '')}
                     </span>
-                  </>
+                    {r.metricSummary && (
+                      <span className="ml-auto rounded bg-surface px-1.5 py-0.5 font-mono text-[10px] font-medium text-ink-muted border border-line-subtle">
+                        {r.metricSummary}
+                      </span>
+                    )}
+                  </div>
                 )
                 return (
-                  <li key={r.id} className="flex items-start gap-2 text-xs leading-4 text-ink-secondary">
+                  <div key={r.id}>
                     {r.to ? (
                       <button
                         type="button"
                         onClick={() => navigate(r.to!)}
-                        className="-mx-1 flex cursor-pointer items-start gap-2 rounded px-1 py-0.5 text-left hover:text-brand-700"
+                        className="w-full text-left rounded p-1 hover:bg-hover transition-colors cursor-pointer"
                       >
                         {body}
                       </button>
                     ) : (
-                      body
+                      <div className="p-1">{body}</div>
                     )}
-                  </li>
+                  </div>
                 )
               })}
-            </ul>
+            </div>
           </div>
         )}
       </CardBody>
@@ -222,39 +293,89 @@ function LaporanHarianCard({ projectId }: { projectId: string }) {
         )}
         {reports.length === 0 && <p className="text-sm text-ink-muted">Tidak ada laporan harian pada periode demo.</p>}
         {reports.slice(0, 2).map((r) => (
-          <div key={r.id} className="rounded-xl border border-line-subtle p-3.5">
-            <div className="flex flex-wrap items-center gap-2">
-              <FileText {...iconProps(14)} className="shrink-0 text-ink-muted" />
-              <span className="font-mono text-xs text-ink-muted">{r.ref}</span>
-              <span className="tnum text-xs text-ink-muted">{formatDate(r.at)}</span>
-              <span className="ml-auto text-right">
-                <span className="block text-2xs font-medium text-ink-secondary">{r.author}</span>
-                <span className="block text-2xs text-ink-disabled">{r.authorOrg}</span>
-              </span>
+          <div key={r.id} className="rounded-xl border border-line-subtle p-3.5 bg-surface">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <FileText {...iconProps(14)} className="shrink-0 text-ink-muted" />
+                <span className="font-mono text-xs font-bold text-ink-secondary bg-sunken px-1.5 py-0.5 rounded border border-line-subtle">{r.ref}</span>
+                <span className="tnum text-2xs text-ink-muted">{formatDate(r.at)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 rounded bg-surface px-1.5 py-0.5 text-2xs font-semibold text-brand-700 border border-brand-200">
+                  <Camera {...iconProps(11)} /> {r.photoCount} foto
+                </span>
+                <span className="text-2xs text-ink-muted">{r.author.split('(')[0].trim()}</span>
+              </div>
             </div>
-            <p className="mt-2 text-sm font-medium text-ink">{r.progressNote}</p>
-            <ul className="mt-1.5 space-y-1">
-              {r.workSummary.map((w, i) => (
-                <li key={i} className="flex gap-1.5 text-xs leading-4 text-ink-secondary">
-                  <span aria-hidden className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-gray-400" />
-                  {w}
-                </li>
-              ))}
-            </ul>
-            {r.delays.length > 0 && (
+
+            {r.progressItems && r.progressItems.length > 0 ? (
+              <div className="mt-2.5 grid gap-1.5 sm:grid-cols-2">
+                {r.progressItems.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between gap-2 rounded-lg border border-line-subtle bg-sunken/40 p-2 text-2xs">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono font-bold text-ink">{item.unitCode}</span>
+                        <span className={cn(
+                          "rounded px-1.5 py-0.2 text-[10px] font-semibold border",
+                          item.status === 'pending_verification' ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                          item.status === 'need_inspection' ? 'bg-brand-50 text-brand-700 border-brand-200' :
+                          item.status === 'completed' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
+                          'bg-surface text-ink-secondary border-line-subtle'
+                        )}>
+                          {item.statusLabel}
+                        </span>
+                      </div>
+                      <span className="text-ink-secondary truncate block mt-0.5">{item.trade}</span>
+                    </div>
+                    <span className="font-mono font-bold text-ink tnum shrink-0 text-xs">{item.progressPct}%</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-2.5 grid gap-1.5 sm:grid-cols-2">
+                {r.workSummary.map((w, i) => {
+                  const parts = w.split(':')
+                  const title = parts[0].trim()
+                  const detail = parts.slice(1).join(':').trim()
+                  return (
+                    <div key={i} className="rounded-lg border border-line-subtle bg-sunken/40 p-2 text-2xs">
+                      <span className="font-bold text-ink block">{title}</span>
+                      {detail && <span className="text-ink-muted line-clamp-1 mt-0.5">{detail}</span>}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {r.structuredDelays && r.structuredDelays.length > 0 ? (
+              <div className="mt-2 space-y-1">
+                {r.structuredDelays.map((d) => (
+                  <div key={d.id} className="flex flex-wrap items-center gap-2 rounded-md border border-dashed border-amber-300 bg-amber-50/60 px-2.5 py-1.5 text-xs text-amber-950">
+                    <TriangleAlert {...iconProps(12)} strokeWidth={2.2} className="shrink-0 text-amber-600" />
+                    <span className="rounded bg-amber-100/80 px-1.5 py-0.2 font-bold text-amber-900 text-[10px] uppercase tracking-wider">{d.category}</span>
+                    <span className="font-mono text-2xs font-bold text-amber-800 bg-white/60 px-1.5 py-0.5 rounded border border-amber-200">{d.duration}</span>
+                    <span className="font-semibold text-ink text-2xs">{d.affectedUnit}</span>
+                    <span className="text-ink-muted text-2xs">{d.impact}</span>
+                  </div>
+                ))}
+              </div>
+            ) : r.delays.length > 0 ? (
               <div className="mt-2 space-y-1">
                 {r.delays.map((d) => (
                   <p key={d.id} className="flex items-start gap-1.5 rounded-md border border-dashed border-amber-300 bg-amber-50/60 px-2.5 py-1.5 text-xs text-amber-950">
                     <TriangleAlert {...iconProps(12)} strokeWidth={2.2} className="mt-0.5 shrink-0 text-amber-600" />
-                    <span><span className="font-medium capitalize">{d.category}:</span> {d.desc}</span>
+                    <span className="min-w-0">
+                      <span className="font-medium capitalize">{d.category}:</span>{' '}
+                      <span className="line-clamp-1">{d.desc}</span>
+                    </span>
                   </p>
                 ))}
               </div>
-            )}
+            ) : null}
             {r.flags.length > 0 && (
-              <div className="mt-2.5 border-t border-line-subtle pt-2.5">
-                <p className="text-2xs font-semibold uppercase tracking-wider text-ink-muted">Isu yang dilaporkan</p>
-                <div className="mt-1.5 flex flex-wrap gap-1.5">
+              <div className="mt-2.5 border-t border-line-subtle pt-2">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mr-1">Isu:</span>
                   {r.flags.map((fl) => (
                     <button
                       key={fl.id}
@@ -268,9 +389,6 @@ function LaporanHarianCard({ projectId }: { projectId: string }) {
                 </div>
               </div>
             )}
-            <p className="mt-2 flex items-center gap-1 text-2xs text-ink-disabled">
-              <Camera {...iconProps(11)} /> {r.photoCount} foto terlampir pada laporan
-            </p>
           </div>
         ))}
         {reports.length > 2 && (
@@ -298,24 +416,38 @@ function MilestoneCard({ projectId }: { projectId: string }) {
               <span className="tnum rounded bg-surface px-1.5 py-0.5 text-2xs font-semibold text-ink-secondary border border-line-subtle font-mono">
                 {formatDate(m.date)}
               </span>
-              <span className="text-2xs text-ink-muted">({formatRelative(m.date)})</span>
-              <span className="min-w-0 flex-1 truncate text-xs font-semibold text-ink">{m.title}</span>
+              <span className="text-2xs font-mono text-ink-muted">({formatRelative(m.date)})</span>
+              {m.code && (
+                <span className="rounded bg-sunken px-1.5 py-0.5 font-mono text-[10px] font-bold text-ink border border-line-subtle">
+                  {m.code}
+                </span>
+              )}
+              <span className="font-mono text-2xs font-semibold text-ink-muted">[{m.targetScope}]</span>
+              <span className="min-w-0 flex-1 truncate text-xs font-semibold text-ink">{m.activityName}</span>
               <StatusBadge status={MILESTONE_STATUS[m.statusId]} size="sm" />
             </div>
-            <p className="mt-1 text-xs text-ink-muted">{m.note}</p>
-            {m.links.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1.5">
+            {m.prerequisiteAction && (
+              <div className="mt-1.5 flex items-center gap-1.5 text-xs text-ink-secondary">
+                <span className="text-[10px] uppercase font-bold text-ink-muted tracking-wider">Prasyarat:</span>
+                <span className="font-medium">{m.prerequisiteAction}</span>
+              </div>
+            )}
+            {m.links.length > 0 ? (
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                <span className="text-ink-muted text-[10px]">Terkait:</span>
                 {m.links.map((l) => (
                   <button
                     key={l.id}
                     type="button"
                     onClick={() => navigate(l.to)}
-                    className="cursor-pointer rounded-full border border-line-subtle bg-surface px-2 py-0.5 font-mono text-2xs text-ink-secondary transition-colors hover:border-line-strong hover:text-brand-700"
+                    className="cursor-pointer rounded border border-line-subtle bg-surface px-1.5 py-0.5 font-mono text-2xs font-bold text-ink-secondary transition-colors hover:border-line-strong hover:text-brand-700"
                   >
                     {l.label}
                   </button>
                 ))}
               </div>
+            ) : (
+              <p className="mt-1 text-xs text-ink-muted">{m.note}</p>
             )}
           </div>
         ))}
@@ -348,11 +480,23 @@ function IsuTerbukaCard({ projectId }: { projectId: string }) {
               className="block w-full cursor-pointer rounded-lg border border-line-subtle p-2.5 text-left transition-colors hover:bg-hover"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="font-mono text-2xs font-semibold text-ink-muted">{f.ref}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-mono text-2xs font-semibold text-ink-muted bg-sunken px-1.5 py-0.5 rounded border border-line-subtle whitespace-nowrap shrink-0">{f.ref}</span>
+                  {f.trade && (
+                    <span className="rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-semibold text-brand-700 border border-brand-200 shrink-0">
+                      {f.trade}
+                    </span>
+                  )}
+                </div>
                 <StatusBadge status={st} size="sm" />
               </div>
-              <p className="mt-1 text-xs font-medium text-ink leading-snug">{f.title}</p>
-              <div className="mt-1 flex flex-wrap items-center gap-1.5 text-2xs text-ink-muted">
+              <div className="mt-1.5 flex flex-wrap items-baseline gap-1.5">
+                <span className="text-xs font-semibold text-ink">{f.defectType ?? f.title}</span>
+                {f.element && (
+                  <span className="text-2xs text-ink-muted font-mono">{f.element}</span>
+                )}
+              </div>
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-2xs text-ink-muted">
                 <span>PJ: {f.assignee}</span>
                 {f.dueAt && <span className="rounded bg-sunken px-1.5 py-0.5 font-mono text-ink-secondary">target {formatRelative(f.dueAt)}</span>}
                 {overdue && <span className="rounded bg-red-100 px-1.5 py-0.5 font-bold text-red-700">Terlambat</span>}
@@ -372,16 +516,20 @@ export function ProyekDetail() {
   const loading = useSimulatedLoading()
   const project = projectById(id)
   const titikParam = params.get('titik')
-  const [tab, setTab] = useState<TabId>(titikParam ? 'titik' : 'ringkasan')
-  // Deep-link ?titik= aktif juga saat sudah berada di halaman proyek yang sama.
+  const tabParam = params.get('tab') as TabId | null
+  const [tab, setTab] = useState<TabId>(tabParam ?? (titikParam ? 'titik' : 'ringkasan'))
+  const [selectedUnit, setSelectedUnit] = useState<ProjectUnit | null>(null)
+  // Deep-link ?titik= atau ?tab= aktif saat dimuat atau diubah
   useEffect(() => {
-    if (titikParam) setTab('titik')
-  }, [titikParam])
+    if (tabParam) setTab(tabParam)
+    else if (titikParam) setTab('titik')
+  }, [titikParam, tabParam])
 
   const ins = useMemo(() => inspectionsOfProject(id), [id])
   const fnd = useMemo(() => findingsOfProject(id), [id])
   const pts = useMemo(() => controlPointsOfProject(id), [id])
   const acts = useMemo(() => ACTIVITY.filter((a) => a.projectId === id), [id])
+  const units = useMemo(() => unitsOfProject(id), [id])
   const openIns = ins.filter((i) => !['accepted', 'withdrawn', 'cancelled'].includes(i.status))
   const openFnd = fnd.filter((f) => !['closed', 'superseded', 'cancelled'].includes(f.status))
   const st = PROJECT_STATUS[project.status]
@@ -431,14 +579,14 @@ export function ProyekDetail() {
                 onClick={() => navigate(`/dashboard/inspeksi?proyek=${project.id}`)}
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-surface px-3 text-sm font-medium text-ink shadow-xs transition-colors hover:bg-hover"
               >
-                <ClipboardList {...iconProps(15)} /> Register inspeksi
+                <ClipboardList {...iconProps(15)} /> Register Pemeriksaan
               </button>
               <button
                 type="button"
                 onClick={() => navigate('/dashboard/laporan')}
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-brand-600 px-3 text-sm font-medium text-white shadow-xs transition-colors hover:bg-brand-700"
               >
-                Ringkasan Kualitas
+                Ringkasan Pemeriksaan
               </button>
             </>
           )
@@ -450,9 +598,9 @@ export function ProyekDetail() {
           onChange={(t) => setTab(t as TabId)}
           items={[
             { id: 'ringkasan', label: 'Ringkasan' },
-            { id: 'inspeksi', label: 'Inspeksi', count: ins.length },
-            { id: 'temuan', label: 'Temuan & Tindakan', count: fnd.length },
-            { id: 'titik', label: 'Titik Kendali', count: pts.length },
+            { id: 'inspeksi', label: 'Pemeriksaan', count: ins.length },
+            { id: 'temuan', label: 'Temuan & Perbaikan', count: fnd.length },
+            { id: 'titik', label: 'Titik Kendali ⚙', count: pts.length },
             { id: 'aktivitas', label: 'Aktivitas', count: acts.length },
           ]}
         />
@@ -485,13 +633,13 @@ export function ProyekDetail() {
                   </div>
                   <div className="mt-4 grid grid-cols-3 divide-x divide-line-subtle rounded-lg border border-line-subtle bg-sunken">
                     {[
-                      { label: 'Inspeksi terbuka', v: openIns.length, to: '/dashboard/inspeksi?proyek=' + id },
-                      { label: 'Temuan terbuka', v: openFnd.length, to: '/dashboard/temuan?proyek=' + id },
-                      { label: 'Hold point belum rilis', v: pts.filter((p) => p.pointType === 'hold' && !['released', 'not_due'].includes(p.status)).length },
+                      { label: 'Pemeriksaan Terbuka', v: openIns.length, to: '/dashboard/inspeksi?proyek=' + id },
+                      { label: 'Temuan Terbuka', v: openFnd.length, to: '/dashboard/temuan?proyek=' + id },
+                      { label: 'Izin Kritis (Opsional)', v: pts.filter((p) => p.pointType === 'hold' && !['released', 'not_due'].includes(p.status)).length },
                     ].map((m) => (
                       <button key={m.label} type="button" onClick={() => m.to && navigate(m.to)} className="cursor-pointer px-3 py-3 text-left transition-colors hover:bg-hover">
-                        <span className="tnum block text-xl font-semibold text-ink">{m.v}</span>
-                        <span className="block text-xs text-ink-muted">{m.label}</span>
+                        <span className="tnum block font-mono text-2xl font-bold text-ink">{m.v}</span>
+                        <span className="block text-[10px] font-semibold uppercase tracking-wider text-ink-muted mt-0.5">{m.label}</span>
                       </button>
                     ))}
                   </div>
@@ -499,40 +647,139 @@ export function ProyekDetail() {
               </Card>
 
               <Card>
-                <CardHeader title="Identitas & kontak" />
+                <CardHeader title="Identitas & Kontak Proyek" />
                 <CardBody className="pt-3">
-                  <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                  <div className="grid gap-3 sm:grid-cols-2">
                     {[
-                      ['Klien', project.client],
-                      ['Lokasi', project.location],
-                      ['Nilai kontrak (demo)', project.value],
-                      ['Periode', project.period],
-                      ['Project Manager', project.pm],
-                      ['Site Manager', project.siteManager],
-                      ['Quality Lead', project.qualityLead],
-                      ['Konsultan / Owner', project.consultant],
-                    ].map(([k, v]) => (
-                      <div key={k}>
-                        <dt className="text-xs text-ink-muted">{k}</dt>
-                        <dd className="text-sm font-medium text-ink">{v}</dd>
+                      { label: 'Klien', value: project.client, icon: Building2 },
+                      { label: 'Lokasi', value: project.location, icon: MapPin },
+                      { label: 'Nilai Kontrak', value: project.value, icon: TrendingUp },
+                      { label: 'Periode', value: project.period, icon: CalendarClock },
+                      { label: 'Project Manager', value: project.pm, icon: User },
+                      { label: 'Site Manager', value: project.siteManager, icon: User },
+                      { label: 'Quality Lead', value: project.qualityLead, icon: ClipboardList },
+                      { label: 'Konsultan / Owner', value: project.consultant, icon: Building2 },
+                    ].map(({ label, value, icon: IconCmp }) => (
+                      <div key={label} className="rounded-lg border border-line-subtle bg-sunken/40 p-2.5">
+                        <div className="flex items-center gap-1.5 text-ink-muted">
+                          <IconCmp {...iconProps(11)} />
+                          <span className="text-[10px] font-bold uppercase tracking-wider">{label}</span>
+                        </div>
+                        <span className="mt-1 block text-xs font-semibold text-ink truncate">{value}</span>
                       </div>
                     ))}
-                  </dl>
+                  </div>
                 </CardBody>
               </Card>
             </div>
 
             <div className="space-y-4">
               <IsuTerbukaCard projectId={id} />
+
+              {units.length > 0 && (() => {
+                const rollups = blockRollupsOf(units)
+                const actionUnits = units.filter((u) => u.status !== 'normal')
+                return (
+                  <Card>
+                    <CardHeader
+                      title="Status Unit & Area"
+                      actions={
+                        <span className="rounded-full bg-brand-50 px-2 py-0.5 text-2xs font-semibold text-brand-700 border border-brand-200">
+                          {units.length} Unit
+                        </span>
+                      }
+                    />
+                    <CardBody className="space-y-3 pt-2">
+                      {/* Block rollup chips */}
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {rollups.map((b) => (
+                          <div key={b.zone} className="rounded-lg border border-line-subtle bg-sunken/60 px-2.5 py-2">
+                            <div className="flex items-baseline justify-between gap-1">
+                              <span className="text-xs font-bold text-ink truncate">{b.zone}</span>
+                              <span className="font-mono text-sm font-bold text-ink tnum">{b.avg}%</span>
+                            </div>
+                            <div className="mt-0.5 flex items-center justify-between gap-1 text-2xs text-ink-muted">
+                              <span>{b.count} unit</span>
+                              {b.needAction > 0
+                                ? <span className="rounded bg-amber-100 px-1.5 py-0.5 font-bold text-amber-800">{b.needAction} aksi</span>
+                                : <span className="rounded bg-emerald-50 px-1.5 py-0.5 font-semibold text-emerald-700">Lancar</span>
+                              }
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Only show units needing action */}
+                      {actionUnits.length > 0 && (
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Perlu Tindakan ({actionUnits.length})</span>
+                          <div className="space-y-1">
+                            {actionUnits.map((u) => (
+                              <button
+                                key={u.id}
+                                type="button"
+                                onClick={() => setSelectedUnit(u)}
+                                className={cn(
+                                  'group flex w-full items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left transition-colors hover:border-brand-400 cursor-pointer',
+                                  u.status === 'need_inspection' ? 'border-amber-300 bg-amber-50/40'
+                                    : u.status === 'has_findings' ? 'border-orange-300 bg-orange-50/40'
+                                    : u.status === 'delayed' ? 'border-red-300 bg-red-50/40'
+                                    : u.status === 'ready_handover' ? 'border-emerald-300 bg-emerald-50/40'
+                                    : 'border-line-subtle',
+                                )}
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="font-mono text-xs font-bold text-ink group-hover:text-brand-700">{u.code}</span>
+                                    <span className="text-2xs text-ink-muted truncate">{u.stage}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  <span className="tnum font-mono text-xs font-bold text-ink">{u.progressPct}%</span>
+                                  <span className="text-[10px] font-semibold">
+                                    {u.status === 'need_inspection' && <span className="text-amber-700">Periksa</span>}
+                                    {u.status === 'has_findings' && <span className="text-orange-700">Temuan</span>}
+                                    {u.status === 'delayed' && <span className="text-red-700">Tertunda</span>}
+                                    {u.status === 'ready_handover' && <span className="text-emerald-700">Punch list</span>}
+                                  </span>
+                                  <ChevronRight {...iconProps(12)} className="text-ink-disabled group-hover:text-brand-500" />
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* "Lihat Semua" button */}
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/dashboard/ringkasan`)}
+                        className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-line-subtle bg-sunken/40 py-2 text-xs font-semibold text-ink-secondary hover:bg-hover hover:text-ink transition-colors cursor-pointer"
+                      >
+                        Lihat semua unit ({units.length})
+                        <ChevronRight {...iconProps(12)} />
+                      </button>
+                    </CardBody>
+                  </Card>
+                )
+              })()}
+
               <Card>
-                <CardHeader title="Titik kendali" actions={
-                  <div className="flex items-center gap-1.5">
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">{pts.filter((p) => p.pointType === 'hold').length} Hold</span>
-                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-800">{pts.filter((p) => p.pointType === 'witness').length} Witness</span>
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700">{pts.filter((p) => p.pointType === 'review').length} Review</span>
-                  </div>
-                } />
+                <CardHeader
+                  title="Izin Tahap Kritis (Advanced QC)"
+                  actions={
+                    <div className="flex items-center gap-1.5">
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">{pts.filter((p) => p.pointType === 'hold').length} Hold</span>
+                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-800">{pts.filter((p) => p.pointType === 'witness').length} Witness</span>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700">{pts.filter((p) => p.pointType === 'review').length} Review</span>
+                    </div>
+                  }
+                />
                 <CardBody className="space-y-2.5 pt-2">
+                  <div className="flex items-center gap-1.5 rounded bg-sunken px-2.5 py-1 text-2xs text-ink-muted">
+                    <Info {...iconProps(11)} />
+                    <span>Opsional untuk pekerjaan kritis (misal: izin cor)</span>
+                  </div>
                   {pts.length === 0 && <p className="text-sm text-ink-muted">Tidak ada titik kendali pada proyek ini.</p>}
                   {pts.slice(0, 3).map((cp) => (
                     <button key={cp.id} type="button" onClick={() => setTab('titik')} className="block w-full cursor-pointer rounded-lg border border-line-subtle p-2.5 text-left transition-colors hover:bg-hover">
@@ -560,7 +807,24 @@ export function ProyekDetail() {
                               <EIcon {...iconProps(13)} />
                             </span>
                             <div className="min-w-0 flex-1">
-                              <p className="truncate text-xs font-medium text-ink group-hover:text-brand-700">{a.title}</p>
+                              {a.actionDetail ? (
+                                <div className="space-y-0.5">
+                                  <div className="flex flex-wrap items-center gap-1.5">
+                                    <span className={cn(
+                                      "rounded px-1.5 py-0.2 text-[10px] font-bold border",
+                                      a.actionDetail.tone === 'danger' ? 'bg-red-50 text-red-700 border-red-200' :
+                                      a.actionDetail.tone === 'warning' ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                                      a.actionDetail.tone === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
+                                      'bg-brand-50 text-brand-700 border-brand-200'
+                                    )}>
+                                      {a.actionDetail.actionLabel}
+                                    </span>
+                                    <span className="truncate text-xs font-semibold text-ink group-hover:text-brand-700">{a.actionDetail.targetScope}</span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <p className="truncate text-xs font-medium text-ink group-hover:text-brand-700">{a.title}</p>
+                              )}
                               <div className="mt-0.5 flex items-center gap-1.5 text-2xs text-ink-muted">
                                 <span className="font-medium text-ink-secondary">{a.actor}</span>
                                 <span className="rounded bg-sunken px-1.5 py-0.5 tnum">{formatRelative(a.at)}</span>
@@ -594,10 +858,10 @@ export function ProyekDetail() {
                 <TableHead>
                   <TableRow>
                     <TableHeaderCell width="165px">Referensi</TableHeaderCell>
-                    <TableHeaderCell width="300px">Lingkup & lokasi</TableHeaderCell>
-                    <TableHeaderCell width="140px" className="hidden lg:table-cell">Titik</TableHeaderCell>
-                    <TableHeaderCell width="235px">Status</TableHeaderCell>
-                    <TableHeaderCell width="190px" className="hidden xl:table-cell">Tindakan berikutnya</TableHeaderCell>
+                    <TableHeaderCell width="320px">Lingkup &amp; lokasi</TableHeaderCell>
+                    <TableHeaderCell width="130px" className="hidden lg:table-cell">Titik</TableHeaderCell>
+                    <TableHeaderCell width="220px">Status</TableHeaderCell>
+                    <TableHeaderCell width="210px" className="hidden xl:table-cell">Tindakan berikutnya</TableHeaderCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -605,8 +869,25 @@ export function ProyekDetail() {
                     <TableRow key={i.id} clickable onClick={() => navigate(`/dashboard/inspeksi/${i.id}`)}>
                       <MonoCell>{i.ref}</MonoCell>
                       <TableCell>
-                        <p className="text-sm font-medium text-ink">{i.title}</p>
-                        <p className="mt-0.5 flex items-center gap-1 text-xs text-ink-muted"><MapPin {...iconProps(12)} /> {i.location}</p>
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {i.discipline && (
+                              <span className="rounded bg-brand-50 px-1.5 py-0.2 text-[10px] font-semibold text-brand-700 border border-brand-200">
+                                {i.discipline}
+                              </span>
+                            )}
+                            <span className="text-sm font-semibold text-ink">
+                              {i.activityType ?? i.title}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-ink-muted">
+                            <span className="rounded bg-sunken px-1.5 py-0.2 font-mono text-[10px] text-ink-secondary border border-line-subtle">
+                              {i.targetScope}
+                            </span>
+                            <span className="text-ink-disabled">·</span>
+                            <span className="flex items-center gap-1"><MapPin {...iconProps(11)} /> {i.location}</span>
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         <StatusBadge status={POINT_TYPE[i.pointType]} size="sm" />
@@ -621,9 +902,25 @@ export function ProyekDetail() {
                       </TableCell>
                       <TableCell className="hidden xl:table-cell">
                         {i.nextAction ? (
-                          <div className="text-xs">
-                            <p className="text-ink-secondary">{i.nextAction.label}</p>
-                            <p className="text-ink-muted">{i.nextAction.owner}{i.nextAction.dueAt && <span className="ml-1.5 rounded bg-sunken px-1.5 py-0.5 font-mono text-2xs">target {formatRelative(i.nextAction.dueAt)}</span>}</p>
+                          <div className="text-xs space-y-1">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {i.nextAction.actionType && (
+                                <span className="rounded bg-sunken px-1.5 py-0.2 text-[10px] font-bold text-ink border border-line-subtle">
+                                  {i.nextAction.actionType}
+                                </span>
+                              )}
+                              <span className="text-xs font-semibold text-ink-secondary">
+                                {i.nextAction.component ?? i.nextAction.label}
+                              </span>
+                            </div>
+                            <p className="text-ink-muted text-2xs">
+                              {i.nextAction.owner.split('(')[0].trim()}
+                              {i.nextAction.dueAt && (
+                                <span className="ml-1.5 rounded bg-sunken px-1.5 py-0.5 font-mono text-2xs">
+                                  target {formatRelative(i.nextAction.dueAt)}
+                                </span>
+                              )}
+                            </p>
                           </div>
                         ) : (
                           <span className="text-xs text-ink-disabled">-</span>
@@ -646,20 +943,56 @@ export function ProyekDetail() {
               {fnd.map((f) => (
                 <Link key={f.id} to={`/dashboard/temuan/${f.id}`} className="group block rounded-xl border border-line-subtle bg-surface p-4 shadow-xs transition-all hover:border-line-strong hover:shadow-sm">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs text-ink-muted">{f.ref}</span>
-                    <span className="text-sm font-semibold text-ink group-hover:text-brand-700">{f.title}</span>
+                    <span className="font-mono text-xs font-bold text-ink-muted bg-sunken px-1.5 py-0.5 rounded border border-line-subtle">{f.ref}</span>
+                    {f.trade && (
+                      <span className="rounded bg-brand-50 px-1.5 py-0.2 text-[10px] font-semibold text-brand-700 border border-brand-200">
+                        {f.trade}
+                      </span>
+                    )}
+                    <span className="text-sm font-semibold text-ink group-hover:text-brand-700">
+                      {f.defectType ?? f.title}
+                    </span>
+                    {f.element && (
+                      <span className="rounded bg-sunken px-1.5 py-0.2 font-mono text-[10px] text-ink-secondary border border-line-subtle">
+                        {f.element}
+                      </span>
+                    )}
                     <span className="ml-auto flex flex-wrap items-center gap-1.5">
                       <StatusBadge status={FINDING_CLASSIFICATION[f.classification]} size="sm" />
                       <StatusBadge status={FINDING_STATUS[f.status]} size="sm" />
                     </span>
                   </div>
-                  <p className="mt-1.5 line-clamp-1 text-xs text-ink-muted">{f.facts}</p>
+                  {f.benchmark && (
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-2xs">
+                      <span className="font-mono text-ink-secondary bg-sunken px-1.5 py-0.5 rounded border border-line-subtle">
+                        {f.benchmark.param}: {f.benchmark.actual} {f.benchmark.unit} vs {f.benchmark.spec} {f.benchmark.unit}
+                      </span>
+                      <span className={cn(
+                        "font-mono font-bold px-1.5 py-0.5 rounded border",
+                        f.benchmark.status === 'below' || f.benchmark.status === 'above'
+                          ? "bg-red-50 text-red-700 border-red-200"
+                          : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      )}>
+                        {f.benchmark.diff} ({f.benchmark.statusLabel})
+                      </span>
+                      {f.benchmark.specRef && (
+                        <span className="font-mono text-ink-muted text-2xs">
+                          [{f.benchmark.specRef}]
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {f.actions.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-1.5">
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
                       {f.actions.map((a) => (
-                        <span key={a.id} className="inline-flex items-center gap-1.5 rounded-full border border-line-subtle bg-sunken px-2 py-0.5 text-2xs text-ink-secondary">
-                          <span className="font-mono text-ink-muted">{a.ref}</span>
-                          <span>{a.assignee}</span>
+                        <span key={a.id} className="inline-flex items-center gap-1.5 rounded-full border border-line-subtle bg-sunken px-2.5 py-0.5 text-2xs text-ink-secondary">
+                          <span className="font-mono text-ink-muted font-bold">{a.ref}</span>
+                          {a.actionPlan && (
+                            <span className="font-semibold text-ink">
+                              {a.actionPlan.actionType}: {a.actionPlan.component}
+                            </span>
+                          )}
+                          <span className="text-ink-muted">{a.assignee}</span>
                           {new Date(a.dueAt).getTime() < Date.now() && !['verified'].includes(a.status) && (
                             <span className="rounded bg-red-100 px-1 font-bold text-red-700">Terlambat</span>
                           )}
@@ -676,6 +1009,13 @@ export function ProyekDetail() {
         {/* ════ TAB: TITIK KENDALI ════ */}
         {tab === 'titik' && (
           <div className="space-y-4">
+            <div className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50/70 p-2.5 text-xs text-blue-950">
+              <div className="flex items-center gap-2">
+                <span className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-blue-900 border border-blue-200">ITP / HOLD POINT</span>
+                <span className="font-semibold text-blue-900">Kendali Mutu Tahap Kritis</span>
+              </div>
+              <span className="text-2xs text-blue-800 font-medium">Syarat pelepasan sebelum tahap pekerjaan berikutnya</span>
+            </div>
             {pts.length === 0 ? (
               <EmptyState icon={Eye} title="Tidak ada titik kendali" description="Proyek ini tidak memiliki hold/witness/review point pada data demo." />
             ) : (
@@ -704,15 +1044,38 @@ export function ProyekDetail() {
                     icon: EVENT_ICON[a.kind],
                     tone: undefined,
                     title: (
-                      <span>
-                        {a.title} <Link to={a.link} className="font-mono text-xs text-brand-700 hover:underline">{a.ref}</Link>
-                      </span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {a.actionDetail ? (
+                          <>
+                            <span className={cn(
+                              "rounded px-1.5 py-0.2 text-[10px] font-bold border",
+                              a.actionDetail.tone === 'danger' ? 'bg-red-50 text-red-700 border-red-200' :
+                              a.actionDetail.tone === 'warning' ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                              a.actionDetail.tone === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
+                              'bg-brand-50 text-brand-700 border-brand-200'
+                            )}>
+                              {a.actionDetail.actionLabel}
+                            </span>
+                            <span className="font-semibold text-xs text-ink">{a.actionDetail.targetScope}</span>
+                            {a.actionDetail.statusOutcome && (
+                              <span className="rounded bg-sunken px-1.5 py-0.2 font-mono text-2xs text-ink-secondary border border-line-subtle">
+                                {a.actionDetail.statusOutcome}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="font-semibold text-xs text-ink">{a.title}</span>
+                        )}
+                        <Link to={a.link} className="font-mono text-xs font-bold text-brand-700 hover:underline">
+                          {a.ref}
+                        </Link>
+                      </div>
                     ),
                     meta: (
                       <span className="flex flex-wrap items-center gap-1.5 text-2xs text-ink-muted">
                         <span className="font-medium text-ink-secondary">{a.actor}</span>
                         <span className="rounded bg-sunken px-1.5 py-0.5">{a.role}</span>
-                        <span className="tnum">{formatDateTime(a.at)}</span>
+                        <span className="tnum font-mono">{formatDateTime(a.at)}</span>
                       </span>
                     ),
                     note: a.note,
@@ -723,6 +1086,7 @@ export function ProyekDetail() {
           </Card>
         )}
       </PageBody>
+      <UnitDetailModal unit={selectedUnit} open={selectedUnit !== null} onClose={() => setSelectedUnit(null)} />
     </>
   )
 }

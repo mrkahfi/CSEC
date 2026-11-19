@@ -38,8 +38,8 @@ export const NAV: NavSection[] = [
   {
     label: 'Pekerjaan',
     items: [
-      { to: '/dashboard/inspeksi', label: 'Inspeksi', icon: ClipboardList, countKey: 'inspeksi' },
-      { to: '/dashboard/temuan', label: 'Temuan & Tindakan', icon: Flag, countKey: 'temuan' },
+      { to: '/dashboard/inspeksi', label: 'Pemeriksaan', icon: ClipboardList, countKey: 'inspeksi' },
+      { to: '/dashboard/temuan', label: 'Temuan & Perbaikan', icon: Flag, countKey: 'temuan' },
       { to: '/dashboard/tindakan', label: 'Kotak Tindakan', icon: Inbox, countKey: 'tindakan' },
       { to: '/dashboard/aktivitas', label: 'Aktivitas', icon: History },
     ],

@@ -44,14 +44,18 @@ import {
 /**
  * KATALOG STATUS DOMAIN
  * ------------------------------------------------------------
- * Kosakata status tunggal untuk seluruh aplikasi (PRD §14.1):
- * setiap status = label teks (Bahasa Indonesia) + ikon + tone.
- * Ikon adalah isyarat non-warna sehingga status tetap terbaca
- * untuk pengguna buta warna (PRD FR-IN-07).
+ * Kosakata status operasional kontraktor Indonesia:
+ * - Ajukan Pemeriksaan (Inspection Request / WIR)
+ * - Checklist Pemeriksaan / Acuan Pemeriksaan (ITP)
+ * - Temuan Pekerjaan & Punch List (NCR / Defect)
+ * - Tindak Lanjut Perbaikan (Corrective Action)
+ * - Verifikasi Perbaikan (Re-inspection)
+ * - Menunggu Pemeriksaan / Persetujuan (Hold Point)
+ * - Hasil Pemeriksaan (Sesuai, Perlu Perbaikan, Perlu Klarifikasi, Belum Diperiksa)
+ * - Pemeriksaan Kualitas (Quality Control)
  *
- * Catatan terminologi (PRD §14.4): label mengikuti istilah yang
- * akrab di kontraktor Indonesia dan dapat dikonfigurasi per
- * proyek — tidak dipaksakan seragam.
+ * Ikon adalah isyarat non-warna sehingga status tetap terbaca
+ * untuk pengguna buta warna.
  */
 
 export type StatusTone =
@@ -122,32 +126,32 @@ export const INSPECTION_STATUS = {
   },
   accepted: {
     id: 'accepted',
-    label: 'Diterima',
+    label: 'Sesuai',
     tone: 'success',
     icon: CircleCheck,
     description:
-      'Diterima untuk lingkup & revisi yang ditinjau. Bukan otomatis rilis hold point.',
+      'Pekerjaan sesuai checklist/acuan pemeriksaan. Bukan izin atau persetujuan kontraktual otomatis.',
   },
   correction_required: {
     id: 'correction_required',
     label: 'Perlu Perbaikan',
     tone: 'warning',
     icon: FileWarning,
-    description: 'Dikembalikan untuk perbaikan; bukan inkonformitas teknis.',
+    description: 'Catatan pekerjaan yang perlu diperbaiki; bukan inkonformitas teknis formal.',
   },
   clarification_required: {
     id: 'clarification_required',
     label: 'Perlu Klarifikasi',
     tone: 'warning',
     icon: MessageCircleQuestion,
-    description: 'Informasi tidak lengkap/ambigu; bukan kegagalan teknis.',
+    description: 'Informasi atau lingkup belum lengkap/jelas; bukan kegagalan teknis.',
   },
   reinspection_requested: {
     id: 'reinspection_requested',
-    label: 'Re-Inspeksi Diminta',
+    label: 'Verifikasi Perbaikan',
     tone: 'active',
     icon: RefreshCw,
-    description: 'Perbaikan diajukan kembali untuk pemeriksaan ulang.',
+    description: 'Bukti perbaikan diajukan untuk verifikasi lapangan.',
   },
   deferred: {
     id: 'deferred',
@@ -273,132 +277,132 @@ export type FindingStatusId = keyof typeof FINDING_STATUS
 export const FINDING_CLASSIFICATION = {
   observation: {
     id: 'observation',
-    label: 'Observasi',
+    label: 'Catatan / Punch List',
     tone: 'info',
     icon: Eye,
-    description: 'Catatan kondisi tanpa tindakan formal.',
+    description: 'Catatan pekerjaan minor atau punch list sebelum serah terima.',
   },
   admin_comment: {
     id: 'admin_comment',
     label: 'Komentar Administratif',
     tone: 'neutral',
     icon: FileText,
-    description: 'Kelengkapan administrasi, bukan kegagalan teknis.',
+    description: 'Kelengkapan administrasi atau koordinasi gambar.',
   },
   potential_nc: {
     id: 'potential_nc',
-    label: 'Potensi Inkonformitas',
+    label: 'Perlu Perbaikan',
     tone: 'warning',
     icon: TriangleAlert,
-    description: 'Diduga menyimpang; menunggu investigasi.',
+    description: 'Pekerjaan tidak sesuai checklist/spesifikasi, perlu perbaikan.',
   },
   confirmed_nc: {
     id: 'confirmed_nc',
-    label: 'Inkonformitas Terkonfirmasi',
+    label: 'Temuan Kritis (NCR)',
     tone: 'danger',
     icon: OctagonAlert,
-    description: 'Penyimpangan terkonfirmasi terhadap persyaratan.',
+    description: 'Inkonformitas signifikan yang memerlukan penanganan khusus.',
   },
 } satisfies Record<string, StatusDef>
 
 export type FindingClassificationId = keyof typeof FINDING_CLASSIFICATION
 
 /* ------------------------------------------------------------
- * 4. Status hold point — PRD §10.3
- *    "Accepted" ≠ "Released" — dua hal yang berbeda.
+ * 4. Status titik kendali / persetujuan — PRD §10.3
+ *    "Sesuai" ≠ "Persetujuan Otomatis" — alur terstruktur.
  * ------------------------------------------------------------ */
 export const HOLD_POINT_STATUS = {
   not_due: {
     id: 'not_due',
-    label: 'Belum Jatuh Tempo',
+    label: 'Belum Mulai',
     tone: 'neutral',
     icon: CircleDashed,
-    description: 'Hold point belum mendekati jadwal.',
+    description: 'Pekerjaan belum mencapai tahap pemeriksaan ini.',
   },
   approaching: {
     id: 'approaching',
     label: 'Mendekati',
     tone: 'warning',
     icon: Hourglass,
-    description: 'Mendekati jadwal; persiapan rilis perlu dimulai.',
+    description: 'Mendekati jadwal pemeriksaan kualitas.',
   },
   awaiting_inspection: {
     id: 'awaiting_inspection',
-    label: 'Menunggu Inspeksi',
+    label: 'Menunggu Pemeriksaan',
     tone: 'info',
     icon: ClipboardCheck,
-    description: 'Inspeksi hold point belum dilaksanakan.',
+    description: 'Pekerjaan siap dan menunggu pemeriksaan lapangan.',
   },
   awaiting_release: {
     id: 'awaiting_release',
-    label: 'Menunggu Rilis',
+    label: 'Menunggu Persetujuan',
     tone: 'warning',
     icon: Lock,
-    description: 'Inspeksi selesai; menunggu rilis dari otoritas berwenang.',
+    description: 'Pemeriksaan selesai; menunggu persetujuan tahap lanjut.',
   },
   released: {
     id: 'released',
-    label: 'Dirilis',
+    label: 'Disetujui',
     tone: 'success',
     icon: LockOpen,
-    description: 'Rilis tercatat oleh otoritas; aktivitas berikutnya boleh jalan.',
+    description: 'Persetujuan tercatat; tahap pekerjaan berikutnya boleh jalan.',
   },
   blocked_prerequisites: {
     id: 'blocked_prerequisites',
-    label: 'Terblokir (Prasyarat)',
+    label: 'Tertahan (Prasyarat)',
     tone: 'danger',
     icon: OctagonAlert,
-    description: 'Prasyarat rilis belum terpenuhi.',
+    description: 'Prasyarat pemeriksaan sebelumnya belum selesai.',
   },
   blocked_finding: {
     id: 'blocked_finding',
-    label: 'Terblokir (Temuan)',
+    label: 'Tertahan (Temuan Terbuka)',
     tone: 'danger',
     icon: OctagonAlert,
-    description: 'Masih ada temuan yang belum selesai.',
+    description: 'Masih ada temuan pekerjaan yang belum diperbaiki.',
   },
   waiver_recorded: {
     id: 'waiver_recorded',
-    label: 'Pengecualian Tercatat',
+    label: 'Dispensasi Disetujui',
     tone: 'warning',
     icon: Stamp,
-    description: 'Waiver dicatat otoritas sesuai prosedur proyek.',
+    description: 'Pengecualian khusus disetujui pihak berwenang.',
   },
 } satisfies Record<string, StatusDef>
 
 export type HoldPointStatusId = keyof typeof HOLD_POINT_STATUS
 
 /* ------------------------------------------------------------
- * 5. Jenis titik inspeksi — PRD FR-HP-01
+ * 5. Jenis titik kendali pemeriksaan
  * ------------------------------------------------------------ */
 export const POINT_TYPE = {
   hold: {
     id: 'hold',
-    label: 'Hold Point',
+    label: 'Menunggu Persetujuan',
     tone: 'warning',
     icon: OctagonAlert,
-    description: 'Pekerjaan tidak boleh lanjut sebelum dirilis pihak berwenang.',
+    description: 'Pekerjaan tahap berikutnya tidak boleh lanjut sebelum pemeriksaan disetujui.',
   },
   witness: {
     id: 'witness',
-    label: 'Witness Point',
+    label: 'Pemeriksaan Bersama',
     tone: 'info',
     icon: Eye,
-    description: 'Titik pemberitahuan/kehadiran; efek ketidakhadiran sesuai prosedur.',
+    description: 'Pemeriksaan lapangan bersama pengawas/konsultan sesuai jadwal.',
   },
   review: {
     id: 'review',
-    label: 'Review Point',
+    label: 'Review Acuan',
     tone: 'neutral',
     icon: FileSearch,
-    description: 'Tinjauan dokumen/rekaman; bukan hold fisik.',
+    description: 'Review gambar kerja atau dokumen acuan pelaksanaan.',
   },
   surveillance: {
     id: 'surveillance',
-    label: 'Surveillance',
+    label: 'Pemeriksaan Berkala',
     tone: 'neutral',
     icon: ScanSearch,
-    description: 'Pengawasan berkala tanpa henti/tinjauan wajib.',
+    description: 'Pengawasan berkala rutin saat pekerjaan berjalan.',
   },
 } satisfies Record<string, StatusDef>
 
@@ -423,11 +427,11 @@ export const ACTION_TYPE_ICON: Record<string, LucideIcon> = {
  * ------------------------------------------------------------ */
 export const ROLE = {
   project_manager: { id: 'project_manager', label: 'Project Manager', icon: HardHat },
-  site_engineer: { id: 'site_engineer', label: 'Site Engineer', icon: FilePenLine },
-  qc_inspector: { id: 'qc_inspector', label: 'QA/QC Inspector', icon: SearchCheck },
-  quality_manager: { id: 'quality_manager', label: 'Quality Manager', icon: Stamp },
+  site_engineer: { id: 'site_engineer', label: 'Site Engineer / Pelaksana', icon: FilePenLine },
+  qc_inspector: { id: 'qc_inspector', label: 'Pengawas Kualitas / QC', icon: SearchCheck },
+  quality_manager: { id: 'quality_manager', label: 'Quality Lead / Manajer Mutu', icon: Stamp },
   external: { id: 'external', label: 'Konsultan / Owner', icon: Landmark },
-  viewer: { id: 'viewer', label: 'Management Viewer', icon: CircleEllipsis },
+  viewer: { id: 'viewer', label: 'Manajemen Operasi', icon: CircleEllipsis },
 } satisfies Record<string, { id: string; label: string; icon: LucideIcon }>
 
 export type RoleId = keyof typeof ROLE

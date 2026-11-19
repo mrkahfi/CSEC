@@ -58,14 +58,26 @@ export function WirCard({ wir, meta }: { wir: FWir; meta?: string }) {
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="font-mono text-xs text-ink-muted">{wir.ref}</p>
-          <p className="mt-0.5 truncate text-md leading-5 font-semibold text-ink">{wir.title}</p>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="font-mono text-xs font-bold text-ink-muted bg-sunken px-1.5 py-0.2 rounded border border-line-subtle">{wir.ref}</span>
+            {wir.discipline && (
+              <span className="rounded bg-brand-50 px-1.5 py-0.2 text-[10px] font-semibold text-brand-700 border border-brand-200">
+                {wir.discipline}
+              </span>
+            )}
+          </div>
+          <p className="mt-1 truncate text-md leading-5 font-semibold text-ink">{wir.activityType ?? wir.title}</p>
         </div>
         <StatusBadge status={status} size="sm" />
       </div>
-      <p className="mt-1.5 flex items-center gap-1 truncate text-sm text-ink-muted">
-        <MapPin {...iconProps(12)} /> {wir.location}
-      </p>
+      <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-ink-muted">
+        {wir.targetScope && (
+          <span className="rounded bg-sunken px-1.5 py-0.2 font-mono text-[10px] text-ink-secondary border border-line-subtle">
+            {wir.targetScope}
+          </span>
+        )}
+        <span className="flex items-center gap-1 truncate"><MapPin {...iconProps(11)} /> {wir.location}</span>
+      </div>
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
         {point && <Badge size="sm" tone={POINT_TYPE[point.type].tone}>{POINT_TYPE[point.type].label}</Badge>}
         {meta && (
@@ -89,12 +101,22 @@ export function FindingCard({ f }: { f: FFinding }) {
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="font-mono text-xs text-ink-muted">{f.ref}</p>
-          <p className="mt-0.5 truncate-2 text-md leading-5 font-semibold text-ink">{f.title}</p>
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-xs font-bold text-ink-muted bg-sunken px-1.5 py-0.2 rounded border border-line-subtle whitespace-nowrap shrink-0">{f.ref}</span>
+            {f.trade && (
+              <span className="rounded bg-brand-50 px-1.5 py-0.2 text-[10px] font-semibold text-brand-700 border border-brand-200 whitespace-nowrap shrink-0">
+                {f.trade}
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-sm font-semibold text-ink leading-snug">{f.defectType ?? f.title}</p>
+          {f.element && (
+            <p className="text-2xs text-ink-muted mt-0.5">{f.element}</p>
+          )}
         </div>
         <StatusBadge status={status} size="sm" />
       </div>
-      <p className="mt-1.5 flex items-center gap-1 truncate text-sm text-ink-muted">
+      <p className="mt-1.5 flex items-center gap-1 truncate text-xs text-ink-muted">
         <MapPin {...iconProps(12)} /> {f.location}
       </p>
       <div className="mt-2 flex items-center justify-between gap-2">

@@ -1,6 +1,7 @@
 import {
   createContext, useCallback, useContext, useMemo, useState, type ReactNode,
 } from 'react'
+import { normalizeProjectId } from '@/demo/data'
 import {
   F_ACTIVITIES, F_EVENTS, F_FINDINGS, F_INBOX, F_REPORTS, F_WIRS,
   type FActivity, type FEvent, type FFinding, type FInboxItem, type FReport, type FWir,
@@ -76,7 +77,7 @@ export function FieldProvider({ children }: { children: ReactNode }) {
   const [persona, setPersonaState] = useState<PersonaId>(() =>
     initial<PersonaId>(PERSONA_KEY, 'engineer', (v) => v === 'engineer' || v === 'qc'))
   const [projectId, setProjectIdState] = useState<string>(() =>
-    initial<string>(PROJECT_KEY, 'aru', (v) => ['aru', 'ks', 'jk'].includes(v)))
+    normalizeProjectId(initial<string>(PROJECT_KEY, 'naw', (v) => ['naw', 'rko', 'gml', 'aru', 'ks', 'jk'].includes(v))))
   const [epoch, setEpoch] = useState(0)
 
   const persist = (key: string, value: string) => {
@@ -89,8 +90,9 @@ export function FieldProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const setProjectId = useCallback((id: string) => {
-    setProjectIdState(id)
-    persist(PROJECT_KEY, id)
+    const norm = normalizeProjectId(id)
+    setProjectIdState(norm)
+    persist(PROJECT_KEY, norm)
   }, [])
 
   const resetDemo = useCallback(() => {

@@ -103,18 +103,18 @@ const MODULES = [
   {
     to: '/dashboard',
     icon: Monitor,
-    label: 'Modul Web',
+    label: 'Dashboard Web',
     name: 'Site Operations Dashboard',
-    desc: 'Kendali eksekusi lintas proyek: progres vs rencana, kesehatan proyek, dan tindak lanjut temuan, dari laporan lapangan hingga keputusan manajemen.',
-    cta: 'Buka Dashboard',
+    desc: 'Visibilitas operasional multi-proyek dan unit: pantau progres per blok & unit, periksa status pekerjaan, tindak lanjut temuan terbuka, dan kendali mutu.',
+    cta: 'Buka Dashboard Operasional',
     mock: <BrowserMock />,
   },
   {
     to: '/field',
     icon: Smartphone,
-    label: 'Modul Mobile',
+    label: 'Aplikasi Mobile',
     name: 'Field Operations App',
-    desc: 'Laporan harian, progres pekerjaan, pengajuan inspeksi, dan tindak lanjut temuan di lapangan.',
+    desc: 'Aplikasi lapangan untuk Site Supervisor & Pelaksana: buat laporan harian, update progres unit, dokumentasi foto, ajukan pemeriksaan, dan kirim bukti perbaikan.',
     cta: 'Buka Aplikasi Lapangan',
     mock: <PhoneMock />,
   },
@@ -128,11 +128,11 @@ export function Portal() {
         <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-6 py-4 lg:px-8">
           <Logo size={28} />
           <div className="min-w-0">
-            <p className="text-md leading-5 font-semibold tracking-tight text-ink">CSEC Demo</p>
-            <p className="text-xs leading-4 text-ink-muted">Construction Site Execution &amp; Quality Workflow</p>
+            <p className="text-md leading-5 font-semibold tracking-tight text-ink">Site Operations &amp; Project Quality Control</p>
+            <p className="text-xs leading-4 text-ink-muted">Kontrol Operasional &amp; Pemeriksaan Kualitas Lapangan</p>
           </div>
           <span className="ml-auto inline-flex h-6.5 shrink-0 items-center rounded-full border border-tone-warning-border bg-tone-warning-bg px-2.5 text-xs font-medium text-tone-warning-text">
-            Data demo
+            Demo Operasional
           </span>
         </div>
       </header>
@@ -140,12 +140,14 @@ export function Portal() {
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-10 lg:px-8 lg:py-14">
         {/* Hero */}
         <div className="max-w-2xl">
-          <h1 className="text-display font-bold tracking-tight text-ink">
-            Satu produk, dua antarmuka
+          <span className="inline-flex items-center rounded-md bg-tone-brand-bg px-2.5 py-1 text-xs font-medium text-brand-700">
+            Site Operations &amp; Project Quality Control
+          </span>
+          <h1 className="mt-3 text-display font-bold tracking-tight text-ink">
+            Kendali Operasional Lapangan &amp; Kualitas Proyek
           </h1>
-          <p className="mt-3 max-w-xl text-md text-ink-secondary">
-            Eksekusi pekerjaan dan mutu di lapangan, terhubung dengan pengawasan
-            manajemen di kantor. Pilih modul untuk memulai demo.
+          <p className="mt-3 max-w-xl text-md leading-relaxed text-ink-secondary">
+            Pantau progres proyek, dokumentasikan pekerjaan lapangan, lakukan pemeriksaan kualitas, dan tindak lanjuti pekerjaan yang perlu diperbaiki dalam satu alur.
           </p>
         </div>
 

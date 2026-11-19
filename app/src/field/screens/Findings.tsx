@@ -156,7 +156,7 @@ export function FindingDetail() {
       <div className="space-y-5">
         <MCard className="space-y-2.5 p-3.5">
           <KV label="Klasifikasi"><Badge size="sm" tone={cls.tone}>{cls.label}</Badge></KV>
-          {f.ncrRef && <KV label="NCR">{f.ncrRef}</KV>}
+          {f.ncrRef && <KV label="Ref. Formal">{f.ncrRef}</KV>}
           <KV label="Lokasi">{f.location}</KV>
           <KV label="Penanggung jawab">{f.responsible}</KV>
           <KV label="Jatuh tempo">
@@ -174,10 +174,46 @@ export function FindingDetail() {
         </MCard>
 
         <section className="space-y-2">
-          <SectionTitle>Uraian</SectionTitle>
-          <MCard className="p-3.5">
-            <p className="text-sm leading-6 text-ink-secondary">{f.desc}</p>
-          </MCard>
+          <SectionTitle>Kondisi Terukur & Spesifikasi</SectionTitle>
+          {f.benchmark ? (
+            <MCard className="space-y-3 p-3.5">
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-lg border border-red-200 bg-red-50/70 p-2">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-red-800">Terukur</span>
+                  <span className="font-mono text-base font-bold text-red-950 tnum">{f.benchmark.actual}</span>
+                </div>
+                <div className="rounded-lg border border-line-subtle bg-sunken p-2">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-ink-muted">Standar</span>
+                  <span className="font-mono text-base font-bold text-ink tnum">{f.benchmark.standard}</span>
+                </div>
+                <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-2">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-800">Deviasi</span>
+                  <span className="font-mono text-base font-bold text-amber-950 tnum">{f.benchmark.deviation}</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line-subtle pt-2 text-2xs">
+                <span className="text-ink-muted">Dasar: <span className="font-mono font-semibold text-ink">{f.benchmark.referenceDoc}</span></span>
+                {f.benchmark.secondaryPoints && (
+                  <span className="text-emerald-700 font-medium">✓ {f.benchmark.secondaryPoints}</span>
+                )}
+              </div>
+              {f.rootCause && (
+                <div className="rounded-md border border-line-subtle bg-sunken/60 p-2 text-2xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="rounded bg-amber-100 px-1.5 py-0.2 font-bold text-amber-900 text-[10px] uppercase tracking-wider">
+                      {f.rootCause.category}
+                    </span>
+                    <span className="font-semibold text-ink">{f.rootCause.component}</span>
+                  </div>
+                  <p className="mt-1 text-ink-muted">{f.rootCause.trigger}</p>
+                </div>
+              )}
+            </MCard>
+          ) : (
+            <MCard className="p-3.5">
+              <p className="text-sm leading-6 text-ink-secondary">{f.desc}</p>
+            </MCard>
+          )}
         </section>
 
         {f.evidence.length > 0 && (
@@ -193,12 +229,40 @@ export function FindingDetail() {
 
         {f.response && (
           <section className="space-y-2">
-            <SectionTitle>Tindak lanjut pengguna</SectionTitle>
-            <MCard className="p-3.5">
-              <p className="text-sm leading-6 text-ink-secondary">{f.response.desc}</p>
-              <p className="mt-2 text-xs text-ink-muted">{f.response.by} · {formatRelative(f.response.at)}</p>
+            <SectionTitle>Tindak lanjut perbaikan</SectionTitle>
+            <MCard className="space-y-2.5 p-3.5">
+              {f.response.actionPlan ? (
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="rounded bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700 border border-brand-200">
+                      {f.response.actionPlan.actionType}
+                    </span>
+                    {f.response.actionPlan.requirePhotoEvidence && (
+                      <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800 border border-emerald-200">
+                        Wajib Bukti Foto
+                      </span>
+                    )}
+                    {f.response.evidenceCount && (
+                      <span className="inline-flex items-center gap-1 rounded bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-brand-700 border border-brand-200">
+                        <Camera {...iconProps(11)} /> {f.response.evidenceCount} Foto
+                      </span>
+                    )}
+                  </div>
+                  <div className="rounded-md border border-line-subtle bg-sunken/40 p-2 text-xs">
+                    <span className="font-semibold text-ink">{f.response.actionPlan.component}</span>
+                    <span className="block text-ink-muted text-2xs mt-0.5">{f.response.actionPlan.targetLocation}</span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm leading-6 text-ink-secondary">{f.response.desc}</p>
+              )}
+              <div className="flex items-center gap-2 border-t border-line-subtle pt-2 text-2xs text-ink-muted">
+                <span className="font-semibold text-ink">{f.response.by}</span>
+                <span>·</span>
+                <span>{formatRelative(f.response.at)}</span>
+              </div>
               {f.response.evidence.length > 0 && (
-                <div className="mt-3">
+                <div className="mt-2">
                   <BeforeAfter
                     before={{ title: f.evidence[0]?.title ?? 'Kondisi awal' }}
                     after={{ title: f.response.evidence[0]?.title ?? 'Setelah perbaikan' }}
@@ -327,9 +391,29 @@ export function FindingRespond() {
       className="px-4 pt-4 pb-4"
     >
       <div className="space-y-5">
-        <Callout tone="info" icon={CircleAlert} title="Yang diminta">
-          {f.desc}
-        </Callout>
+        {f.actionPlan ? (
+          <div className="rounded-xl border border-brand-200 bg-brand-50/50 p-3 space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-brand-900 block">Instruksi Tindak Lanjut</span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="rounded bg-brand-100 px-2 py-0.5 text-xs font-bold text-brand-800">
+                {f.actionPlan.actionType}
+              </span>
+              {f.actionPlan.requirePhotoEvidence && (
+                <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800">
+                  Wajib Foto
+                </span>
+              )}
+            </div>
+            <p className="text-xs font-semibold text-ink">{f.actionPlan.component} <span className="text-ink-muted font-normal">({f.actionPlan.targetLocation})</span></p>
+            {f.actionPlan.standardSpec && (
+              <span className="font-mono text-2xs text-ink-muted block">Standar: {f.actionPlan.standardSpec}</span>
+            )}
+          </div>
+        ) : (
+          <Callout tone="info" icon={CircleAlert} title="Yang diminta">
+            {f.desc}
+          </Callout>
+        )}
 
         <Field label="Uraian perbaikan" hint="Jelaskan apa yang diperbaiki dan hasilnya.">
           <Textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} placeholder="Contoh: Jarak kait diperbaiki ke 200 mm dan disera ulang." />
@@ -453,8 +537,27 @@ export function FindingVerify() {
 
         <section className="space-y-2">
           <SectionTitle>Uraian perbaikan</SectionTitle>
-          <MCard className="p-3.5">
-            <p className="text-sm leading-6 text-ink-secondary">{f.response.desc}</p>
+          <MCard className="p-3.5 space-y-2">
+            {f.response.actionPlan ? (
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="rounded bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700 border border-brand-200">
+                    {f.response.actionPlan.actionType}
+                  </span>
+                  {f.response.evidenceCount && (
+                    <span className="inline-flex items-center gap-1 rounded bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-brand-700 border border-brand-200">
+                      <Camera {...iconProps(11)} /> {f.response.evidenceCount} Foto Terlampir
+                    </span>
+                  )}
+                </div>
+                <div className="rounded-md border border-line-subtle bg-sunken/40 p-2 text-xs">
+                  <span className="font-semibold text-ink">{f.response.actionPlan.component}</span>
+                  <span className="block text-ink-muted text-2xs mt-0.5">{f.response.actionPlan.targetLocation}</span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm leading-6 text-ink-secondary">{f.response.desc}</p>
+            )}
           </MCard>
         </section>
 

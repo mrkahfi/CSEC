@@ -176,7 +176,7 @@ export function ProjectOverview() {
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-semibold text-ink">Gambar &amp; dokumen proyek</span>
-              <span className="block truncate text-xs text-ink-muted">ITP, spesifikasi, method statement</span>
+              <span className="block truncate text-xs text-ink-muted">Checklist, spesifikasi, gambar kerja</span>
             </span>
             <ArrowRight {...iconProps(14)} className="shrink-0 text-ink-disabled" />
           </Link>

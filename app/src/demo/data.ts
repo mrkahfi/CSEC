@@ -98,59 +98,59 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
-    id: 'aru',
-    code: 'ARU',
-    name: 'Gedung Aruna Tower A',
-    client: 'PT Griya Aruna Sejahtera',
-    location: 'Jakarta Selatan',
-    type: 'Gedung bertingkat (struktur & arsitektur)',
+    id: 'naw',
+    code: 'NAW',
+    name: 'Cluster Nawasena (Tahap 2)',
+    client: 'PT Graha Nawasena Makmur',
+    location: 'Bekasi Barat',
+    type: 'Cluster Perumahan — 24 Unit (Blok A, B, C)',
     status: 'active',
-    value: 'Rp 412 M',
-    period: 'Jan 2025 s.d. Agu 2026',
+    value: 'Rp 18,5 M',
+    period: 'Feb 2026 s.d. Nov 2026',
     pm: 'Andi Prasetyo',
     siteManager: 'Rizky Hidayat',
     qualityLead: 'Sari Wulandari',
-    consultant: 'CV Mitra Teknik (Hendra Kusuma)',
+    consultant: 'PT Cipta Graha Konsultan (Hendra Kusuma)',
   },
   {
-    id: 'ks',
-    code: 'KS',
-    name: 'Pembangunan Klinik Sentosa',
-    client: 'Yayasan Sentosa Sehat',
-    location: 'Bandung',
-    type: 'Fasilitas kesehatan (2 lantai + MEP)',
+    id: 'rko',
+    code: 'RKO',
+    name: 'Pembangunan Ruko Grand Harmoni',
+    client: 'PT Harmoni Niaga Sentosa',
+    location: 'Tangerang Kota',
+    type: 'Ruko Komersial (6 Unit, 3 Lantai + MEP)',
     status: 'active',
-    value: 'Rp 68 M',
-    period: 'Okt 2025 s.d. Mar 2026',
+    value: 'Rp 14,2 M',
+    period: 'Jan 2026 s.d. Sep 2026',
     pm: 'Andi Prasetyo',
     siteManager: 'Dedi Kurniawan',
     qualityLead: 'Sari Wulandari',
-    consultant: 'CV Mitra Teknik (Hendra Kusuma)',
+    consultant: 'CV Mitra Desain & Arsitektur',
   },
   {
-    id: 'jk',
-    code: 'JK',
-    name: 'Peningkatan Jalan Kartika',
-    client: 'Dinas Bina Marga Kota (fiktif)',
-    location: 'Makassar, Sektor 2',
-    type: 'Jalan (peningkatan perkerasan, Sta 0+000-1+200)',
+    id: 'gml',
+    code: 'GML',
+    name: 'Renovasi Gedung Graha Mulia',
+    client: 'Yayasan Graha Mulia',
+    location: 'Jakarta Timur',
+    type: 'Renovasi Gedung Kantor (3 Lantai)',
     status: 'active',
-    value: 'Rp 31 M',
-    period: 'Agu 2026 s.d. Feb 2027',
+    value: 'Rp 6,8 M',
+    period: 'Mei 2026 s.d. Okt 2026',
     pm: 'Andi Prasetyo',
     siteManager: 'Yusuf Maulana',
     qualityLead: 'Sari Wulandari',
-    consultant: 'PT Cipta Karya Konsultan',
+    consultant: 'PT Cipta Karya Desain',
   },
   {
     id: 'bl',
     code: 'BL',
     name: 'Renovasi Gudang Logistik Bantan',
-    client: 'PT Sentra Pergudangan',
-    location: 'Medan',
+    client: 'PT Sentra Pergudangan Mandiri',
+    location: 'Bekasi Timur',
     type: 'Renovasi gudang (struktur baja)',
     status: 'closed',
-    value: 'Rp 12 M',
+    value: 'Rp 5,4 M',
     period: 'Feb 2025 s.d. Des 2025 · diarsipkan',
     pm: 'Andi Prasetyo',
     siteManager: 'Dedi Kurniawan',
@@ -158,6 +158,68 @@ export const PROJECTS: Project[] = [
     consultant: 'CV Mitra Teknik',
   },
 ]
+
+/* ------------------------------------------------------------
+ * Unit & Blok Proyek (Visibilitas Operasional Perumahan & Ruko)
+ * ------------------------------------------------------------ */
+
+export interface ProjectUnit {
+  id: string
+  projectId: string
+  code: string // e.g. "Unit A-05", "Unit B-12", "Ruko 03"
+  blockOrZone: string // "Blok A", "Blok B", "Blok C", "Zona Ruko"
+  type: string // "Type 60/90", "Type 45/72", "Type 70/105", "Ruko 3 Lantai"
+  stage: string // "Pondasi & Sloof", "Struktur Beton", "Dinding & Plesteran", "Atap & Baja Ringan", "Instalasi MEP", "Lantai & Keramik", "Pengecatan", "Finishing & Punch List"
+  progressPct: number
+  status: 'normal' | 'need_inspection' | 'has_findings' | 'ready_handover' | 'delayed'
+  activeInspectionRef?: string
+  openFindingRef?: string
+  targetHandover: string
+  notes?: string
+}
+
+export const PROJECT_UNITS: ProjectUnit[] = [
+  // Cluster Nawasena: 24 Unit (Blok A: 8 unit, Blok B: 8 unit, Blok C: 8 unit)
+  { id: 'u-a01', projectId: 'naw', code: 'Unit A-01', blockOrZone: 'Blok A', type: 'Type 70/105', stage: 'Finishing & Punch List', progressPct: 92, status: 'ready_handover', targetHandover: aheadD(20), notes: 'Punch list serah terima unit' },
+  { id: 'u-a02', projectId: 'naw', code: 'Unit A-02', blockOrZone: 'Blok A', type: 'Type 60/90', stage: 'Lantai & Keramik', progressPct: 84, status: 'normal', targetHandover: aheadD(35) },
+  { id: 'u-a03', projectId: 'naw', code: 'Unit A-03', blockOrZone: 'Blok A', type: 'Type 60/90', stage: 'Dinding & Plesteran', progressPct: 65, status: 'normal', targetHandover: aheadD(50) },
+  { id: 'u-a04', projectId: 'naw', code: 'Unit A-04', blockOrZone: 'Blok A', type: 'Type 60/90', stage: 'Instalasi MEP', progressPct: 72, status: 'normal', targetHandover: aheadD(45) },
+  { id: 'u-a05', projectId: 'naw', code: 'Unit A-05', blockOrZone: 'Blok A', type: 'Type 70/105', stage: 'Struktur Beton', progressPct: 55, status: 'need_inspection', activeInspectionRef: 'INSP-NW-2026-0142', openFindingRef: 'F-NW-021', targetHandover: aheadD(60), notes: 'Balok B2: Verifikasi spacer 25 mm' },
+  { id: 'u-a06', projectId: 'naw', code: 'Unit A-06', blockOrZone: 'Blok A', type: 'Type 60/90', stage: 'Atap & Baja Ringan', progressPct: 78, status: 'normal', targetHandover: aheadD(40) },
+  { id: 'u-a07', projectId: 'naw', code: 'Unit A-07', blockOrZone: 'Blok A', type: 'Type 45/72', stage: 'Pondasi & Sloof', progressPct: 35, status: 'normal', targetHandover: aheadD(80) },
+  { id: 'u-a08', projectId: 'naw', code: 'Unit A-08', blockOrZone: 'Blok A', type: 'Type 45/72', stage: 'Pondasi & Sloof', progressPct: 30, status: 'normal', targetHandover: aheadD(85) },
+
+  { id: 'u-b01', projectId: 'naw', code: 'Unit B-01', blockOrZone: 'Blok B', type: 'Type 45/72', stage: 'Pengecatan', progressPct: 88, status: 'normal', targetHandover: aheadD(25) },
+  { id: 'u-b02', projectId: 'naw', code: 'Unit B-02', blockOrZone: 'Blok B', type: 'Type 45/72', stage: 'Atap & Baja Ringan', progressPct: 68, status: 'need_inspection', activeInspectionRef: 'INSP-NW-2026-0151', targetHandover: aheadD(50), notes: 'Rangka Atap: Inspeksi Kuda-Kuda' },
+  { id: 'u-b03', projectId: 'naw', code: 'Unit B-03', blockOrZone: 'Blok B', type: 'Type 60/90', stage: 'Instalasi MEP', progressPct: 62, status: 'normal', targetHandover: aheadD(55) },
+  { id: 'u-b04', projectId: 'naw', code: 'Unit B-04', blockOrZone: 'Blok B', type: 'Type 60/90', stage: 'Dinding & Plesteran', progressPct: 58, status: 'has_findings', openFindingRef: 'F-NW-022', targetHandover: aheadD(60), notes: 'Dinding Belakang: Retak Rambut (40 cm)' },
+  { id: 'u-b05', projectId: 'naw', code: 'Unit B-05', blockOrZone: 'Blok B', type: 'Type 45/72', stage: 'Struktur Beton', progressPct: 48, status: 'normal', targetHandover: aheadD(70) },
+  { id: 'u-b06', projectId: 'naw', code: 'Unit B-06', blockOrZone: 'Blok B', type: 'Type 45/72', stage: 'Struktur Beton', progressPct: 45, status: 'normal', targetHandover: aheadD(75) },
+  { id: 'u-b07', projectId: 'naw', code: 'Unit B-07', blockOrZone: 'Blok B', type: 'Type 45/72', stage: 'Pondasi & Sloof', progressPct: 25, status: 'normal', targetHandover: aheadD(90) },
+  { id: 'u-b12', projectId: 'naw', code: 'Unit B-12', blockOrZone: 'Blok B', type: 'Type 60/90', stage: 'Instalasi MEP', progressPct: 60, status: 'normal', targetHandover: aheadD(55), notes: 'MEP: Sanitair & Sparing Pipa' },
+
+  { id: 'u-c01', projectId: 'naw', code: 'Unit C-01', blockOrZone: 'Blok C', type: 'Type 45/72', stage: 'Dinding & Plesteran', progressPct: 50, status: 'normal', targetHandover: aheadD(65) },
+  { id: 'u-c02', projectId: 'naw', code: 'Unit C-02', blockOrZone: 'Blok C', type: 'Type 45/72', stage: 'Struktur Beton', progressPct: 40, status: 'normal', targetHandover: aheadD(75) },
+  { id: 'u-c03', projectId: 'naw', code: 'Unit C-03', blockOrZone: 'Blok C', type: 'Type 45/72', stage: 'Pondasi & Sloof', progressPct: 28, status: 'normal', targetHandover: aheadD(85) },
+  { id: 'u-c04', projectId: 'naw', code: 'Unit C-04', blockOrZone: 'Blok C', type: 'Type 45/72', stage: 'Pondasi & Sloof', progressPct: 22, status: 'delayed', targetHandover: aheadD(90), notes: 'Logistik: Suplai batu belah tertunda 1 hari' },
+  { id: 'u-c05', projectId: 'naw', code: 'Unit C-05', blockOrZone: 'Blok C', type: 'Type 45/72', stage: 'Pondasi & Sloof', progressPct: 20, status: 'normal', targetHandover: aheadD(95) },
+  { id: 'u-c06', projectId: 'naw', code: 'Unit C-06', blockOrZone: 'Blok C', type: 'Type 45/72', stage: 'Pondasi & Sloof', progressPct: 15, status: 'normal', targetHandover: aheadD(100) },
+  { id: 'u-c07', projectId: 'naw', code: 'Unit C-07', blockOrZone: 'Blok C', type: 'Type 45/72', stage: 'Pondasi & Sloof', progressPct: 10, status: 'normal', targetHandover: aheadD(110) },
+  { id: 'u-c08', projectId: 'naw', code: 'Unit C-08', blockOrZone: 'Blok C', type: 'Type 45/72', stage: 'Pondasi & Sloof', progressPct: 10, status: 'normal', targetHandover: aheadD(110) },
+
+  // Pembangunan Ruko Grand Harmoni: 6 Unit Ruko 3 Lantai
+  { id: 'u-rk01', projectId: 'rko', code: 'Ruko 01', blockOrZone: 'Zona Ruko', type: 'Ruko 3 Lantai', stage: 'Finishing & Cat', progressPct: 86, status: 'normal', targetHandover: aheadD(30) },
+  { id: 'u-rk02', projectId: 'rko', code: 'Ruko 02', blockOrZone: 'Zona Ruko', type: 'Ruko 3 Lantai', stage: 'Finishing & Rolling Door', progressPct: 82, status: 'has_findings', openFindingRef: 'F-RKO-014', targetHandover: aheadD(30), notes: 'Fasad: Perbaikan cat melepuh (1,5 m²)' },
+  { id: 'u-rk03', projectId: 'rko', code: 'Ruko 03', blockOrZone: 'Zona Ruko', type: 'Ruko 3 Lantai', stage: 'Instalasi MEP', progressPct: 64, status: 'need_inspection', activeInspectionRef: 'INSP-RKO-2026-0088', openFindingRef: 'F-RKO-012', targetHandover: aheadD(45), notes: 'Shaft L2: Relokasi pipa vs kabel' },
+  { id: 'u-rk04', projectId: 'rko', code: 'Ruko 04', blockOrZone: 'Zona Ruko', type: 'Ruko 3 Lantai', stage: 'Dinding & Plesteran', progressPct: 52, status: 'normal', targetHandover: aheadD(55) },
+  { id: 'u-rk05', projectId: 'rko', code: 'Ruko 05', blockOrZone: 'Zona Ruko', type: 'Ruko 3 Lantai', stage: 'Struktur Beton', progressPct: 44, status: 'normal', targetHandover: aheadD(65) },
+  { id: 'u-rk06', projectId: 'rko', code: 'Ruko 06', blockOrZone: 'Zona Ruko', type: 'Ruko 3 Lantai', stage: 'Struktur Beton', progressPct: 38, status: 'delayed', targetHandover: aheadD(70), notes: 'Ready-mix: Pasokan batching plant terjadwal ulang' },
+]
+
+export const unitsOfProject = (projectId: string) => {
+  const norm = normalizeProjectId(projectId)
+  return PROJECT_UNITS.filter((u) => u.projectId === norm || u.projectId === projectId)
+}
 
 /* ------------------------------------------------------------
  * Paket pekerjaan / aktivitas + titik ITP
@@ -175,20 +237,27 @@ export interface WorkPackage {
   nextActivity?: string
 }
 
+export const normalizeProjectId = (id: string): string => {
+  if (id === 'aru') return 'naw'
+  if (id === 'ks') return 'rko'
+  if (id === 'jk') return 'gml'
+  return id
+}
+
 export const WORK_PACKAGES: WorkPackage[] = [
-  { id: 'wp-ar-l8', projectId: 'aru', code: 'ARU-STR-L8', name: 'Struktur pelat & balok lantai 8', discipline: 'Struktur beton', location: 'Tower A · Lantai 8', itpRef: 'ITP-ARU-STR Rev C', nextActivity: 'Pengecoran pelat lantai 8' },
-  { id: 'wp-ar-l9', projectId: 'aru', code: 'ARU-ARC-L9', name: 'Dinding geser & bekistik lantai 9', discipline: 'Struktur beton', location: 'Tower A · Lantai 9', itpRef: 'ITP-ARU-STR Rev C', nextActivity: 'Pengecoran dinding geser L9' },
-  { id: 'wp-ar-l7', projectId: 'aru', code: 'ARU-ARC-L7', name: 'Arsitektur lantai 7 (dinding & lantai keramik)', discipline: 'Arsitektur', location: 'Tower A · Lantai 7', itpRef: 'ITP-ARU-ARC Rev B' },
-  { id: 'wp-ar-mep8', projectId: 'aru', code: 'ARU-MEP-L8', name: 'MEP lantai 8 (ducting, pipa, riser)', discipline: 'MEP', location: 'Tower A · Lantai 8 · Shaft B', itpRef: 'ITP-ARU-MEP Rev A' },
-  { id: 'wp-ks-mep', projectId: 'ks', code: 'KS-MEP-L2', name: 'MEP plafon lantai 2 (kelistrikan & HVAC)', discipline: 'MEP', location: 'Lantai 2 · Zona Klinik', itpRef: 'ITP-KS-MEP Rev B' },
-  { id: 'wp-ks-san', projectId: 'ks', code: 'KS-PLB-L1', name: 'Instalasi sanitair & plumbing lantai 1', discipline: 'Plumbing', location: 'Lantai 1 · Blok Poli', itpRef: 'ITP-KS-PLB Rev A' },
-  { id: 'wp-ks-ff', projectId: 'ks', code: 'KS-FF-L2', name: 'Instalasi fire fighting lantai 2', discipline: 'Fire Fighting', location: 'Lantai 2 · Koridor Utara', itpRef: 'ITP-KS-FF Rev A' },
-  { id: 'wp-jk-sub', projectId: 'jk', code: 'JK-EW-01', name: 'Tanah dasar & subbase (earthwork)', discipline: 'Perkerasan jalan', location: 'Sta 0+400 s.d. 0+900', itpRef: 'ITP-JK-RW Rev 2', nextActivity: 'Layer base kelas A' },
-  { id: 'wp-bl-st', projectId: 'bl', code: 'BL-ST-01', name: 'Struktur baja kanopi & mezzanine', discipline: 'Struktur baja', location: 'Blok Gudang B', itpRef: 'ITP-BL-ST Rev A' },
+  { id: 'wp-ar-l8', projectId: 'naw', code: 'NAW-STR-A05', name: 'Pembesian balok & pelat lantai 2 Unit A-05', discipline: 'Struktur beton', location: 'Blok A — Unit A-05 · Lantai 2', itpRef: 'Checklist Struktur Beton · Item 4.2', nextActivity: 'Pengecoran balok & pelat Unit A-05' },
+  { id: 'wp-ar-l9', projectId: 'naw', code: 'NAW-ATP-B02', name: 'Rangka atap baja ringan & insulasi Unit B-02', discipline: 'Struktur atap', location: 'Blok B — Unit B-02 · Atap', itpRef: 'Checklist Rangka Atap · Item 3.1', nextActivity: 'Pemasangan genteng beton' },
+  { id: 'wp-ar-l7', projectId: 'naw', code: 'NAW-ARC-A03', name: 'Pasangan bata ringan & plesteran Unit A-03', discipline: 'Arsitektur', location: 'Blok A — Unit A-03', itpRef: 'Checklist Dinding & Plesteran' },
+  { id: 'wp-ar-mep8', projectId: 'naw', code: 'NAW-MEP-B12', name: 'Instalasi pipa air bersih & pembuangan Unit B-12', discipline: 'MEP / Plumbing', location: 'Blok B — Unit B-12', itpRef: 'Checklist Plumbing Air Bersih' },
+  { id: 'wp-ks-mep', projectId: 'rko', code: 'RKO-MEP-03', name: 'Instalasi MEP & sanitair Ruko 03 Lantai 2', discipline: 'MEP', location: 'Ruko 03 — Lantai 2', itpRef: 'Checklist MEP Komersial' },
+  { id: 'wp-ks-san', projectId: 'rko', code: 'RKO-PLB-01', name: 'Instalasi sanitair & pipa pembuangan Ruko 01', discipline: 'Plumbing', location: 'Ruko 01 — Lantai 1', itpRef: 'Checklist Plumbing Ruko' },
+  { id: 'wp-ks-ff', projectId: 'rko', code: 'RKO-STR-02', name: 'Plesteran dinding & pemasangan keramik Ruko 02', discipline: 'Finishing', location: 'Ruko 02 — Lantai 1-3', itpRef: 'Checklist Finishing Ruko' },
+  { id: 'wp-jk-sub', projectId: 'gml', code: 'GML-ARC-01', name: 'Partisi gypsum & plafon akustik Lantai 2', discipline: 'Arsitektur', location: 'Lantai 2 · Area Kantor', itpRef: 'Checklist Interior Graha Mulia' },
+  { id: 'wp-bl-st', projectId: 'bl', code: 'BL-ST-01', name: 'Struktur baja kanopi & mezzanine', discipline: 'Struktur baja', location: 'Blok Gudang B', itpRef: 'Checklist Struktur Baja' },
 ]
 
 /* ------------------------------------------------------------
- * Titik inspeksi (hold / witness / review) — PRD §9.7
+ * Titik pemeriksaan & kendali mutu (Tahap Kritis) — PRD §9.7
  * ------------------------------------------------------------ */
 
 export interface ReleaseCondition {
@@ -226,70 +295,70 @@ export interface ControlPoint {
 export const CONTROL_POINTS: ControlPoint[] = [
   {
     id: 'hp-ar-02',
-    ref: 'HP-AR-02',
-    projectId: 'aru',
+    ref: 'CP-NW-02',
+    projectId: 'naw',
     activityId: 'wp-ar-l8',
     pointType: 'hold',
-    title: 'Pengecoran pelat lantai 8',
-    itpRef: 'ITP-ARU-STR Rev C · Item 4.2',
-    releaseAuthority: 'Quality Manager · Ratna Dewi',
+    title: 'Pengecoran balok & pelat lantai 2 Unit A-05',
+    itpRef: 'Checklist Struktur Beton · Item 4.2',
+    releaseAuthority: 'Quality Lead · Ratna Dewi / Site Manager',
     status: 'awaiting_release',
     conditions: [
-      { id: 'c1', label: 'Inspeksi tulangan terakhir tercatat (WIR-AR-2026-0142)', met: true, note: 'Re-inspeksi lapangan telah dilaksanakan; keputusan QC menunggu rekam.' },
-      { id: 'c2', label: 'Tidak ada temuan terbuka pada lingkup terkait', met: false, note: 'F-AR-021 · cover tulangan di bawah spesifikasi, masih terbuka.' },
-      { id: 'c3', label: 'Verifikasi tindakan perbaikan oleh QA/QC', met: false, note: 'Tindakan CA-021-1 menunggu verifikasi independen.' },
-      { id: 'c4', label: 'Hasil uji bahan (slump & kuat tekan batch 118)', met: true, note: 'Laboratorium: slump 85 mm, kuat tekan 28,4 MPa; memenuhi.' },
+      { id: 'c1', label: 'Pemeriksaan tulangan Unit A-05 tercatat (WIR-AR-2026-0142)', met: true, note: 'Pemeriksaan fisik lapangan telah dilaksanakan; keputusan pengawas menunggu rekam.' },
+      { id: 'c2', label: 'Tidak ada temuan terbuka pada pembesian balok B2', met: false, note: 'F-AR-021 · cover tulangan balok B2 kurang dari spesifikasi, masih terbuka.' },
+      { id: 'c3', label: 'Verifikasi tindakan perbaikan oleh pengawas lapangan', met: false, note: 'Tindakan CA-021-1 menunggu verifikasi fisik di lapangan.' },
+      { id: 'c4', label: 'Pembersihan bekisting & sparing pipa terpasang', met: true, note: 'Pipa sparing listrik dan plumbing telah tertanam rapi.' },
     ],
-    nextActivity: 'Pengecoran pelat lantai 8',
+    nextActivity: 'Pengecoran balok & pelat lantai 2 Unit A-05',
     relatedInspectionRef: 'WIR-AR-2026-0142',
   },
   {
     id: 'wp-jk-01',
-    ref: 'WP-JK-01',
-    projectId: 'jk',
-    activityId: 'wp-jk-sub',
+    ref: 'WP-RKO-01',
+    projectId: 'rko',
+    activityId: 'wp-ks-mep',
     pointType: 'witness',
-    title: 'Kepadatan in-situ subbase (sand cone)',
-    itpRef: 'ITP-JK-RW Rev 2 · Item 3.4',
-    releaseAuthority: 'Konsultan · PT Cipta Karya',
+    title: 'Uji tekan pipa air bersih Ruko 03 Lantai 2',
+    itpRef: 'Checklist MEP Komersial · Item 2.4',
+    releaseAuthority: 'Konsultan Pengawas · CV Mitra Desain',
     status: 'awaiting_inspection',
     witness: {
-      party: 'PT Cipta Karya Konsultan',
+      party: 'Konsultan Pengawas (CV Mitra Desain)',
       scheduledAt: aheadH(30),
       attendance: 'rescheduled',
       note: 'Kehadiran dijadwalkan ulang (konsultan berhalangan); waktu baru tercatat & pemberitahuan ulang terkirim.',
     },
-    relatedInspectionRef: 'WIR-JK-2026-0041',
+    relatedInspectionRef: 'WIR-KS-2026-0088',
   },
   {
     id: 'hp-jk-01',
-    ref: 'HP-JK-01',
-    projectId: 'jk',
-    activityId: 'wp-jk-sub',
+    ref: 'CP-NW-05',
+    projectId: 'naw',
+    activityId: 'wp-ar-l9',
     pointType: 'hold',
-    title: 'Penerimaan layer base sebelum aspal',
-    itpRef: 'ITP-JK-RW Rev 2 · Item 5.1',
-    releaseAuthority: 'Konsultan · PT Cipta Karya',
+    title: 'Persetujuan pemasangan penutup genteng Unit B-02',
+    itpRef: 'Checklist Rangka Atap · Item 3.1',
+    releaseAuthority: 'Site Manager · Rizky Hidayat',
     status: 'not_due',
-    nextActivity: 'Pekerjaan perkerasan aspal lapis 1',
+    nextActivity: 'Pemasangan genteng beton & nok',
   },
   {
     id: 'rp-ks-01',
-    ref: 'RP-KS-01',
-    projectId: 'ks',
-    activityId: 'wp-ks-mep',
+    ref: 'RP-GML-01',
+    projectId: 'gml',
+    activityId: 'wp-jk-sub',
     pointType: 'review',
-    title: 'Review shop drawing MEP revisi terbaru',
-    itpRef: 'ITP-KS-MEP Rev B · Item 1.3',
-    releaseAuthority: 'Konsultan · CV Mitra Teknik',
+    title: 'Review shop drawing tata letak partisi ruangan',
+    itpRef: 'Checklist Arsitektur · Item 1.2',
+    releaseAuthority: 'Konsultan · PT Cipta Karya Desain',
     status: 'awaiting_release',
-    note: 'Review point, bukan hold fisik.',
-    relatedInspectionRef: 'WIR-KS-2026-0088',
+    note: 'Review denah partisi dan jalur kabel daya.',
+    relatedInspectionRef: 'WIR-JK-2026-0041',
   },
 ]
 
 /* ------------------------------------------------------------
- * Referensi dokumen — revisi & status (SC-27/28)
+ * Referensi dokumen acuan — gambar kerja & spesifikasi
  * ------------------------------------------------------------ */
 
 export interface DocRef {
@@ -304,11 +373,11 @@ export interface DocRef {
 }
 
 export const DOCS: Record<string, DocRef> = {
-  s301c: { id: 's301c', title: 'Gambar Detail Tulangan Pelat L8', number: 'S-301', rev: 'C', status: 'current', issued: agoD(24), usedRevAtSubmission: 'C' },
-  s301b: { id: 's301b', title: 'Gambar Detail Tulangan Pelat L8', number: 'S-301', rev: 'B', status: 'superseded', issued: agoD(120) },
-  mep12: { id: 'mep12', title: 'Shop Drawing Tata Letak MEP Lantai 2', number: 'MEP-12', rev: '2', status: 'current', issued: agoD(9) },
-  speccon: { id: 'speccon', title: 'Spesifikasi Teknik Beton Struktur', number: 'SPEC-CON-01', rev: '1', status: 'current', issued: agoD(300) },
-  itpjkrw: { id: 'itpjkrw', title: 'ITP Perkerasan Jalan', number: 'ITP-JK-RW', rev: '2', status: 'current', issued: agoD(60) },
+  s301c: { id: 's301c', title: 'Gambar Detail Pembesian Balok & Pelat Unit A-05', number: 'STR-A05', rev: 'C', status: 'current', issued: agoD(24), usedRevAtSubmission: 'C' },
+  s301b: { id: 's301b', title: 'Gambar Detail Pembesian Balok & Pelat Unit A-05', number: 'STR-A05', rev: 'B', status: 'superseded', issued: agoD(120) },
+  mep12: { id: 'mep12', title: 'Shop Drawing Jalur Pipa Sanitair & Listrik Ruko', number: 'MEP-RK-03', rev: '2', status: 'current', issued: agoD(9) },
+  speccon: { id: 'speccon', title: 'Spesifikasi Pekerjaan Struktur & Pasangan Nawasena', number: 'SPEC-NW-01', rev: '1', status: 'current', issued: agoD(300) },
+  itpjkrw: { id: 'itpjkrw', title: 'Checklist Acuan Rangka Atap Baja Ringan', number: 'CHK-ATP-01', rev: '2', status: 'current', issued: agoD(60) },
 }
 
 /* ------------------------------------------------------------
@@ -344,11 +413,11 @@ export interface TimelineEvent {
   detail?: string
   /** Kunci pemetaan ikon + tone di halaman. */
   kind:
-    | 'created' | 'submitted' | 'review' | 'external' | 'scheduled'
-    | 'in_progress' | 'accepted' | 'correction' | 'clarification'
-    | 'reinspection' | 'rescheduled' | 'unable' | 'withdrawn' | 'cancelled'
-    | 'finding' | 'action' | 'verified' | 'rejected' | 'release'
-    | 'evidence' | 'doc'
+  | 'created' | 'submitted' | 'review' | 'external' | 'scheduled'
+  | 'in_progress' | 'accepted' | 'correction' | 'clarification'
+  | 'reinspection' | 'rescheduled' | 'unable' | 'withdrawn' | 'cancelled'
+  | 'finding' | 'action' | 'verified' | 'rejected' | 'release'
+  | 'evidence' | 'doc'
 }
 
 export interface Inspection {
@@ -357,6 +426,9 @@ export interface Inspection {
   projectId: string
   activityId: string
   title: string
+  discipline?: string
+  activityType?: string
+  targetScope: string
   scope: string
   /** Lokasi kerja granular (FR-ID-04). */
   location: string
@@ -374,7 +446,13 @@ export interface Inspection {
   externalAuthority?: string
   noticeHours: number
   /** Tindakan berikutnya + penanggung jawab + target (FR-IN-01). */
-  nextAction?: { label: string; owner: string; dueAt?: string }
+  nextAction?: {
+    actionType?: string
+    component?: string
+    label: string
+    owner: string
+    dueAt?: string
+  }
   documents: DocRef[]
   checklist: ChecklistItem[]
   /** SC-01: daftar kekurangan pengajuan, eksplisit. */
@@ -398,194 +476,230 @@ const SARI: Person = { name: 'Sari Wulandari', org: 'QA/QC · PT KBN', role: 'qc
 const BUDI: Person = { name: 'Budi Santoso', org: 'PT Karya Bangun Nusantara', role: 'site_engineer' }
 
 export const INSPECTIONS: Inspection[] = [
-  /* ---------- ARU — inti skenario §15.3 ---------- */
+  /* ---------- Cluster Nawasena — inti skenario demo operasional ---------- */
   {
     id: 'wir-ar-0142',
-    ref: 'WIR-AR-2026-0142',
-    projectId: 'aru',
+    ref: 'INSP-NW-2026-0142',
+    projectId: 'naw',
     activityId: 'wp-ar-l8',
-    title: 'Inspeksi tulangan pelat lantai 8',
-    scope: 'Tulangan pelat & balok · Grid A/1-4, ±184 m², besi D16-150',
-    location: 'Tower A · Lantai 8 · Grid A/1-4',
-    locationDetail: 'Zona puring timur, dekat lift core B',
+    discipline: 'Struktur Beton',
+    activityType: 'Pembesian Balok & Pelat',
+    targetScope: 'Unit A-05 · Lantai 2',
+    title: '[Unit A-05] Pembesian Balok & Pelat L2',
+    scope: 'Pembesian balok B1-B2 & pelat lantai 2 Unit A-05 · besi D13 & D10, selimut beton 25 mm',
+    location: 'Blok A — Unit A-05 · Lantai 2',
+    locationDetail: 'Balok B2 sisi timur & pelat lantai 2 Unit A-05',
     pointType: 'hold',
-    itpRef: 'ITP-ARU-STR Rev C · Item 4.2',
+    itpRef: 'Checklist Struktur Beton · Item 4.2',
     status: 'reinspection_requested',
     submittedAt: agoD(6),
     requestedAt: aheadH(20),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
     externalAuthority: undefined,
-    noticeHours: 48,
-    nextAction: { label: 'Terima/tolak hasil re-inspeksi', owner: 'Sari Wulandari (QA/QC)', dueAt: aheadH(26) },
+    noticeHours: 24,
+    nextAction: {
+      actionType: 'Verifikasi Lapangan',
+      component: 'Spacer Selimut Beton 25 mm',
+      label: 'Verifikasi hasil perbaikan selimut beton',
+      owner: 'Sari Wulandari (Pengawas Kualitas)',
+      dueAt: aheadH(26),
+    },
     documents: [DOCS.s301c, DOCS.s301b, DOCS.speccon],
     checklist: [
-      { id: 'ck1', label: 'Diameter, jarak & jumlah tulangan sesuai gambar', source: 'S-301 Rev C · Sheet 2', result: 'ok' },
-      { id: 'ck2', label: 'Cover beton sesuai spesifikasi (25 mm)', source: 'SPEC-CON-01 Rev 1 §5.3', result: 'issue', note: 'Cover sebagian 20 mm, sudah dikoreksi & difoto ulang' },
-      { id: 'ck3', label: 'Ikatan spacer & kur jarak terpasang', source: 'ITP-ARU-STR Rev C 4.2.b', result: 'ok' },
-      { id: 'ck4', label: 'Bersihan & rapat sambungan bekisting', source: 'ITP-ARU-STR Rev C 4.2.c', result: 'ok' },
-      { id: 'ck5', label: 'Hasil uji slump & benda uji batch tercatat', source: 'SPEC-CON-01 Rev 1 §7.1', result: 'ok', note: 'Batch 118 · slump 85 mm' },
+      { id: 'ck1', label: 'Diameter, jarak sengkang & jumlah tulangan sesuai gambar kerja (STR-A05)', source: 'STR-A05 Rev C · Sheet 2', result: 'ok' },
+      { id: 'ck2', label: 'Tebal selimut beton/cover block sesuai spesifikasi (25 mm)', source: 'SPEC-NW-01 Rev 1 §5.3', result: 'issue', note: 'Cover sebagian 20 mm di balok B2; spacer standar 25 mm sudah dipasang & difoto ulang' },
+      { id: 'ck3', label: 'Kerapatan ikatan kawat bendrat & posisi sambungan kait', source: 'Checklist Struktur 4.2.b', result: 'ok' },
+      { id: 'ck4', label: 'Kebersihan bekisting dari serpihan kayu dan serbuk', source: 'Checklist Struktur 4.2.c', result: 'ok' },
+      { id: 'ck5', label: 'Pipa sparing instalasi listrik dan sanitair terpasang rapi', source: 'SPEC-NW-01 Rev 1 §7.1', result: 'ok', note: 'Pipa sparing conduit & buangan aman' },
     ],
     evidence: [
-      { id: 'ev1', kind: 'photo', title: 'Foto cover tulangan setelah koreksi (Grid A/2)', meta: '8 foto · Budi Santoso · terlampir pada pengajuan ulang' },
-      { id: 'ev2', kind: 'doc', title: 'Laporan pengawasan harian LW-08-114', meta: 'PDF · 2 hal · CV Mitra Teknik' },
-      { id: 'ev3', kind: 'test', title: 'Berita acara uji slump batch 118', meta: 'PDF · lab independen' },
-      { id: 'ev4', kind: 'photo', title: 'Foto progres sebelum koreksi (riwayat)', meta: '6 foto · arsip pengajuan pertama', unavailable: true },
+      { id: 'ev1', kind: 'photo', title: 'Foto cover tulangan setelah perbaikan spacer 25 mm', meta: '8 foto · Budi Santoso · terlampir pada pengajuan ulang' },
+      { id: 'ev2', kind: 'doc', title: 'Laporan pengawasan harian lapangan LHR-NAW-1030', meta: 'PDF · 2 hal · PT Cipta Graha Konsultan' },
+      { id: 'ev3', kind: 'test', title: 'Surat jalan & sertifikat uji tarik besi D13/D10 SNI', meta: 'PDF · pabrikan' },
+      { id: 'ev4', kind: 'photo', title: 'Foto kondisi sebelum koreksi (riwayat)', meta: '6 foto · arsip pengajuan pertama', unavailable: true },
     ],
     linkedFindingIds: ['f-ar-021'],
     priorInspectionIds: ['wir-ar-0131'],
     holdPointId: 'hp-ar-02',
     timeline: [
-      { id: 't1', at: agoD(6), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan dibuat', kind: 'created', detail: 'WIR-AR-2026-0142 · lingkup Grid A/1-4 · S-301 Rev C' },
-      { id: 't2', at: agoH(140), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan untuk review', kind: 'submitted', note: 'Pemberitahuan 48 jam sesuai ITP.' },
-      { id: 't3', at: agoD(4), actor: SARI.name, role: 'QA/QC', title: 'Keputusan direkam: Perlu Perbaikan', kind: 'correction', note: 'Cover tulangan sebagian 20 mm (spesifikasi 25 mm); foto pendukung kurang mewakili area Grid A/3-4.', detail: 'Bukan inkonformitas teknis formal, tidak membuat NCR. Re-inspeksi ditautkan ke pengajuan ini.' },
-      { id: 't4', at: agoD(3), actor: BUDI.name, role: 'Site Engineer', title: 'Perbaikan dikerjakan + bukti dilampirkan', kind: 'evidence', note: 'Cover diganti spacer 25 mm; 8 foto baru & laporan pengawasan LW-08-114.' },
-      { id: 't5', at: agoD(1), actor: BUDI.name, role: 'Site Engineer', title: 'Re-inspeksi diminta', kind: 'reinspection', detail: 'Tertaut ke WIR-AR-2026-0142; riwayat pengajuan pertama tetap tersimpan.' },
-      { id: 't6', at: agoH(20), actor: SARI.name, role: 'QA/QC', title: 'Inspeksi ulang dilaksanakan di lapangan', kind: 'in_progress', note: 'Pemeriksaan lapangan selesai; keputusan formal menunggu perekaman.' },
+      { id: 't1', at: agoD(6), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan pemeriksaan dibuat', kind: 'created', detail: 'INSP-NW-2026-0142 · lingkup Unit A-05 Lantai 2 · STR-A05 Rev C' },
+      { id: 't2', at: agoH(140), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan untuk pemeriksaan kualitas', kind: 'submitted', note: 'Pemberitahuan diajukan sesuai checklist operasional.' },
+      { id: 't3', at: agoD(4), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Hasil pemeriksaan: Perlu Perbaikan', kind: 'correction', note: 'Cover tulangan balok B2 sebagian terukur 20 mm (spesifikasi 25 mm). Mandor diminta pasang spacer beton standar.', detail: 'Catatan pekerjaan lapangan, bukan NCR formal.' },
+      { id: 't4', at: agoD(3), actor: BUDI.name, role: 'Site Engineer', title: 'Perbaikan dikerjakan + bukti dilampirkan', kind: 'evidence', note: 'Spacer diganti 25 mm tiap jarak 60 cm; 8 foto baru dilampirkan.' },
+      { id: 't5', at: agoD(1), actor: BUDI.name, role: 'Site Engineer', title: 'Verifikasi perbaikan diajukan', kind: 'reinspection', detail: 'Tertaut ke INSP-NW-2026-0142; riwayat catatan awal tersimpan rapi.' },
+      { id: 't6', at: agoH(20), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Pemeriksaan ulang dilaksanakan di lapangan', kind: 'in_progress', note: 'Pemeriksaan lapangan selesai; konfirmasi formal menunggu perekaman.' },
     ],
   },
   {
     id: 'wir-ar-0151',
-    ref: 'WIR-AR-2026-0151',
-    projectId: 'aru',
+    ref: 'INSP-NW-2026-0151',
+    projectId: 'naw',
     activityId: 'wp-ar-l9',
-    title: 'Inspeksi bekisting & dinding geser L9',
-    scope: 'Bekisting dinding geser inti · Grid C/2-5, per…' ,
-    location: 'Tower A · Lantai 9 · Grid C/2-5',
+    discipline: 'Struktur Atap',
+    activityType: 'Rangka Kuda-kuda Baja Ringan',
+    targetScope: 'Unit B-02 · Atap',
+    title: '[Unit B-02] Rangka Kuda-kuda Baja Ringan',
+    scope: 'Kuda-kuda baja ringan, bracing, reng, dan dynabolt ringbalk Unit B-02',
+    location: 'Blok B — Unit B-02 · Atap',
     pointType: 'witness',
-    itpRef: 'ITP-ARU-STR Rev C · Item 3.1',
+    itpRef: 'Checklist Rangka Atap · Item 3.1',
     status: 'submitted',
     submittedAt: agoH(9),
     requestedAt: aheadD(2),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
-    noticeHours: 48,
-    nextAction: { label: 'Review kelengkapan & jadwalkan', owner: 'Sari Wulandari (QA/QC)', dueAt: aheadH(30) },
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
+    noticeHours: 24,
+    nextAction: {
+      actionType: 'Review Checklist',
+      component: 'Jarak Kuda-kuda & Dynabolt',
+      label: 'Review checklist & jadwalkan cek lapangan',
+      owner: 'Sari Wulandari (Pengawas Kualitas)',
+      dueAt: aheadH(30),
+    },
     documents: [DOCS.s301c],
     checklist: [
-      { id: 'ck1', label: 'Kesesuaian dimensi bekisting dengan gambar', source: 'S-301 Rev C · Sheet 4', result: 'ok' },
-      { id: 'ck2', label: 'Kelurusan & penyangga vertikal', source: 'ITP-ARU-STR Rev C 3.1.a', result: 'ok' },
-      { id: 'ck3', label: 'Agent release & lendutan diizinkan', source: 'ITP-ARU-STR Rev C 3.1.c', result: 'na' },
+      { id: 'ck1', label: 'Dimensi profil kanal C & reng sesuai gambar', source: 'STR-A05 Rev C · Sheet 4', result: 'ok' },
+      { id: 'ck2', label: 'Jarak kuda-kuda maks 1,2 m & kerapatan sekrup self-drilling', source: 'Checklist Rangka Atap 3.1.a', result: 'ok' },
+      { id: 'ck3', label: 'Ikatan dynabolt ke ringbalk terpasang kokoh', source: 'Checklist Rangka Atap 3.1.c', result: 'na' },
     ],
     evidence: [
-      { id: 'ev1', kind: 'photo', title: 'Foto bekisting dinding inti', meta: '5 foto · Budi Santoso' },
-      { id: 'ev2', kind: 'doc', title: 'Checklist pra-pengecoran', meta: 'PDF · ditandatangani mandor' },
+      { id: 'ev1', kind: 'photo', title: 'Foto sambungan kuda-kuda baja ringan', meta: '5 foto · Budi Santoso' },
+      { id: 'ev2', kind: 'doc', title: 'Checklist fabrikasi rangka atap', meta: 'PDF · ditandatangani mandor' },
     ],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoH(10), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan dibuat', kind: 'created' },
-      { id: 't2', at: agoH(9), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan untuk review', kind: 'submitted', note: 'Menunggu penugasan reviewer QA/QC.' },
+      { id: 't2', at: agoH(9), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan untuk pemeriksaan', kind: 'submitted', note: 'Menunggu penugasan pengawas kualitas.' },
     ],
   },
   {
     id: 'wir-ar-0131',
-    ref: 'WIR-AR-2026-0131',
-    projectId: 'aru',
+    ref: 'INSP-NW-2026-0131',
+    projectId: 'naw',
     activityId: 'wp-ar-l8',
-    title: 'Inspeksi tulangan balok lantai 7 (parsial)',
-    scope: 'Tulangan balok B-7a/B-7b · lingkup yang diperiksa: balok B-7a saja',
-    location: 'Tower A · Lantai 7 · Grid B/2-4',
+    discipline: 'Struktur Pondasi',
+    activityType: 'Pondasi Batu Kali & Sloof',
+    targetScope: 'Unit C-03 · Sloof Dasar',
+    title: '[Unit C-03] Pondasi Batu Kali & Sloof',
+    scope: 'Dimensi sloof 15/20 cm, besi 4D12, begel D8-150 Unit C-03',
+    location: 'Blok C — Unit C-03',
     pointType: 'hold',
-    itpRef: 'ITP-ARU-STR Rev C · Item 4.1',
+    itpRef: 'Checklist Pondasi & Sloof · Item 2.1',
     status: 'accepted',
     submittedAt: agoD(11),
     requestedAt: agoD(9),
     decidedAt: agoD(9),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
-    noticeHours: 48,
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
+    noticeHours: 24,
     documents: [DOCS.s301c, DOCS.s301b],
     checklist: [
-      { id: 'ck1', label: 'Diameter & jarak tulangan sesuai gambar', source: 'S-301 Rev C · Sheet 2', result: 'ok' },
-      { id: 'ck2', label: 'Panjang kait & overlap las', source: 'SPEC-CON-01 Rev 1 §5.1', result: 'ok' },
+      { id: 'ck1', label: 'Ukuran dimensi sloof & kedalaman pondasi', source: 'STR-A05 Rev C · Sheet 2', result: 'ok' },
+      { id: 'ck2', label: 'Jarak begel & penyaluran stek kolom praktis', source: 'SPEC-NW-01 Rev 1 §5.1', result: 'ok' },
     ],
     evidence: [
-      { id: 'ev1', kind: 'photo', title: 'Foto tulangan balok B-7a', meta: '9 foto · Budi Santoso' },
+      { id: 'ev1', kind: 'photo', title: 'Foto pembesian sloof Unit C-03', meta: '6 foto · Budi Santoso' },
     ],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(11), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(10), actor: SARI.name, role: 'QA/QC', title: 'Inspeksi dilaksanakan (lingkup parsial)', kind: 'in_progress', note: 'Balok B-7b belum dapat diperiksa (material belum tiba). Sisa lingkup memerlukan pengajuan baru.' },
-      { id: 't3', at: agoD(9), actor: SARI.name, role: 'QA/QC', title: 'Keputusan direkam: Diterima (lingkup B-7a)', kind: 'accepted', note: 'Diterima untuk lingkup & revisi gambar yang ditinjau (S-301 Rev C).', detail: 'Bukan penerimaan kontraktual; bukan rilis hold point.' },
+      { id: 't2', at: agoD(10), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Pemeriksaan fisik di lokasi Unit C-03', kind: 'in_progress' },
+      { id: 't3', at: agoD(9), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Hasil pemeriksaan: Sesuai', kind: 'accepted', note: 'Dimensi & tulangan sesuai gambar kerja.' },
     ],
-    decision: { outcome: 'Diterima', statusId: 'accepted', by: SARI.name, role: 'QA/QC', scope: 'Balok B-7a · Grid B/2-4 · S-301 Rev C', comment: 'Sesuai gambar & spesifikasi. Sisa lingkup (B-7b) = pengajuan terpisah.' },
+    decision: { outcome: 'Sesuai', statusId: 'accepted', by: SARI.name, role: 'Pengawas Kualitas', scope: 'Sloof pondasi Unit C-03 · STR-A05 Rev C', comment: 'Sesuai gambar & spesifikasi. Siap dicor.' },
   },
   {
     id: 'wir-ar-0128',
-    ref: 'WIR-AR-2026-0128',
-    projectId: 'aru',
+    ref: 'INSP-NW-2026-0128',
+    projectId: 'naw',
     activityId: 'wp-ar-l7',
-    title: 'Pengecoran fooring lantai 7',
-    scope: 'Pengecoran fooring 100 mm · area parkir L7',
-    location: 'Tower A · Lantai 7 · Zona Parkir',
+    discipline: 'Pekerjaan Dinding',
+    activityType: 'Plesteran & Acian Dinding',
+    targetScope: 'Unit A-03 · Dinding L1',
+    title: '[Unit A-03] Plesteran & Acian Dinding',
+    scope: 'Plesteran bata ringan & acian halus dinding ruang keluarga Unit A-03',
+    location: 'Blok A — Unit A-03 · Lantai 1',
     pointType: 'surveillance',
-    itpRef: 'ITP-ARU-ARC Rev B · Item 6.2',
+    itpRef: 'Checklist Dinding & Plesteran · Item 3.2',
     status: 'accepted',
     submittedAt: agoD(14),
     decidedAt: agoD(13),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
     noticeHours: 24,
     documents: [],
     checklist: [
-      { id: 'ck1', label: 'Ketebalan & mutu beton fooring', source: 'ITP-ARU-ARC Rev B 6.2', result: 'ok' },
+      { id: 'ck1', label: 'Kelurusan permukaan dinding & bebas retak', source: 'Checklist Dinding 3.2', result: 'ok' },
     ],
-    evidence: [{ id: 'ev1', kind: 'photo', title: 'Foto hasil fooring', meta: '4 foto' }],
+    evidence: [{ id: 'ev1', kind: 'photo', title: 'Foto dinding setelah diaci', meta: '4 foto' }],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(14), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(13), actor: SARI.name, role: 'QA/QC', title: 'Keputusan direkam: Diterima', kind: 'accepted' },
+      { id: 't2', at: agoD(13), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Hasil pemeriksaan: Sesuai', kind: 'accepted' },
     ],
-    decision: { outcome: 'Diterima', statusId: 'accepted', by: SARI.name, role: 'QA/QC', scope: 'Fooring L7 · ITP-ARU-ARC Rev B', comment: 'Rata & sesuai garis tinggi.' },
+    decision: { outcome: 'Sesuai', statusId: 'accepted', by: SARI.name, role: 'Pengawas Kualitas', scope: 'Dinding Unit A-03 · Checklist Dinding', comment: 'Rata, siku, dan siap dicat dasar.' },
   },
   {
     id: 'wir-ar-0135',
-    ref: 'WIR-AR-2026-0135',
-    projectId: 'aru',
+    ref: 'INSP-NW-2026-0135',
+    projectId: 'naw',
     activityId: 'wp-ar-l7',
-    title: 'Waterproofing bak toilet L7',
-    scope: 'Waterproofing 6 bak toilet · uji genangan 48 jam',
-    location: 'Tower A · Lantai 7 · Bak Toilet 1-6',
+    discipline: 'Sanitair & Basah',
+    activityType: 'Uji Genangan Air 24 Jam',
+    targetScope: 'Unit A-05 · KM Lantai 2',
+    title: '[Unit A-05] Uji Genangan Waterproofing KM',
+    scope: 'Uji genangan air 24 jam lantai kamar mandi Unit A-05 Lantai 2',
+    location: 'Blok A — Unit A-05 · Lantai 2',
     pointType: 'hold',
-    itpRef: 'ITP-ARU-ARC Rev B · Item 7.3',
+    itpRef: 'Checklist Sanitair & Waterproofing · Item 2.3',
     status: 'deferred',
     submittedAt: agoD(5),
     requestedAt: agoD(2),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
     noticeHours: 24,
-    nextAction: { label: 'Jadwalkan ulang uji genangan', owner: 'Budi Santoso (Site Eng)', dueAt: aheadD(1) },
+    nextAction: {
+      actionType: 'Jadwal Ulang',
+      component: 'Uji Genangan Mandor Plumbing',
+      label: 'Jadwalkan ulang uji genangan air',
+      owner: 'Budi Santoso (Site Eng)',
+      dueAt: aheadD(1),
+    },
     documents: [],
     checklist: [
-      { id: 'ck1', label: 'Genangan 48 jam tanpa rembes', source: 'ITP-ARU-ARC Rev B 7.3', result: 'na' },
+      { id: 'ck1', label: 'Genangan 24 jam tanpa rembes ke lantai bawah', source: 'Checklist Sanitair 2.3', result: 'na' },
     ],
-    evidence: [{ id: 'ev1', kind: 'photo', title: 'Foto bak dalam pengujian', meta: '3 foto' }],
+    evidence: [{ id: 'ev1', kind: 'photo', title: 'Foto lantai kamar mandi dalam pengujian', meta: '3 foto' }],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(5), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(2), actor: SARI.name, role: 'QA/QC', title: 'Tidak dapat diinspeksi, reviewer berhalangan', kind: 'unable', note: 'Pemeriksa tidak hadir pada jadwal; waktu asli & pihak terkait tercatat.', detail: 'Tidak ada izin otomatis melanjutkan pekerjaan; sesuai prosedur, jadwal ulang.' },
-      { id: 't3', at: agoH(30), actor: SARI.name, role: 'QA/QC', title: 'Ditunda & dijadwalkan ulang', kind: 'rescheduled', detail: 'Alasan: ketersediaan pemeriksa. Waktu baru diusulkan oleh penjadwal.' },
+      { id: 't2', at: agoD(2), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Tidak dapat diperiksa, pengawas berhalangan', kind: 'unable', note: 'Pemeriksa berhalangan hadir; waktu asli tercatat.' },
+      { id: 't3', at: agoH(30), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Ditunda & dijadwalkan ulang', kind: 'rescheduled', detail: 'Jadwal baru disepakati bersama mandor plumbing.' },
     ],
   },
   {
     id: 'wir-ar-0119',
-    ref: 'WIR-AR-2026-0119',
-    projectId: 'aru',
+    ref: 'INSP-NW-2026-0119',
+    projectId: 'naw',
     activityId: 'wp-ar-mep8',
-    title: 'Instalasi pipa riser shaft B',
-    scope: 'Pipa riser air bersih DN80 · shaft B',
-    location: 'Tower A · Lantai 8 · Shaft B',
+    discipline: 'Pekerjaan MEP',
+    activityType: 'Pipa Distribusi Air Bersih',
+    targetScope: 'Blok B · Distribusi Air',
+    title: '[Blok B] Jalur Pipa Distribusi PVC AW',
+    scope: 'Pipa distribusi air bersih PVC AW DN25 Blok B',
+    location: 'Blok B — Saluran Distribusi',
     pointType: 'review',
-    itpRef: 'ITP-ARU-MEP Rev A · Item 2.2',
+    itpRef: 'Checklist Plumbing · Item 1.2',
     status: 'withdrawn',
     submittedAt: agoD(9),
     decidedAt: agoD(8),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
     noticeHours: 24,
     documents: [],
     checklist: [],
@@ -594,25 +708,35 @@ export const INSPECTIONS: Inspection[] = [
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(9), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(8), actor: BUDI.name, role: 'Site Engineer', title: 'Ditarik oleh pengirim', kind: 'withdrawn', note: 'Duplikasi dengan WIR-AR-2026-0118 untuk lingkup yang sama, tidak digabung diam-diam.' },
+      { id: 't2', at: agoD(8), actor: BUDI.name, role: 'Site Engineer', title: 'Ditarik oleh pengirim', kind: 'withdrawn', note: 'Digabungkan dengan pengajuan saluran terpadu Blok B.' },
     ],
   },
   {
     id: 'wir-ar-0147',
-    ref: 'WIR-AR-2026-0147',
-    projectId: 'aru',
+    ref: 'INSP-NW-2026-0147',
+    projectId: 'naw',
     activityId: 'wp-ar-mep8',
-    title: 'Ducting AC lantai 8',
-    scope: 'Ducting prefabricated · zona tenaga utara',
-    location: 'Tower A · Lantai 8 · Zona Tenaga Utara',
+    discipline: 'Finishing Lantai',
+    activityType: 'Pemasangan Granit Tile 40x40',
+    targetScope: 'Unit A-01 · Ruang Tamu',
+    title: '[Unit A-01] Pemasangan Granit Tile 40x40',
+    scope: 'Keramik lantai granit tile 40x40 area ruang tamu Unit A-01',
+    location: 'Blok A — Unit A-01 · Ruang Tamu',
     pointType: 'witness',
-    itpRef: 'ITP-ARU-MEP Rev A · Item 3.4',
+    itpRef: 'Checklist Finishing Keramik · Item 2.4',
     status: 'draft',
     submitter: BUDI,
     reviewer: 'Belum ditunjuk',
-    noticeHours: 48,
+    noticeHours: 24,
+    nextAction: {
+      actionType: 'Pengajuan QC',
+      component: 'Review Kerataan Nat',
+      label: 'Ajukan verifikasi kerataan nat lantai',
+      owner: 'Budi Santoso (Site Eng)',
+      dueAt: aheadD(2),
+    },
     documents: [],
-    checklist: [{ id: 'ck1', label: 'Kedapatan ducting & isolasi', source: 'ITP-ARU-MEP Rev A 3.4' }],
+    checklist: [{ id: 'ck1', label: 'Kerataan nat & kelurusan pemasangan', source: 'Checklist Finishing 2.4' }],
     evidence: [],
     linkedFindingIds: [],
     priorInspectionIds: [],
@@ -621,258 +745,309 @@ export const INSPECTIONS: Inspection[] = [
     ],
   },
 
-  /* ---------- Klinik Sentosa ---------- */
+  /* ---------- Pembangunan Ruko Grand Harmoni ---------- */
   {
     id: 'wir-ks-0088',
-    ref: 'WIR-KS-2026-0088',
-    projectId: 'ks',
+    ref: 'INSP-RKO-2026-0088',
+    projectId: 'rko',
     activityId: 'wp-ks-mep',
-    title: 'Instalasi MEP plafon lantai 2',
-    scope: 'Kelistrikan, HVAC & pasokan gas medis · plafon zona klinik',
-    location: 'Lantai 2 · Zona Klinik · Sektor A1-A6',
+    discipline: 'Pekerjaan MEP',
+    activityType: 'Pipa Sanitair & Kabel Daya',
+    targetScope: 'Ruko 03 · Shaft Lantai 2',
+    title: '[Ruko 03] Pipa Sanitair & Tray Kabel L2',
+    scope: 'Instalasi pipa PPR air bersih, pipa buangan PVC & kabel daya Ruko 03',
+    location: 'Ruko 03 — Lantai 2 · Toilet & Shaft',
     pointType: 'review',
-    itpRef: 'ITP-KS-MEP Rev B · Item 2.5',
+    itpRef: 'Checklist MEP Komersial · Item 2.5',
     status: 'clarification_required',
     submittedAt: agoD(3),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
-    externalAuthority: 'CV Mitra Teknik',
-    noticeHours: 48,
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
+    externalAuthority: 'CV Mitra Desain',
+    noticeHours: 24,
     missingItems: [
-      'Nomor revisi shop drawing MEP belum dicantumkan pada pengajuan (MEP-12 Rev 2 terbaru, perlu konfirmasi)',
-      'Checklist pra-instalasi bertanda tangan QA kontraktor belum terlampir',
+      'Nomor revisi shop drawing sanitair Ruko 03 belum dicantumkan (MEP-RK-03 Rev 2)',
+      'Foto jalur tray kabel vs pipa air belum terlampir jelas',
     ],
-    nextAction: { label: 'Lengkapi referensi dokumen & kirim respons', owner: 'Budi Santoso (Site Eng)', dueAt: aheadD(2) },
+    nextAction: {
+      actionType: 'Klarifikasi Gambar',
+      component: 'Revisi Shop Drawing MEP-RK-03',
+      label: 'Lengkapi referensi gambar & kirim klarifikasi',
+      owner: 'Budi Santoso (Site Eng)',
+      dueAt: aheadD(2),
+    },
     documents: [DOCS.mep12],
     checklist: [
-      { id: 'ck1', label: 'Routing kabel sesuai shop drawing', source: 'MEP-12 Rev … (perlu konfirmasi revisi)', result: 'issue', note: 'Revisi gambar tidak disebut pada pengajuan' },
-      { id: 'ck2', label: 'Uji kontinuitas & isolasi tercatat', source: 'ITP-KS-MEP Rev B 2.5.b', result: 'ok' },
-      { id: 'ck3', label: 'Penandaan jalur gas medis', source: 'ITP-KS-MEP Rev B 2.5.d', result: 'ok' },
+      { id: 'ck1', label: 'Jalur kabel daya & pemisahan dari pipa air', source: 'MEP-RK-03 Rev 2', result: 'issue', note: 'Jarak jalur kabel daya dan pipa air terlalu dekat (<20 cm)' },
+      { id: 'ck2', label: 'Klem pipa & support penggantung terpasang kokoh', source: 'Checklist MEP 2.5.b', result: 'ok' },
+      { id: 'ck3', label: 'Penandaan jalur pipa air bersih & air kotor', source: 'Checklist MEP 2.5.d', result: 'ok' },
     ],
     evidence: [
-      { id: 'ev1', kind: 'photo', title: 'Foto instalasi plafon terbuka', meta: '12 foto · Budi Santoso' },
-      { id: 'ev2', kind: 'test', title: 'Hasil uji kontinuitas (terpusat)', meta: 'PDF · 1 hal' },
+      { id: 'ev1', kind: 'photo', title: 'Foto instalasi pipa & kabel di shaft Ruko 03', meta: '8 foto · Budi Santoso' },
+      { id: 'ev2', kind: 'test', title: 'Hasil uji kontinuitas instalasi kabel', meta: 'PDF · 1 hal' },
     ],
     linkedFindingIds: ['f-ks-012'],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(3), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(2), actor: SARI.name, role: 'QA/QC', title: 'Perlu klarifikasi, bukan kegagalan teknis', kind: 'clarification', note: 'Referensi revisi gambar tidak lengkap; perlu konfirmasi sebelum review teknis.', detail: 'Tidak dinyatakan sebagai inkonformitas; pengajuan dikembalikan untuk kelengkapan.' },
+      { id: 't2', at: agoD(2), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Perlu klarifikasi pemisahan jalur pipa', kind: 'clarification', note: 'Jalur pipa dan kabel daya berhimpitan di shaft; mohon konfirmasi revisi denah jalur.', detail: 'Bukan kegagalan konstruksi; dikembalikan untuk penataan jalur.' },
     ],
   },
   {
     id: 'wir-ks-0079',
-    ref: 'WIR-KS-2026-0079',
-    projectId: 'ks',
+    ref: 'INSP-RKO-2026-0079',
+    projectId: 'rko',
     activityId: 'wp-ks-san',
-    title: 'Instalasi sanitair lantai 1',
-    scope: 'Pipa air bersih & kotor · blok poli',
-    location: 'Lantai 1 · Blok Poli · Ruang 101-118',
+    discipline: 'Pekerjaan Plumbing',
+    activityType: 'Pipa Pembuangan PVC 4 Inch',
+    targetScope: 'Ruko 01 · Lantai Dasar',
+    title: '[Ruko 01] Pipa Pembuangan Air Kotor L1',
+    scope: 'Pipa air kotor & pipa limbah PVC 4 inch lantai dasar Ruko 01',
+    location: 'Ruko 01 — Lantai 1',
     pointType: 'witness',
-    itpRef: 'ITP-KS-PLB Rev A · Item 2.1',
+    itpRef: 'Checklist Plumbing Ruko · Item 2.1',
     status: 'accepted',
     submittedAt: agoD(8),
     decidedAt: agoD(7),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
     noticeHours: 24,
     documents: [],
-    checklist: [{ id: 'ck1', label: 'Uji tekan pipa 1,5× tekanan kerja', source: 'ITP-KS-PLB Rev A 2.1', result: 'ok' }],
-    evidence: [{ id: 'ev1', kind: 'test', title: 'Berita acara uji tekan', meta: 'PDF' }],
+    checklist: [{ id: 'ck1', label: 'Kemiringan pipa pembuangan minimal 2%', source: 'Checklist Plumbing 2.1', result: 'ok' }],
+    evidence: [{ id: 'ev1', kind: 'test', title: 'Berita acara uji gelontor air', meta: 'PDF' }],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(8), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(7), actor: SARI.name, role: 'QA/QC', title: 'Keputusan direkam: Diterima (lulus pertama)', kind: 'accepted' },
+      { id: 't2', at: agoD(7), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Hasil pemeriksaan: Sesuai', kind: 'accepted' },
     ],
-    decision: { outcome: 'Diterima', statusId: 'accepted', by: SARI.name, role: 'QA/QC', scope: 'Sanitair L1 · ITP-KS-PLB Rev A', comment: 'Uji tekan lulus; tidak ada kebocoran.' },
+    decision: { outcome: 'Sesuai', statusId: 'accepted', by: SARI.name, role: 'Pengawas Kualitas', scope: 'Saluran pembuangan Ruko 01', comment: 'Aliran lancar, kemiringan memenuhi standar.' },
   },
   {
     id: 'wir-ks-0091',
-    ref: 'WIR-KS-2026-0091',
-    projectId: 'ks',
+    ref: 'INSP-RKO-2026-0091',
+    projectId: 'rko',
     activityId: 'wp-ks-ff',
-    title: 'Instalasi fire fighting lantai 2',
-    scope: 'Pipa sprinkler & hydrant box · koridor utara',
-    location: 'Lantai 2 · Koridor Utara',
+    discipline: 'Finishing Fasad',
+    activityType: 'Rolling Door & Lantai 60x60',
+    targetScope: 'Ruko 02 · Lantai 1',
+    title: '[Ruko 02] Rolling Door & Keramik L1',
+    scope: 'Rolling door aluminium & keramik lantai dasar 60x60 Ruko 02',
+    location: 'Ruko 02 — Lantai 1',
     pointType: 'hold',
-    itpRef: 'ITP-KS-FF Rev A · Item 3.2',
+    itpRef: 'Checklist Finishing Ruko · Item 3.2',
     status: 'scheduled',
     submittedAt: agoD(2),
     requestedAt: aheadD(3),
     scheduledAt: aheadD(3),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
-    externalAuthority: 'CV Mitra Teknik',
-    noticeHours: 48,
-    nextAction: { label: 'Siapkan area & hadir pada jadwal', owner: 'Budi Santoso (Site Eng)', dueAt: aheadD(3) },
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
+    externalAuthority: 'CV Mitra Desain',
+    noticeHours: 24,
+    nextAction: {
+      actionType: 'Persiapan Lapangan',
+      component: 'Area Kerja & Uji Buka-Tutup',
+      label: 'Siapkan area dan kelengkapan operasional',
+      owner: 'Budi Santoso (Site Eng)',
+      dueAt: aheadD(3),
+    },
     documents: [],
-    checklist: [{ id: 'ck1', label: 'Uji tekan sprinkler tercatat', source: 'ITP-KS-FF Rev A 3.2' }],
+    checklist: [{ id: 'ck1', label: 'Kunci rolling door & kelancaran buka-tutup', source: 'Checklist Finishing 3.2' }],
     evidence: [],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(2), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(1), actor: SARI.name, role: 'QA/QC', title: 'Terjadwal, disetujui kedua pihak', kind: 'scheduled', detail: 'Jadwal: H+3 pukul 09:00 · pemberitahuan 48 jam terpenuhi.' },
+      { id: 't2', at: agoD(1), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Terjadwal pemeriksaan bersama', kind: 'scheduled', detail: 'Jadwal: H+3 pukul 10:00 WIB bersama pengawas.' },
     ],
   },
 
-  /* ---------- Jalan Kartika ---------- */
+  /* ---------- Renovasi Gedung Graha Mulia ---------- */
   {
     id: 'wir-jk-0041',
-    ref: 'WIR-JK-2026-0041',
-    projectId: 'jk',
+    ref: 'INSP-GML-2026-0041',
+    projectId: 'gml',
     activityId: 'wp-jk-sub',
-    title: 'Pemadatan subbase (uji kepadatan lapangan)',
-    scope: 'Subbase kelas B · kepadatan in-situ (sand cone), 3 titik',
-    location: 'Sta 0+600 s.d. 0+900 · Lajur kanan',
+    discipline: 'Interior & Plafon',
+    activityType: 'Rangka Hollow & Gypsum 9 mm',
+    targetScope: 'Lantai 2 · Ruang Rapat',
+    title: '[Lantai 2] Partisi Gypsum & Plafon',
+    scope: 'Rangka hollow galvalum & gypsum board 9 mm ruang rapat Graha Mulia',
+    location: 'Lantai 2 · Area Ruang Rapat',
     pointType: 'witness',
-    itpRef: 'ITP-JK-RW Rev 2 · Item 3.4',
+    itpRef: 'Checklist Interior Graha Mulia · Item 3.4',
     status: 'scheduled',
     submittedAt: agoD(4),
     scheduledAt: aheadH(30),
     submitter: BUDI,
-    reviewer: 'PT Cipta Karya Konsultan',
-    externalAuthority: 'PT Cipta Karya Konsultan',
-    noticeHours: 72,
-    nextAction: { label: 'Konfirmasi kehadiran witness baru', owner: 'PT Cipta Karya (Konsultan)', dueAt: aheadH(24) },
+    reviewer: 'PT Cipta Karya Desain',
+    externalAuthority: 'PT Cipta Karya Desain',
+    noticeHours: 24,
+    nextAction: {
+      actionType: 'Konfirmasi Jadwal',
+      component: 'Witness Pengawas Arsitektur',
+      label: 'Konfirmasi kehadiran pengawas arsitektur',
+      owner: 'PT Cipta Karya (Konsultan)',
+      dueAt: aheadH(24),
+    },
     documents: [DOCS.itpjkrw],
     checklist: [
-      { id: 'ck1', label: 'Kepadatan ≥ 95% proctor standar', source: 'ITP-JK-RW Rev 2 3.4', result: 'na' },
+      { id: 'ck1', label: 'Kerataan permukaan & jarak sekrup gypsum maks 20 cm', source: 'Checklist Interior 3.4', result: 'na' },
     ],
-    evidence: [{ id: 'ev1', kind: 'photo', title: 'Foto permukaan subbase', meta: '6 foto' }],
+    evidence: [{ id: 'ev1', kind: 'photo', title: 'Foto rangka partisi hollow', meta: '6 foto' }],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
-      { id: 't1', at: agoD(4), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted', detail: 'Pemberitahuan 72 jam (witness point).' },
-      { id: 't2', at: agoD(2), actor: 'PT Cipta Karya', role: 'Konsultan', title: 'Jadwal diubah, konsultan berhalangan', kind: 'rescheduled', note: 'Waktu asli, alasan perubahan, waktu baru & penanggung jawab penjadwalan tercatat. Notifikasi simulasi terkirim ke pihak terkait.' },
-      { id: 't3', at: agoD(1), actor: 'Yusuf Maulana', role: 'Site Manager', title: 'Terjadwal, disetujui ulang', kind: 'scheduled', detail: 'Waktu baru: H+1 pukul 14:00.' },
+      { id: 't1', at: agoD(4), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
+      { id: 't2', at: agoD(2), actor: 'PT Cipta Karya', role: 'Konsultan', title: 'Jadwal disesuaikan dengan pengawas arsitek', kind: 'rescheduled', note: 'Waktu pemeriksaan disepakati ulang ke H+1 pukul 14:00.' },
+      { id: 't3', at: agoD(1), actor: 'Yusuf Maulana', role: 'Site Manager', title: 'Jadwal baru dikonfirmasi', kind: 'scheduled', detail: 'Waktu baru: H+1 pukul 14:00.' },
     ],
   },
   {
     id: 'wir-jk-0033',
-    ref: 'WIR-JK-2026-0033',
-    projectId: 'jk',
+    ref: 'INSP-GML-2026-0033',
+    projectId: 'gml',
     activityId: 'wp-jk-sub',
-    title: 'Tanah dasar (uji CBR lapangan)',
-    scope: 'Tanah dasar sta 0+400-0+600 · CBR & kepadatan',
-    location: 'Sta 0+400 s.d. 0+600 · Lajur kiri',
+    discipline: 'Finishing Lantai',
+    activityType: 'Epoxy Primer & Perataan Lantai',
+    targetScope: 'Lantai 1 · Lobby Depan',
+    title: '[Lantai 1] Coating Lantai Epoxy Primer',
+    scope: 'Coating epoxy primer & perataan lantai lobby Graha Mulia',
+    location: 'Lantai 1 · Lobby Depan',
     pointType: 'witness',
-    itpRef: 'ITP-JK-RW Rev 2 · Item 2.3',
+    itpRef: 'Checklist Interior · Item 2.3',
     status: 'accepted',
     submittedAt: agoD(10),
     decidedAt: agoD(9),
     submitter: BUDI,
-    reviewer: 'PT Cipta Karya Konsultan',
-    externalAuthority: 'PT Cipta Karya Konsultan',
-    noticeHours: 72,
+    reviewer: 'PT Cipta Karya Desain',
+    externalAuthority: 'PT Cipta Karya Desain',
+    noticeHours: 24,
     documents: [DOCS.itpjkrw],
-    checklist: [{ id: 'ck1', label: 'CBR ≥ 8% (tanah dasar)', source: 'ITP-JK-RW Rev 2 2.3', result: 'ok', note: 'CBR rata-rata 10,2%' }],
-    evidence: [{ id: 'ev1', kind: 'test', title: 'Laporan uji CBR lab', meta: 'PDF · 3 hal' }],
+    checklist: [{ id: 'ck1', label: 'Ketebalan coating epoxy & daya rekat', source: 'Checklist Interior 2.3', result: 'ok', note: 'Hasil uji gores baik' }],
+    evidence: [{ id: 'ev1', kind: 'test', title: 'Laporan uji daya rekat epoxy', meta: 'PDF · 2 hal' }],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(10), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(9), actor: 'PT Cipta Karya', role: 'Konsultan', title: 'Keputusan direkam: Diterima', kind: 'accepted' },
+      { id: 't2', at: agoD(9), actor: 'PT Cipta Karya', role: 'Konsultan', title: 'Hasil pemeriksaan: Sesuai', kind: 'accepted' },
     ],
-    decision: { outcome: 'Diterima', statusId: 'accepted', by: 'PT Cipta Karya', role: 'Konsultan', scope: 'Sta 0+400-0+600 lajur kiri', comment: 'CBR memenuhi; lanjut subbase.' },
+    decision: { outcome: 'Sesuai', statusId: 'accepted', by: 'PT Cipta Karya', role: 'Konsultan', scope: 'Lantai lobby Graha Mulia', comment: 'Rata, mengkilap, dan daya rekat memenuhi.' },
   },
   {
     id: 'wir-jk-0027',
-    ref: 'WIR-JK-2026-0027',
-    projectId: 'jk',
+    ref: 'INSP-GML-2026-0027',
+    projectId: 'gml',
     activityId: 'wp-jk-sub',
-    title: 'Review rencana campuran aspal (mix design)',
-    scope: 'Dokumen mix design AC-WC & AC-BC · review point',
-    location: 'Dokumen · Sta seluruh segmen',
+    discipline: 'Fasad Arsitektur',
+    activityType: 'Kusen Aluminium & Kaca 10 mm',
+    targetScope: 'Lantai 1 · Fasad Depan',
+    title: '[Fasad Depan] Material Kaca & Kusen 4"',
+    scope: 'Kusen aluminium 4 inch & kaca tempered 10 mm fasad depan',
+    location: 'Area Fasad Depan',
     pointType: 'review',
-    itpRef: 'ITP-JK-RW Rev 2 · Item 5.0',
+    itpRef: 'Checklist Material · Item 5.0',
     status: 'external_review',
     submittedAt: agoD(5),
     submitter: BUDI,
-    reviewer: 'PT Cipta Karya Konsultan',
-    externalAuthority: 'PT Cipta Karya Konsultan',
+    reviewer: 'PT Cipta Karya Desain',
+    externalAuthority: 'PT Cipta Karya Desain',
     noticeHours: 0,
-    nextAction: { label: 'Catat keputusan eksternal', owner: 'PT Cipta Karya (Konsultan)', dueAt: aheadD(1) },
+    nextAction: {
+      actionType: 'Review Sampel',
+      component: 'Persetujuan Kaca Tempered',
+      label: 'Konfirmasi persetujuan sampel kaca',
+      owner: 'PT Cipta Karya (Konsultan)',
+      dueAt: aheadD(1),
+    },
     documents: [DOCS.itpjkrw],
-    checklist: [{ id: 'ck1', label: 'Mix design sesuai spesifikasi dinas', source: 'ITP-JK-RW Rev 2 5.0' }],
-    evidence: [{ id: 'ev1', kind: 'doc', title: 'Mix design proposal AC-WC/AC-BC', meta: 'PDF · 11 hal' }],
+    checklist: [{ id: 'ck1', label: 'Sampel profil aluminium & ketebalan anodize', source: 'Checklist Material 5.0' }],
+    evidence: [{ id: 'ev1', kind: 'doc', title: 'Brosur & sertifikat spesifikasi kaca tempered', meta: 'PDF · 5 hal' }],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(5), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(4), actor: SARI.name, role: 'QA/QC', title: 'Review internal selesai, diteruskan ke pihak eksternal', kind: 'review', detail: 'Menunggu keputusan konsultan; satu persetujuan bukan semua persetujuan.' },
+      { id: 't2', at: agoD(4), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Sampel diperiksa, diteruskan ke konsultan arsitek', kind: 'review' },
     ],
   },
   {
     id: 'wir-jk-0038',
-    ref: 'WIR-JK-2026-0038',
-    projectId: 'jk',
+    ref: 'INSP-GML-2026-0038',
+    projectId: 'gml',
     activityId: 'wp-jk-sub',
-    title: 'Pemadatan tanah dasar (lanjutan)',
-    scope: 'Tanah dasar sta 0+900-1+200 · sedang diperiksa',
-    location: 'Sta 0+900 s.d. 1+200 · Lajur kanan',
+    discipline: 'Pekerjaan MEP',
+    activityType: 'Kabel Data Cat6 & Stop Kontak',
+    targetScope: 'Lantai 2 · Ruang Rapat',
+    title: '[Lantai 2] Kabel Data Cat6 & Elektrikal',
+    scope: 'Kabel data Cat6 & stop kontak tersembunyi ruang kerja',
+    location: 'Lantai 2 · Ruang Rapat',
     pointType: 'surveillance',
-    itpRef: 'ITP-JK-RW Rev 2 · Item 2.3',
+    itpRef: 'Checklist MEP Graha Mulia · Item 2.3',
     status: 'in_progress',
     submittedAt: agoD(1),
     submitter: BUDI,
-    reviewer: 'PT Cipta Karya Konsultan',
-    noticeHours: 72,
+    reviewer: 'PT Cipta Karya Desain',
+    noticeHours: 24,
     documents: [],
-    checklist: [{ id: 'ck1', label: 'Kepadatan lapangan', source: 'ITP-JK-RW Rev 2 2.3' }],
+    checklist: [{ id: 'ck1', label: 'Labeling kabel & konektivitas jaringan', source: 'Checklist MEP 2.3' }],
     evidence: [],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(1), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoH(4), actor: 'PT Cipta Karya', role: 'Konsultan', title: 'Inspeksi berlangsung di lapangan', kind: 'in_progress' },
+      { id: 't2', at: agoH(4), actor: 'PT Cipta Karya', role: 'Konsultan', title: 'Pemeriksaan sedang berlangsung', kind: 'in_progress' },
     ],
   },
 
-  /* ---------- Bantan (arsip, hanya-baca — FR-PR-05) ---------- */
+  /* ---------- Gudang Bantan (arsip, hanya-baca) ---------- */
   {
     id: 'wir-bl-0202',
-    ref: 'WIR-BL-2025-0202',
+    ref: 'INSP-BL-2025-0202',
     projectId: 'bl',
     activityId: 'wp-bl-st',
-    title: 'Ereksi struktur baja mezzanine',
+    discipline: 'Struktur Baja',
+    activityType: 'Ereksi Kolom & Balok WF',
+    targetScope: 'Blok Gudang B · Grid 3-7',
+    title: '[Gudang B] Ereksi Kolom & Balok WF',
     scope: 'Ereksi kolom & balok WF · blok gudang B',
     location: 'Blok Gudang B · Grid 3-7/A-D',
     pointType: 'hold',
-    itpRef: 'ITP-BL-ST Rev A · Item 4.1',
+    itpRef: 'Checklist Struktur Baja · Item 4.1',
     status: 'accepted',
     submittedAt: agoD(400),
     decidedAt: agoD(398),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
     noticeHours: 48,
     documents: [],
-    checklist: [{ id: 'ck1', label: 'Torque baut & plumb kolom', source: 'ITP-BL-ST Rev A 4.1', result: 'ok' }],
+    checklist: [{ id: 'ck1', label: 'Kekencangan baut & ketegakan kolom', source: 'Checklist Struktur Baja 4.1', result: 'ok' }],
     evidence: [],
     linkedFindingIds: [],
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(400), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(398), actor: SARI.name, role: 'QA/QC', title: 'Keputusan direkam: Diterima', kind: 'accepted' },
+      { id: 't2', at: agoD(398), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Hasil pemeriksaan: Sesuai', kind: 'accepted' },
     ],
-    decision: { outcome: 'Diterima', statusId: 'accepted', by: SARI.name, role: 'QA/QC', scope: 'Ereksi mezzanine Rev A', comment: 'Rekam historis, proyek arsip (hanya-baca).' },
+    decision: { outcome: 'Sesuai', statusId: 'accepted', by: SARI.name, role: 'Pengawas Kualitas', scope: 'Ereksi mezzanine', comment: 'Rekaman historis arsip (hanya-baca).' },
   },
   {
     id: 'wir-bl-0196',
-    ref: 'WIR-BL-2025-0196',
+    ref: 'INSP-BL-2025-0196',
     projectId: 'bl',
     activityId: 'wp-bl-st',
-    title: 'Pengecatan struktur baja',
-    scope: 'Primer & finishing · zona 2',
+    discipline: 'Finishing Proteksi',
+    activityType: 'Cat Primer Anti-Karat',
+    targetScope: 'Blok Gudang B · Zona 2',
+    title: '[Gudang B] Primer Anti-Karat & Cat',
+    scope: 'Primer anti-karat & cat finishing · zona 2',
     location: 'Blok Gudang B · Zona 2',
     pointType: 'review',
-    itpRef: 'ITP-BL-ST Rev A · Item 6.1',
+    itpRef: 'Checklist Pengecatan · Item 6.1',
     status: 'cancelled',
     submittedAt: agoD(380),
     decidedAt: agoD(379),
     submitter: BUDI,
-    reviewer: 'Sari Wulandari (QA/QC)',
+    reviewer: 'Sari Wulandari (Pengawas Kualitas)',
     noticeHours: 24,
     documents: [],
     checklist: [],
@@ -881,7 +1056,7 @@ export const INSPECTIONS: Inspection[] = [
     priorInspectionIds: [],
     timeline: [
       { id: 't1', at: agoD(380), actor: BUDI.name, role: 'Site Engineer', title: 'Pengajuan diajukan', kind: 'submitted' },
-      { id: 't2', at: agoD(379), actor: 'Ratna Dewi', role: 'Quality Manager', title: 'Dibatalkan', kind: 'cancelled', note: 'Lingkup dialihkan ke vendor cat; riwayat tetap tersimpan.' },
+      { id: 't2', at: agoD(379), actor: 'Ratna Dewi', role: 'Manajer Mutu', title: 'Dibatalkan', kind: 'cancelled', note: 'Lingkup dialihkan ke vendor cat eksternal.' },
     ],
   },
 ]
@@ -890,15 +1065,47 @@ export const INSPECTIONS: Inspection[] = [
  * Temuan & tindakan perbaikan — PRD §9.6 / §10.2
  * ------------------------------------------------------------ */
 
+export interface MeasurementBenchmark {
+  param: string            // "Tebal Selimut Beton"
+  actual: number           // 20
+  spec: number             // 25
+  unit: string             // "mm"
+  diff: string             // "-5 mm"
+  diffPct: string          // "-20%"
+  status: 'below' | 'above' | 'compliant'
+  statusLabel: string      // "Di Bawah Spesifikasi"
+  specRef: string          // "SPEC-NW-01 §5.3"
+  element: string          // "Balok B2 (Unit A-05)"
+  secondaryPoints?: { label: string; value: string; compliant: boolean }[]
+}
+
+export interface RootCauseIndication {
+  category: string         // "Material / Aksesoris"
+  component: string        // "Spacer Beton / Tahu Beton"
+  trigger: string          // "Lepas saat perakitan tulangan oleh tukang besi"
+}
+
+export interface StructuredActionPlan {
+  actionType: string       // "Pasang Ulang / Replace"
+  component: string        // "Spacer Beton 25 mm"
+  location: string         // "Balok B2 · Unit A-05"
+  photoRequired: boolean   // true
+  photoCount?: number      // 8
+  submittedBy?: string     // "Budi Santoso"
+}
+
 export interface CorrectiveAction {
   id: string
   ref: string
   description: string
+  actionPlan?: StructuredActionPlan
   assignee: string
   assigneeOrg: string
   dueAt: string
   status: 'in_progress' | 'submitted' | 'verification_pending' | 'verified' | 'rejected'
   evidenceNote?: string
+  evidenceCount?: number
+  evidenceType?: string
   verifiedBy?: string
   verifiedAt?: string
   rejectionReason?: string
@@ -910,9 +1117,15 @@ export interface Finding {
   projectId: string
   inspectionRef?: string
   location: string
+  trade?: string
+  element?: string
+  defectType?: string
   title: string
   /** Fakta objektif terpisah dari dugaan penyebab (FR-FA-03). */
   facts: string
+  benchmark?: MeasurementBenchmark
+  rootCause?: RootCauseIndication
+  actionPlan?: StructuredActionPlan
   suspectedCause?: string
   affectedExtent: string
   sourceRequirement: string
@@ -932,139 +1145,284 @@ export interface Finding {
 export const FINDINGS: Finding[] = [
   {
     id: 'f-ar-021',
-    ref: 'F-AR-021',
-    projectId: 'aru',
-    inspectionRef: 'WIR-AR-2026-0142',
-    location: 'Tower A · Lantai 8 · Grid A/2-3',
-    title: 'Cover tulangan pelat di bawah spesifikasi',
-    facts: 'Pengukuran lapangan pada 12 titik menunjukkan cover 20 mm pada area Grid A/2-3; spesifikasi 25 mm (SPEC-CON-01 §5.3). 4 titik lainnya sesuai.',
-    suspectedCause: 'Spacer tidak terpasang merata saat pengecoran tahap awal (dugaan, belum dikonfirmasi).',
-    affectedExtent: '±6 m² pelat atas Grid A/2-3, luas pasti masih diinvestigasi',
-    sourceRequirement: 'SPEC-CON-01 Rev 1 §5.3 · S-301 Rev C',
-    classification: 'confirmed_nc',
+    ref: 'F-NW-021',
+    projectId: 'naw',
+    inspectionRef: 'INSP-NW-2026-0142',
+    location: 'Blok A — Unit A-05 · Lantai 2 · Balok B2',
+    trade: 'Struktur Beton',
+    element: 'Balok B2 (Unit A-05)',
+    defectType: 'Tebal Selimut Kurang (20 mm)',
+    title: '[Balok B2] Tebal Selimut Kurang (<25 mm)',
+    facts: 'Pengukuran lapangan pada balok B2 Unit A-05 menunjukkan selimut beton 20 mm; spesifikasi menetapkan 25 mm (SPEC-NW-01 §5.3). Titik lainnya pada balok B1 sesuai.',
+    benchmark: {
+      param: 'Tebal Selimut Beton',
+      actual: 20,
+      spec: 25,
+      unit: 'mm',
+      diff: '-5 mm',
+      diffPct: '-20%',
+      status: 'below',
+      statusLabel: 'Di Bawah Spesifikasi',
+      specRef: 'SPEC-NW-01 Rev 1 §5.3',
+      element: 'Balok B2 (Bentang 3,5 m sisi timur Unit A-05)',
+      secondaryPoints: [{ label: 'Balok B1', value: '25 mm', compliant: true }],
+    },
+    rootCause: {
+      category: 'Material / Aksesoris',
+      component: 'Spacer Beton / Tahu Beton',
+      trigger: 'Lepas saat perakitan tulangan oleh tukang besi',
+    },
+    actionPlan: {
+      actionType: 'Pasang Ulang',
+      component: 'Spacer beton 25 mm',
+      location: 'Balok B2 · Unit A-05',
+      photoRequired: true,
+      photoCount: 8,
+      submittedBy: 'Budi Santoso',
+    },
+    suspectedCause: 'Spacer beton / tahu beton lepas saat perakitan tulangan oleh tukang besi.',
+    affectedExtent: 'Balok B2 bentang 3,5 m sisi timur Unit A-05',
+    sourceRequirement: 'SPEC-NW-01 Rev 1 §5.3 · STR-A05 Rev C',
+    classification: 'potential_nc',
     status: 'verification_pending',
     identifiedAt: agoD(4),
     identifiedBy: SARI.name,
-    assignee: 'CV Bangun Jaya (subkontraktor)',
+    assignee: 'CV Mitra Bangun (Mandor Struktur)',
     dueAt: aheadD(2),
-    ncrRequired: true,
+    ncrRequired: false,
     actions: [
       {
         id: 'ca-021-1',
         ref: 'CA-021-1',
-        description: 'Ganti spacer 25 mm & pasang ulang kur pada area terdampak; dokumentasikan foto tiap titik.',
-        assignee: 'CV Bangun Jaya (subkontraktor)',
+        description: 'Ganti dan pasang ulang spacer beton 25 mm pada balok B2 Unit A-05; lampirkan foto dokumentasi tiap titik perbaikan.',
+        actionPlan: {
+          actionType: 'Pasang Ulang',
+          component: 'Spacer beton 25 mm',
+          location: 'Balok B2 · Unit A-05',
+          photoRequired: true,
+          photoCount: 8,
+          submittedBy: 'Budi Santoso',
+        },
+        assignee: 'CV Mitra Bangun (Mandor Struktur)',
         assigneeOrg: 'Subkontraktor struktur',
         dueAt: aheadD(1),
         status: 'verification_pending',
-        evidenceNote: '8 foto pasca-perbaikan + laporan pengawasan LW-08-114 diajukan Budi Santoso.',
+        evidenceNote: '8 foto pasca-perbaikan spacer 25 mm diajukan Budi Santoso.',
+        evidenceCount: 8,
+        evidenceType: 'Foto',
       },
     ],
     timeline: [
-      { id: 't1', at: agoD(4), actor: SARI.name, role: 'QA/QC', title: 'Temuan dicatat, inkonformitas terkonfirmasi', kind: 'finding', note: 'Klasifikasi oleh otoritas QA; indikator NCR wajib dibuat pada sistem resmi.' },
-      { id: 't2', at: agoD(3), actor: 'Andi Prasetyo', role: 'Project Manager', title: 'Tindakan ditugaskan ke subkontraktor', kind: 'action', detail: 'Penanggung jawab internal: Rizky Hidayat (Site Manager).' },
-      { id: 't3', at: agoD(1), actor: BUDI.name, role: 'Site Engineer', title: 'Bukti perbaikan diajukan', kind: 'evidence', note: 'Menunggu verifikasi independen; temuan belum boleh ditutup.' },
+      { id: 't1', at: agoD(4), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Catatan perbaikan dicatat di lapangan', kind: 'finding', note: 'Catatan pekerjaan lapangan; perlu perbaikan sebelum pengecoran diizinkan.' },
+      { id: 't2', at: agoD(3), actor: 'Andi Pratama', role: 'Site Engineer', title: 'Tindak lanjut ditugaskan ke mandor struktur', kind: 'action', detail: 'Penanggung jawab lapangan: Mandor Slamet (CV Mitra Bangun).' },
+      { id: 't3', at: agoD(1), actor: BUDI.name, role: 'Site Engineer', title: 'Bukti perbaikan diajukan', kind: 'evidence', note: '8 foto pemasangan spacer 25 mm diunggah; menunggu verifikasi pengawas.' },
     ],
   },
   {
     id: 'f-ar-022',
-    ref: 'F-AR-022',
-    projectId: 'aru',
-    inspectionRef: 'WIR-AR-2026-0131',
-    location: 'Tower A · Lantai 7 · Grid B/2-4',
-    title: 'Urutan ikatan kait balok tidak seragam',
-    facts: 'Jarak kait bervariasi 190-210 mm pada 2 titik; toleransi ±10 mm. Sudah diperbaiki saat inspeksi.',
-    affectedExtent: '2 titik kait, sudah dikoreksi saat inspeksi',
-    sourceRequirement: 'SPEC-CON-01 Rev 1 §5.1',
+    ref: 'F-NW-022',
+    projectId: 'naw',
+    inspectionRef: 'INSP-NW-2026-0131',
+    location: 'Blok B — Unit B-04 · Dinding Belakang',
+    trade: 'Finishing Dinding',
+    element: 'Dinding Kamar Unit B-04',
+    defectType: 'Retak Rambut Plesteran (40 cm)',
+    title: '[Dinding B-04] Retak Rambut Plesteran (40 cm)',
+    facts: 'Retak rambut sepanjang 40 cm pada plesteran dinding belakang kamar tidur Unit B-04; plesteran belum diaci.',
+    benchmark: {
+      param: 'Lebar Retak Plesteran',
+      actual: 0.3,
+      spec: 0,
+      unit: 'mm',
+      diff: '+0.3 mm',
+      diffPct: 'Retak Rambut',
+      status: 'above',
+      statusLabel: 'Punch List',
+      specRef: 'SPEC-NW-01 Rev 1 §6.2',
+      element: 'Dinding Belakang Kamar Tidur Unit B-04',
+    },
+    rootCause: {
+      category: 'Aplikasi Plesteran',
+      component: 'Mortar Plesteran Belum Diaci',
+      trigger: 'Penyusutan mortar saat pengeringan awal',
+    },
+    actionPlan: {
+      actionType: 'Coak & Tambal',
+      component: 'Mortar Elastis',
+      location: 'Dinding Belakang · Unit B-04',
+      photoRequired: true,
+      photoCount: 2,
+      submittedBy: 'Budi Santoso',
+    },
+    affectedExtent: '1 bidang dinding belakang kamar tidur',
+    sourceRequirement: 'SPEC-NW-01 Rev 1 §6.2',
     classification: 'observation',
     status: 'closed',
     identifiedAt: agoD(10),
     identifiedBy: SARI.name,
     assignee: 'Budi Santoso',
     actions: [
-      { id: 'ca-022-1', ref: 'CA-022-1', description: 'Rapikan kait & briefing mandor tulangan.', assignee: 'Budi Santoso', assigneeOrg: 'PT KBN', dueAt: agoD(9), status: 'verified', evidenceNote: 'Foto pasca-perbaikan.', verifiedBy: SARI.name, verifiedAt: agoD(9) },
+      { id: 'ca-022-1', ref: 'CA-022-1', description: 'Coak retakan, tambal mortar elastis & ratakan sebelum acian.', assignee: 'Budi Santoso', assigneeOrg: 'PT Tri Daya Bangun', dueAt: agoD(9), status: 'verified', evidenceNote: 'Foto tambalan mortar rapi.', evidenceCount: 2, evidenceType: 'Foto', verifiedBy: SARI.name, verifiedAt: agoD(9) },
     ],
     timeline: [
-      { id: 't1', at: agoD(10), actor: SARI.name, role: 'QA/QC', title: 'Observasi dicatat, tanpa NCR', kind: 'finding', note: 'Observasi tidak otomatis membuka NCR.' },
-      { id: 't2', at: agoD(9), actor: SARI.name, role: 'QA/QC', title: 'Diverifikasi & ditutup', kind: 'verified' },
+      { id: 't1', at: agoD(10), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Catatan punch list dicatat', kind: 'finding', note: 'Pekerjaan minor masuk daftar punch list serah terima unit.' },
+      { id: 't2', at: agoD(9), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Diverifikasi & ditutup', kind: 'verified' },
     ],
   },
   {
     id: 'f-ks-012',
-    ref: 'F-KS-012',
-    projectId: 'ks',
-    inspectionRef: 'WIR-KS-2026-0088',
-    location: 'Lantai 2 · Zona Klinik · Sektor A3',
-    title: 'Jalur kabel tidak sesuai routing plan',
-    facts: 'Tray kabel daya Sektor A3 melewati jalur gas medis sesuai foto lapangan; routing plan menetapkan jalur terpisah min. 300 mm.',
-    suspectedCause: 'Interpretasi drawing oleh installer (dugaan).',
-    affectedExtent: '±14 m tray, masih diinvestigasi',
-    sourceRequirement: 'MEP-12 · ITP-KS-MEP Rev B 2.5',
+    ref: 'F-RKO-012',
+    projectId: 'rko',
+    inspectionRef: 'INSP-RKO-2026-0088',
+    location: 'Ruko 03 — Lantai 2 · Shaft Pipa',
+    trade: 'Instalasi MEP',
+    element: 'Shaft Pipa L2 (Ruko 03)',
+    defectType: 'Jarak Pipa vs Kabel < 30 cm',
+    title: '[Shaft Pipa] Jarak Pipa vs Kabel < 30 cm',
+    facts: 'Pipa air bersih PPR dan tray kabel daya di shaft Ruko 03 terpasang dengan jarak kurang dari 10 cm; jarak aman yang disyaratkan minimal 30 cm.',
+    benchmark: {
+      param: 'Jarak Aman Pipa ke Kabel Daya',
+      actual: 8,
+      spec: 30,
+      unit: 'cm',
+      diff: '-22 cm',
+      diffPct: '-73%',
+      status: 'below',
+      statusLabel: 'Di Bawah Jarak Minimum',
+      specRef: 'MEP-RK-03 §2.5',
+      element: 'Shaft Pipa Lantai 2 Ruko 03',
+    },
+    rootCause: {
+      category: 'Koordinasi MEP',
+      component: 'Tray Kabel & Pipa PPR',
+      trigger: 'Penarikan pipa mendahului tray kabel tanpa cek shop drawing',
+    },
+    actionPlan: {
+      actionType: 'Relokasi Jalur',
+      component: 'Pipa Air Bersih PPR',
+      location: 'Shaft Lantai 2 · Ruko 03',
+      photoRequired: true,
+    },
+    suspectedCause: 'Penarikan pipa mendahului instalasi tray kabel tanpa koordinasi shop drawing.',
+    affectedExtent: '±3 m jalur vertikal shaft pipa Lantai 2',
+    sourceRequirement: 'MEP-RK-03 · Checklist MEP Komersial §2.5',
     classification: 'potential_nc',
     status: 'assigned',
     identifiedAt: agoD(2),
     identifiedBy: SARI.name,
-    assignee: 'PT Karya Bangun Nusantara · MEP',
+    assignee: 'PT Tri Daya Bangun · MEP',
     dueAt: aheadD(4),
     actions: [],
     timeline: [
-      { id: 't1', at: agoD(2), actor: SARI.name, role: 'QA/QC', title: 'Temuan dicatat, potensi inkonformitas', kind: 'finding', note: 'Klasifikasi menunggu investigasi; belum dinyatakan terkonfirmasi.' },
-      { id: 't2', at: agoD(1), actor: 'Andi Prasetyo', role: 'Project Manager', title: 'Ditugaskan ke tim MEP', kind: 'action', detail: 'Investigasi luas dampak oleh mandor MEP; update berikutnya H+2.' },
+      { id: 't1', at: agoD(2), actor: SARI.name, role: 'Pengawas Kualitas', title: 'Temuan pekerjaan dicatat', kind: 'finding', note: 'Perlu penataan ulang posisi jalur pipa sebelum shaft ditutup partisi.' },
+      { id: 't2', at: agoD(1), actor: 'Andi Pratama', role: 'Site Engineer', title: 'Ditugaskan ke mandor MEP', kind: 'action', detail: 'Relokasi jalur pipa air bersih ke sisi berlawanan shaft.' },
     ],
   },
   {
     id: 'f-ks-014',
-    ref: 'F-KS-014',
-    projectId: 'ks',
-    location: 'Lantai 1 · Ruang Panel Listrik',
-    title: 'Panel listrik sementara tidak tertutup',
-    facts: 'Panel distribusi sementara ditemukan tanpa penutup pelindung saat patroli; risiko kontak listrik area kerja.',
-    affectedExtent: '1 panel distribusi · Ruang Panel L1',
-    sourceRequirement: 'Prosedur K3 Proyek KS §4.2',
+    ref: 'F-RKO-014',
+    projectId: 'rko',
+    location: 'Ruko 02 — Lantai 1 · Dinding Depan',
+    trade: 'Finishing Fasad',
+    element: 'Dinding Fasad Ruko 02',
+    defectType: 'Cat Weatherproof Melepuh (1,5 m²)',
+    title: '[Fasad Ruko 02] Cat Menggelembung (1,5 m²)',
+    facts: 'Cat weatherproof dinding fasad depan Ruko 02 menggelembung seluas ±1,5 m² akibat kelembapan dinding belum kering saat pengecatan dasar.',
+    benchmark: {
+      param: 'Luas Cat Menggelembung',
+      actual: 1.5,
+      spec: 0,
+      unit: 'm²',
+      diff: '+1.5 m²',
+      diffPct: 'Cacat Lapisan',
+      status: 'above',
+      statusLabel: 'Perlu Perbaikan Fasad',
+      specRef: 'Spesifikasi Finishing Ruko §4.2',
+      element: 'Dinding Fasad Depan Lantai 1 Ruko 02',
+    },
+    rootCause: {
+      category: 'Kondisi Permukaan',
+      component: 'Cat Weatherproof & Sealer',
+      trigger: 'Dinding belum kering saat pengecatan dasar',
+    },
+    actionPlan: {
+      actionType: 'Kerok & Cat Ulang',
+      component: 'Sealer + 2 Lapis Weatherproof',
+      location: 'Fasad Depan · Ruko 02',
+      photoRequired: true,
+    },
+    affectedExtent: '±1,5 m² fasad depan Ruko 02',
+    sourceRequirement: 'Spesifikasi Finishing Ruko §4.2',
     classification: 'confirmed_nc',
     status: 'action_in_progress',
     identifiedAt: agoD(6),
     identifiedBy: 'Rizky Hidayat',
-    assignee: 'CV Bangun Jaya (subkontraktor MEP)',
+    assignee: 'CV Berkah Finishing (Subkontraktor Cat)',
     dueAt: agoD(1),
     ncrRequired: true,
     actions: [
       {
         id: 'ca-014-1',
         ref: 'CA-014-1',
-        description: 'Pasang penutup panel sementara + rambu; ajukan foto kepatuhan.',
-        assignee: 'CV Bangun Jaya',
-        assigneeOrg: 'Subkontraktor MEP',
+        description: 'Kerok cat yang menggelembung, keringkan dinding, lapisi sealer anti-kelembapan & cat ulang 2 lapis.',
+        assignee: 'CV Berkah Finishing',
+        assigneeOrg: 'Subkontraktor Finishing',
         dueAt: agoD(1),
         status: 'in_progress',
       },
     ],
     timeline: [
-      { id: 't1', at: agoD(6), actor: 'Rizky Hidayat', role: 'Site Manager', title: 'Temuan dicatat, inkonformitas terkonfirmasi', kind: 'finding' },
-      { id: 't2', at: agoD(5), actor: 'Andi Prasetyo', role: 'Project Manager', title: 'Tindakan ditugaskan, due H+1', kind: 'action' },
-      { id: 't3', at: agoH(20), actor: 'Sistem (simulasi)', role: 'Eskalasi demo', title: 'Tindakan melewati jatuh tempo', kind: 'rejected', note: 'Overdue 1 hari; tampil di kotak tindakan PM.' },
+      { id: 't1', at: agoD(6), actor: 'Rizky Hidayat', role: 'Site Manager', title: 'Temuan dicatat, perlu perbaikan mendesak sebelum serah terima', kind: 'finding' },
+      { id: 't2', at: agoD(5), actor: 'Andi Pratama', role: 'Site Engineer', title: 'Tindakan ditugaskan ke subkontraktor finishing', kind: 'action' },
+      { id: 't3', at: agoH(20), actor: 'Sistem (simulasi)', role: 'Eskalasi demo', title: 'Tindakan melewati batas waktu (Overdue)', kind: 'rejected', note: 'Overdue 1 hari; perlu konfirmasi mandor cat sebelum serah terima unit.' },
     ],
   },
   {
     id: 'f-jk-006',
-    ref: 'F-JK-006',
-    projectId: 'jk',
-    inspectionRef: 'WIR-JK-2026-0033',
-    location: 'Sta 0+520 · Lajur kiri',
-    title: 'Genangan kecil pada galian terbuka',
-    facts: 'Air menggenang ±2 m² pada galian terbuka pasca hujan; dipompa & diurug ulang di hari yang sama.',
-    affectedExtent: '±2 m², ditangani di hari yang sama',
-    sourceRequirement: 'ITP-JK-RW Rev 2 §2.3',
+    ref: 'F-GML-006',
+    projectId: 'gml',
+    inspectionRef: 'INSP-GML-2026-0033',
+    location: 'Lantai 2 · Area Ruang Rapat',
+    trade: 'Plafon & Partisi',
+    element: 'Rangka Partisi Lantai 2',
+    defectType: 'Jarak Sekrup Gypsum > 20 cm (30 cm)',
+    title: '[Partisi L2] Jarak Sekrup Rangka > 20 cm',
+    facts: 'Jarak pemasangan sekrup gypsum pada beberapa rangka hollow mencapai 30 cm; standar spesifikasi maksimal 20 cm.',
+    benchmark: {
+      param: 'Jarak Pemasangan Sekrup',
+      actual: 30,
+      spec: 20,
+      unit: 'cm',
+      diff: '+10 cm',
+      diffPct: '+50%',
+      status: 'above',
+      statusLabel: 'Melebihi Jarak Maksimal',
+      specRef: 'SPEC-GML-ARC §3.4',
+      element: '2 Lembar Panel Gypsum Ruang Rapat',
+    },
+    rootCause: {
+      category: 'Pemasangan Partisi',
+      component: 'Sekrup Gypsum & Rangka Hollow',
+      trigger: 'Pemasangan sekrup melompati grid rangka',
+    },
+    actionPlan: {
+      actionType: 'Tambah Sekrup',
+      component: 'Sekrup Gypsum 15 cm + Dempul',
+      location: 'Ruang Rapat Lantai 2',
+      photoRequired: true,
+    },
+    affectedExtent: '2 lembar panel gypsum ruang rapat',
+    sourceRequirement: 'SPEC-GML-ARC §3.4',
     classification: 'observation',
     status: 'closed',
     identifiedAt: agoD(10),
-    identifiedBy: 'PT Cipta Karya',
+    identifiedBy: 'PT Cipta Karya Desain',
     assignee: 'Yusuf Maulana',
     actions: [
-      { id: 'ca-006-1', ref: 'CA-006-1', description: 'Pompa genangan & padatkan ulang.', assignee: 'Yusuf Maulana', assigneeOrg: 'PT KBN', dueAt: agoD(9), status: 'verified', verifiedBy: 'PT Cipta Karya', verifiedAt: agoD(9) },
+      { id: 'ca-006-1', ref: 'CA-006-1', description: 'Tambahkan sekrup perantara tiap 15 cm & dempul ulang.', assignee: 'Yusuf Maulana', assigneeOrg: 'PT Tri Daya Bangun', dueAt: agoD(9), status: 'verified', verifiedBy: 'PT Cipta Karya', verifiedAt: agoD(9) },
     ],
     timeline: [
-      { id: 't1', at: agoD(10), actor: 'PT Cipta Karya', role: 'Konsultan', title: 'Observasi dicatat', kind: 'finding' },
+      { id: 't1', at: agoD(10), actor: 'PT Cipta Karya', role: 'Konsultan', title: 'Catatan punch list dicatat', kind: 'finding' },
       { id: 't2', at: agoD(9), actor: 'PT Cipta Karya', role: 'Konsultan', title: 'Diverifikasi & ditutup', kind: 'verified' },
     ],
   },
@@ -1099,27 +1457,34 @@ export const ACTION_KIND: Record<string, { label: string; tone: StatusTone; icon
 }
 
 export const ACTION_ITEMS: ActionItem[] = [
-  { id: 'a1', kind: 'review_inspection', title: 'Terima/tolak hasil re-inspeksi WIR-AR-2026-0142', detail: 'Tulangan pelat L8; perbaikan cover sudah diajukan ulang dengan bukti.', projectId: 'aru', record: { type: 'inspection', id: 'wir-ar-0142' }, owner: 'Sari Wulandari (QA/QC)', dueAt: aheadH(26), visibleTo: ['qc_inspector', 'quality_manager', 'project_manager'] },
-  { id: 'a2', kind: 'review_inspection', title: 'Review pengajuan WIR-AR-2026-0151', detail: 'Bekisting dinding geser L9 (baru masuk), prioritas jadwal H+2.', projectId: 'aru', record: { type: 'inspection', id: 'wir-ar-0151' }, owner: 'Sari Wulandari (QA/QC)', dueAt: aheadH(30), visibleTo: ['qc_inspector', 'quality_manager'] },
-  { id: 'a3', kind: 'complete_submission', title: 'Lengkapi referensi dokumen WIR-KS-2026-0088', detail: 'Nomor revisi shop drawing & checklist bertanda tangan belum terlampir.', projectId: 'ks', record: { type: 'inspection', id: 'wir-ks-0088' }, owner: 'Budi Santoso (Site Eng)', dueAt: aheadD(2), visibleTo: ['site_engineer', 'project_manager'] },
-  { id: 'a4', kind: 'verify_action', title: 'Verifikasi tindakan CA-021-1 (F-AR-021)', detail: 'Perbaikan cover tulangan menunggu verifikasi independen QA/QC.', projectId: 'aru', record: { type: 'finding', id: 'f-ar-021' }, owner: 'Sari Wulandari (QA/QC)', dueAt: aheadD(1), visibleTo: ['qc_inspector', 'quality_manager'] },
-  { id: 'a5', kind: 'respond_finding', title: 'Investigasi F-KS-012 (jalur kabel vs gas medis)', detail: 'Tentukan luas dampak & tindakan; update berikutnya H+2.', projectId: 'ks', record: { type: 'finding', id: 'f-ks-012' }, owner: 'Tim MEP · PT KBN', dueAt: aheadD(4), visibleTo: ['site_engineer', 'project_manager', 'qc_inspector'] },
-  { id: 'a6', kind: 'release_hold_point', title: 'Catat rilis HP-AR-02 (pengecoran pelat L8)', detail: 'Rilis oleh Quality Manager setelah seluruh kondisi terpenuhi. Saat ini terblokir 2 kondisi.', projectId: 'aru', record: { type: 'holdpoint', id: 'hp-ar-02' }, owner: 'Ratna Dewi (Quality Manager)', visibleTo: ['quality_manager', 'project_manager'] },
-  { id: 'a7', kind: 'record_external_decision', title: 'Rekam keputusan konsultan · WIR-JK-2026-0027', detail: 'Review mix design aspal menunggu keputusan pihak eksternal.', projectId: 'jk', record: { type: 'inspection', id: 'wir-jk-0027' }, owner: 'PT Cipta Karya (Konsultan)', dueAt: aheadD(1), visibleTo: ['external'] },
-  { id: 'a8', kind: 'schedule_inspection', title: 'Konfirmasi jadwal witness baru WP-JK-01', detail: 'Kehadiran konsultan dijadwalkan ulang, perlu konfirmasi akhir.', projectId: 'jk', record: { type: 'holdpoint', id: 'wp-jk-01' }, owner: 'PT Cipta Karya (Konsultan)', dueAt: aheadH(24), visibleTo: ['external', 'site_engineer', 'project_manager'] },
-  { id: 'a9', kind: 'resolve_overdue', title: 'Overdue: CA-014-1 penutupan panel listrik (F-KS-014)', detail: 'Tindakan melewati jatuh tempo 1 hari; perlu penanganan/eskalasi.', projectId: 'ks', record: { type: 'finding', id: 'f-ks-014' }, owner: 'CV Bangun Jaya / PM', dueAt: agoD(1), visibleTo: ['project_manager', 'site_engineer', 'qc_inspector', 'quality_manager'] },
+  { id: 'a1', kind: 'review_inspection', title: 'Verifikasi hasil perbaikan INSP-NW-2026-0142', detail: 'Pembesian balok & pelat Unit A-05; perbaikan spacer 25 mm sudah diajukan ulang dengan bukti foto.', projectId: 'naw', record: { type: 'inspection', id: 'wir-ar-0142' }, owner: 'Sari Wulandari (Pengawas Kualitas)', dueAt: aheadH(26), visibleTo: ['qc_inspector', 'quality_manager', 'project_manager'] },
+  { id: 'a2', kind: 'review_inspection', title: 'Review pengajuan INSP-NW-2026-0151', detail: 'Rangka atap baja ringan Unit B-02 (baru masuk), jadwal cek lapangan H+2.', projectId: 'naw', record: { type: 'inspection', id: 'wir-ar-0151' }, owner: 'Sari Wulandari (Pengawas Kualitas)', dueAt: aheadH(30), visibleTo: ['qc_inspector', 'quality_manager'] },
+  { id: 'a3', kind: 'complete_submission', title: 'Lengkapi referensi dokumen INSP-RKO-2026-0088', detail: 'Nomor revisi shop drawing sanitair Ruko 03 & jalur tray kabel perlu dilengkapi.', projectId: 'rko', record: { type: 'inspection', id: 'wir-ks-0088' }, owner: 'Budi Santoso (Site Eng)', dueAt: aheadD(2), visibleTo: ['site_engineer', 'project_manager'] },
+  { id: 'a4', kind: 'verify_action', title: 'Verifikasi tindakan CA-021-1 (F-NW-021)', detail: 'Perbaikan cover tulangan balok B2 Unit A-05 menunggu verifikasi pengawas kualitas.', projectId: 'naw', record: { type: 'finding', id: 'f-ar-021' }, owner: 'Sari Wulandari (Pengawas Kualitas)', dueAt: aheadD(1), visibleTo: ['qc_inspector', 'quality_manager'] },
+  { id: 'a5', kind: 'respond_finding', title: 'Tindak lanjut F-RKO-012 (jalur pipa vs kabel)', detail: 'Atur ulang posisi tray kabel dan pipa air shaft Ruko 03 Lantai 2.', projectId: 'rko', record: { type: 'finding', id: 'f-ks-012' }, owner: 'Tim MEP · PT Tri Daya Bangun', dueAt: aheadD(4), visibleTo: ['site_engineer', 'project_manager', 'qc_inspector'] },
+  { id: 'a6', kind: 'release_hold_point', title: 'Konfirmasi izin pengecoran CP-NW-02 (Unit A-05)', detail: 'Pengecoran balok & pelat Unit A-05 menunggu rilis kondisi verifikasi perbaikan.', projectId: 'naw', record: { type: 'holdpoint', id: 'hp-ar-02' }, owner: 'Ratna Dewi / Site Manager', visibleTo: ['quality_manager', 'project_manager'] },
+  { id: 'a7', kind: 'record_external_decision', title: 'Rekam review konsultan · INSP-GML-2026-0027', detail: 'Review sampel spesifikasi material kaca fasad depan oleh konsultan.', projectId: 'gml', record: { type: 'inspection', id: 'wir-jk-0027' }, owner: 'PT Cipta Karya Desain', dueAt: aheadD(1), visibleTo: ['external'] },
+  { id: 'a8', kind: 'schedule_inspection', title: 'Konfirmasi jadwal uji tekan WP-RKO-01', detail: 'Uji tekan pipa air bersih Ruko 03 dijadwalkan ulang bersama konsultan pengawas.', projectId: 'rko', record: { type: 'holdpoint', id: 'wp-jk-01' }, owner: 'CV Mitra Desain', dueAt: aheadH(24), visibleTo: ['external', 'site_engineer', 'project_manager'] },
+  { id: 'a9', kind: 'resolve_overdue', title: 'Overdue: CA-014-1 perbaikan cat dinding (F-RKO-014)', detail: 'Perbaikan cat fasad Ruko 02 melewati batas waktu 1 hari sebelum serah terima.', projectId: 'rko', record: { type: 'finding', id: 'f-ks-014' }, owner: 'CV Berkah Finishing / PM', dueAt: agoD(1), visibleTo: ['project_manager', 'site_engineer', 'qc_inspector', 'quality_manager'] },
 ]
 
 /** Notifikasi in-app — SELALU berlabel simulasi (FR-NO-04). */
 export const NOTIFICATIONS = [
-  { id: 'n1', at: agoH(2), title: 'Re-inspeksi WIR-AR-2026-0142 menunggu keputusan Anda', body: 'Sari Wulandari · QA/QC · simulasi', link: '/dashboard/inspeksi/wir-ar-0142', tone: 'info' as StatusTone },
-  { id: 'n2', at: agoD(1), title: 'Tindakan CA-014-1 melewati jatuh tempo', body: 'F-KS-014 panel listrik, overdue 1 hari · simulasi', link: '/dashboard/temuan/f-ks-014', tone: 'danger' as StatusTone },
-  { id: 'n3', at: agoD(2), title: 'Jadwal witness WP-JK-01 diubah', body: 'Kehadiran konsultan ditunda ke H+1 14:00 · simulasi', link: '/dashboard/inspeksi/wir-jk-0041', tone: 'warning' as StatusTone },
+  { id: 'n1', at: agoH(2), title: 'Verifikasi INSP-NW-2026-0142 (Unit A-05) menunggu keputusan', body: 'Sari Wulandari · Pengawas Kualitas · simulasi', link: '/dashboard/inspeksi/wir-ar-0142', tone: 'info' as StatusTone },
+  { id: 'n2', at: agoD(1), title: 'Tindakan CA-014-1 (Cat Ruko 02) melewati batas waktu', body: 'F-RKO-014 cat dinding menggelembung, overdue 1 hari · simulasi', link: '/dashboard/temuan/f-ks-014', tone: 'danger' as StatusTone },
+  { id: 'n3', at: agoD(2), title: 'Jadwal uji tekan WP-RKO-01 Ruko 03 disesuaikan', body: 'Kehadiran konsultan disepakati ke H+1 14:00 · simulasi', link: '/dashboard/inspeksi/wir-ks-0088', tone: 'warning' as StatusTone },
 ]
 
 /* ------------------------------------------------------------
  * Aktivitas global (FR-OV-04 / FR-AU-01)
  * ------------------------------------------------------------ */
+
+export interface StructuredEventAction {
+  actionLabel: string
+  targetScope: string
+  statusOutcome?: string
+  tone?: 'danger' | 'warning' | 'info' | 'success'
+}
 
 export interface ActivityEntry {
   id: string
@@ -1130,6 +1495,7 @@ export interface ActivityEntry {
   ref: string
   kind: TimelineEvent['kind']
   title: string
+  actionDetail?: StructuredEventAction
   note?: string
   /** 'decision' bila berdampak tinggi (FR-OV-04). */
   impact?: boolean
@@ -1137,18 +1503,222 @@ export interface ActivityEntry {
 }
 
 export const ACTIVITY: ActivityEntry[] = [
-  { id: 'g1', at: agoH(2), actor: SARI.name, role: 'QA/QC', projectId: 'aru', ref: 'WIR-AR-2026-0142', kind: 'in_progress', title: 'Inspeksi ulang dilaksanakan di lapangan', note: 'Keputusan formal menunggu perekaman.', impact: true, link: '/dashboard/inspeksi/wir-ar-0142' },
-  { id: 'g2', at: agoH(5), actor: BUDI.name, role: 'Site Engineer', projectId: 'aru', ref: 'WIR-AR-2026-0147', kind: 'created', title: 'Draf pengajuan dibuat', link: '/dashboard/inspeksi/wir-ar-0147' },
-  { id: 'g3', at: agoH(20), actor: 'Sistem (simulasi)', role: 'Eskalasi demo', projectId: 'ks', ref: 'F-KS-014', kind: 'rejected', title: 'Tindakan CA-014-1 melewati jatuh tempo', impact: true, link: '/dashboard/temuan/f-ks-014' },
-  { id: 'g4', at: agoD(1), actor: BUDI.name, role: 'Site Engineer', projectId: 'aru', ref: 'F-AR-021', kind: 'evidence', title: 'Bukti perbaikan diajukan (CA-021-1)', note: 'Menunggu verifikasi QA/QC.', impact: true, link: '/dashboard/temuan/f-ar-021' },
-  { id: 'g5', at: agoD(1), actor: 'Yusuf Maulana', role: 'Site Manager', projectId: 'jk', ref: 'WIR-JK-2026-0041', kind: 'scheduled', title: 'Jadwal witness disetujui ulang', link: '/dashboard/inspeksi/wir-jk-0041' },
-  { id: 'g6', at: agoD(1), actor: SARI.name, role: 'QA/QC', projectId: 'ks', ref: 'WIR-KS-2026-0091', kind: 'scheduled', title: 'Inspeksi fire fighting terjadwal H+3', link: '/dashboard/inspeksi/wir-ks-0091' },
-  { id: 'g7', at: agoD(2), actor: 'PT Cipta Karya', role: 'Konsultan', projectId: 'jk', ref: 'WIR-JK-2026-0041', kind: 'rescheduled', title: 'Jadwal diubah, konsultan berhalangan', note: 'Waktu asli, alasan, & penanggung jawab tercatat.', impact: true, link: '/dashboard/inspeksi/wir-jk-0041' },
-  { id: 'g8', at: agoD(2), actor: SARI.name, role: 'QA/QC', projectId: 'ks', ref: 'WIR-KS-2026-0088', kind: 'clarification', title: 'Perlu klarifikasi, referensi revisi gambar', note: 'Bukan kegagalan teknis.', impact: true, link: '/dashboard/inspeksi/wir-ks-0088' },
-  { id: 'g9', at: agoD(2), actor: SARI.name, role: 'QA/QC', projectId: 'ks', ref: 'F-KS-012', kind: 'finding', title: 'Temuan potensi inkonformitas dicatat', link: '/dashboard/temuan/f-ks-012' },
-  { id: 'g10', at: agoD(3), actor: 'Andi Prasetyo', role: 'Project Manager', projectId: 'aru', ref: 'F-AR-021', kind: 'action', title: 'Tindakan perbaikan ditugaskan ke subkontraktor', link: '/dashboard/temuan/f-ar-021' },
-  { id: 'g11', at: agoD(4), actor: SARI.name, role: 'QA/QC', projectId: 'aru', ref: 'WIR-AR-2026-0142', kind: 'correction', title: 'Keputusan direkam: Perlu Perbaikan', note: 'Alasan wajib tercatat; riwayat pengajuan dipertahankan.', impact: true, link: '/dashboard/inspeksi/wir-ar-0142' },
-  { id: 'g12', at: agoD(4), actor: SARI.name, role: 'QA/QC', projectId: 'aru', ref: 'F-AR-021', kind: 'finding', title: 'Inkonformitas terkonfirmasi (indikator NCR)', impact: true, link: '/dashboard/temuan/f-ar-021' },
+  {
+    id: 'g1',
+    at: agoH(2),
+    actor: SARI.name,
+    role: 'Pengawas Kualitas',
+    projectId: 'naw',
+    ref: 'INSP-NW-2026-0142',
+    kind: 'in_progress',
+    title: '[Balok B2] Verifikasi Fisik di Lokasi',
+    actionDetail: {
+      actionLabel: 'Verifikasi Fisik Lapangan',
+      targetScope: 'Unit A-05 · Balok B2',
+      statusOutcome: 'Siap Rekam Hasil',
+      tone: 'info',
+    },
+    note: 'Pengawas memeriksa spacer 25 mm; konfirmasi siap direkam.',
+    impact: true,
+    link: '/dashboard/inspeksi/wir-ar-0142',
+  },
+  {
+    id: 'g2',
+    at: agoH(5),
+    actor: BUDI.name,
+    role: 'Site Engineer',
+    projectId: 'naw',
+    ref: 'INSP-NW-2026-0147',
+    kind: 'created',
+    title: '[Unit A-01] Draf Pengajuan Keramik',
+    actionDetail: {
+      actionLabel: 'Draf Pengajuan',
+      targetScope: 'Unit A-01 · Keramik Lantai',
+      statusOutcome: 'Dibuat',
+      tone: 'info',
+    },
+    link: '/dashboard/inspeksi/wir-ar-0147',
+  },
+  {
+    id: 'g3',
+    at: agoH(20),
+    actor: 'Sistem (simulasi)',
+    role: 'Eskalasi demo',
+    projectId: 'rko',
+    ref: 'F-RKO-014',
+    kind: 'rejected',
+    title: '[Fasad Ruko 02] Jatuh Tempo Tindakan Lewat',
+    actionDetail: {
+      actionLabel: 'Batas Waktu Lewat',
+      targetScope: 'Ruko 02 · Cat Fasad',
+      statusOutcome: 'Overdue 1 Hari',
+      tone: 'danger',
+    },
+    impact: true,
+    link: '/dashboard/temuan/f-ks-014',
+  },
+  {
+    id: 'g4',
+    at: agoD(1),
+    actor: BUDI.name,
+    role: 'Site Engineer',
+    projectId: 'naw',
+    ref: 'F-NW-021',
+    kind: 'evidence',
+    title: '[Balok B2] Bukti Foto Spacer Diunggah',
+    actionDetail: {
+      actionLabel: 'Unggah Bukti (CA-021-1)',
+      targetScope: 'Unit A-05 · Balok B2',
+      statusOutcome: '8 Foto Terlampir',
+      tone: 'info',
+    },
+    note: 'Menunggu verifikasi pengawas kualitas.',
+    impact: true,
+    link: '/dashboard/temuan/f-ar-021',
+  },
+  {
+    id: 'g5',
+    at: agoD(1),
+    actor: 'Yusuf Maulana',
+    role: 'Site Manager',
+    projectId: 'gml',
+    ref: 'INSP-GML-2026-0041',
+    kind: 'scheduled',
+    title: '[Partisi L2] Jadwal Pemeriksaan H+1',
+    actionDetail: {
+      actionLabel: 'Jadwal Pemeriksaan',
+      targetScope: 'Lantai 2 · Partisi Gypsum',
+      statusOutcome: 'Disepakati H+1',
+      tone: 'info',
+    },
+    link: '/dashboard/inspeksi/wir-jk-0041',
+  },
+  {
+    id: 'g6',
+    at: agoD(1),
+    actor: SARI.name,
+    role: 'Pengawas Kualitas',
+    projectId: 'rko',
+    ref: 'INSP-RKO-2026-0091',
+    kind: 'scheduled',
+    title: '[Ruko 02] Jadwal Rolling Door H+3',
+    actionDetail: {
+      actionLabel: 'Jadwal Rolling Door',
+      targetScope: 'Ruko 02 · Rolling Door',
+      statusOutcome: 'Terjadwal H+3',
+      tone: 'info',
+    },
+    link: '/dashboard/inspeksi/wir-ks-0091',
+  },
+  {
+    id: 'g7',
+    at: agoD(2),
+    actor: 'PT Cipta Karya',
+    role: 'Konsultan',
+    projectId: 'gml',
+    ref: 'INSP-GML-2026-0041',
+    kind: 'rescheduled',
+    title: '[Partisi L2] Penyesuaian Jadwal Konsultan',
+    actionDetail: {
+      actionLabel: 'Penyesuaian Jadwal',
+      targetScope: 'Graha Mulia · Partisi L2',
+      statusOutcome: 'Disepakati H+1',
+      tone: 'info',
+    },
+    note: 'Waktu pemeriksaan disepakati ulang ke H+1 14:00.',
+    impact: true,
+    link: '/dashboard/inspeksi/wir-jk-0041',
+  },
+  {
+    id: 'g8',
+    at: agoD(2),
+    actor: SARI.name,
+    role: 'Pengawas Kualitas',
+    projectId: 'rko',
+    ref: 'INSP-RKO-2026-0088',
+    kind: 'clarification',
+    title: '[Shaft Pipa] Klarifikasi Jarak Pipa vs Kabel',
+    actionDetail: {
+      actionLabel: 'Klarifikasi Teknis',
+      targetScope: 'Ruko 03 · Shaft Pipa L2',
+      statusOutcome: 'Perlu Rincian Jarak',
+      tone: 'warning',
+    },
+    note: 'Bukan kegagalan konstruksi.',
+    impact: true,
+    link: '/dashboard/inspeksi/wir-ks-0088',
+  },
+  {
+    id: 'g9',
+    at: agoD(2),
+    actor: SARI.name,
+    role: 'Pengawas Kualitas',
+    projectId: 'rko',
+    ref: 'F-RKO-012',
+    kind: 'finding',
+    title: '[Shaft Pipa] Temuan Jarak Kurang (<30 cm)',
+    actionDetail: {
+      actionLabel: 'Temuan Lapangan',
+      targetScope: 'Ruko 03 · Shaft Pipa L2',
+      statusOutcome: 'Jarak < 30 cm',
+      tone: 'warning',
+    },
+    link: '/dashboard/temuan/f-ks-012',
+  },
+  {
+    id: 'g10',
+    at: agoD(3),
+    actor: 'Andi Pratama',
+    role: 'Site Engineer',
+    projectId: 'naw',
+    ref: 'F-NW-021',
+    kind: 'action',
+    title: '[Balok B2] Penugasan Perbaikan Spacer',
+    actionDetail: {
+      actionLabel: 'Penugasan Perbaikan',
+      targetScope: 'Unit A-05 · Balok B2',
+      statusOutcome: 'Mandor Struktur',
+      tone: 'info',
+    },
+    link: '/dashboard/temuan/f-ar-021',
+  },
+  {
+    id: 'g11',
+    at: agoD(4),
+    actor: SARI.name,
+    role: 'Pengawas Kualitas',
+    projectId: 'naw',
+    ref: 'INSP-NW-2026-0142',
+    kind: 'correction',
+    title: '[Balok B2] Hasil Perlu Perbaikan (20 mm)',
+    actionDetail: {
+      actionLabel: 'Pemeriksaan Lapangan',
+      targetScope: 'Unit A-05 · Balok B2',
+      statusOutcome: 'Perlu Perbaikan (20 mm)',
+      tone: 'warning',
+    },
+    note: 'Catatan pekerjaan lapangan; ganti spacer 25 mm.',
+    impact: true,
+    link: '/dashboard/inspeksi/wir-ar-0142',
+  },
+  {
+    id: 'g12',
+    at: agoD(4),
+    actor: SARI.name,
+    role: 'Pengawas Kualitas',
+    projectId: 'naw',
+    ref: 'F-NW-021',
+    kind: 'finding',
+    title: '[Balok B2] Temuan Selimut Kurang (<25 mm)',
+    actionDetail: {
+      actionLabel: 'Temuan Selimut',
+      targetScope: 'Unit A-05 · Balok B2',
+      statusOutcome: 'Deviasi -5 mm',
+      tone: 'danger',
+    },
+    impact: true,
+    link: '/dashboard/temuan/f-ar-021',
+  },
 ]
 
 /* ============================================================
@@ -1206,51 +1776,177 @@ export interface HealthReason {
   severity: Extract<StatusTone, 'danger' | 'warning' | 'info'>
   /** Referensi catatan sumber, mis. "F-AR-021". */
   refLabel?: string
+  targetScope?: string
+  issueCategory?: string
+  metricSummary?: string
   label: string
   to?: string
+}
+
+export interface StructuredBlockerSummary {
+  badgeLabel: string
+  tone: 'danger' | 'warning' | 'info' | 'success'
+  targetUnit: string
+  component: string
+  prerequisiteRef?: string
+  prerequisiteAction?: string
 }
 
 export interface ProjectHealthState {
   healthId: ProjectHealthId
   /** Satu kalimat ringkas untuk pemilik. */
   headline: string
+  blockerSummary?: StructuredBlockerSummary
   reasons: HealthReason[]
 }
 
+const NAW_HEALTH: ProjectHealthState = {
+  healthId: 'behind',
+  headline: '[Unit A-05] Pengecoran Tertahan · Verifikasi Spacer Balok B2',
+  blockerSummary: {
+    badgeLabel: 'Cor Tertahan',
+    tone: 'danger',
+    targetUnit: 'Unit A-05',
+    component: 'Pembesian Balok B2',
+    prerequisiteRef: 'CP-NW-02',
+    prerequisiteAction: 'Verifikasi Spacer 25 mm',
+  },
+  reasons: [
+    {
+      id: 'r1',
+      severity: 'danger',
+      refLabel: 'CP-NW-02',
+      targetScope: 'Unit A-05 · Balok B2',
+      issueCategory: 'Izin Pengecoran Tertahan',
+      metricSummary: 'Syarat Rilis Cor',
+      label: '[CP-NW-02] Unit A-05: Syarat Rilis Cor (Verifikasi Selimut Beton)',
+      to: '/dashboard/proyek/naw?titik=hp-ar-02',
+    },
+    {
+      id: 'r2',
+      severity: 'warning',
+      refLabel: 'F-NW-021',
+      targetScope: 'Unit A-05 · Balok B2',
+      issueCategory: 'Verifikasi Bukti Perbaikan',
+      metricSummary: '8 Foto Diajukan',
+      label: '[F-NW-021] Unit A-05: Bukti Foto Spacer Diajukan (Menunggu Verifikasi)',
+      to: '/dashboard/temuan/f-ar-021',
+    },
+    {
+      id: 'r3',
+      severity: 'warning',
+      refLabel: 'INSP-NW-2026-0142',
+      targetScope: 'Unit A-05 · Pelat L2',
+      issueCategory: 'Perekaman Hasil Lapangan',
+      metricSummary: 'Menunggu Rekam QC',
+      label: '[INSP-NW-2026-0142] Unit A-05: Verifikasi Fisik Lapangan (Menunggu Rekam QC)',
+      to: '/dashboard/inspeksi/wir-ar-0142',
+    },
+    {
+      id: 'r4',
+      severity: 'info',
+      targetScope: 'Blok A & Blok B',
+      issueCategory: 'Deviasi Progres Kumulatif',
+      metricSummary: '54% vs 58% (-4 poin)',
+      label: '[Blok A & B] Deviasi Progres: 54% Realisasi vs 58% Rencana (-4 Poin)',
+    },
+  ],
+}
+
+const RKO_HEALTH: ProjectHealthState = {
+  healthId: 'at_risk',
+  headline: '[Ruko 02] Perbaikan Cat Fasad Overdue · Deviasi Progres -2 Poin',
+  blockerSummary: {
+    badgeLabel: 'Perbaikan Terlambat',
+    tone: 'danger',
+    targetUnit: 'Ruko 02',
+    component: 'Kerokan Cat Fasad',
+    prerequisiteRef: 'CA-014-1',
+    prerequisiteAction: 'Tambah 2 Tukang Cat',
+  },
+  reasons: [
+    {
+      id: 'r1',
+      severity: 'danger',
+      refLabel: 'CA-014-1',
+      targetScope: 'Ruko 02 · Fasad Depan',
+      issueCategory: 'Perbaikan Cat Fasad Overdue',
+      metricSummary: 'Lewat 1 Hari',
+      label: '[CA-014-1] Ruko 02: Perbaikan Cat Fasad Lewat Jatuh Tempo 1 Hari',
+      to: '/dashboard/temuan/f-ks-014',
+    },
+    {
+      id: 'r2',
+      severity: 'warning',
+      refLabel: 'F-RKO-012',
+      targetScope: 'Ruko 03 · Shaft Pipa L2',
+      issueCategory: 'Penataan Jalur Pipa vs Kabel',
+      metricSummary: 'Proses Relokasi',
+      label: '[F-RKO-012] Ruko 03: Penataan Ulang Jalur Pipa Air vs Kabel Daya',
+      to: '/dashboard/temuan/f-ks-012',
+    },
+    {
+      id: 'r3',
+      severity: 'info',
+      refLabel: 'INSP-RKO-2026-0088',
+      targetScope: 'Ruko 03 · Shaft MEP',
+      issueCategory: 'Detail Revisi Jarak Tray',
+      metricSummary: 'Klarifikasi Gambar',
+      label: '[INSP-RKO-2026-0088] Ruko 03: Klarifikasi Shop Drawing MEP-RK-03',
+      to: '/dashboard/inspeksi/wir-ks-0088',
+    },
+  ],
+}
+
+const GML_HEALTH: ProjectHealthState = {
+  healthId: 'on_track',
+  headline: '[Lantai 2] Pekerjaan Partisi Gypsum & Lobby On-Track',
+  blockerSummary: {
+    badgeLabel: 'Sesuai Jadwal',
+    tone: 'info',
+    targetUnit: 'Lantai 2',
+    component: 'Rangka Partisi Gypsum',
+    prerequisiteRef: 'INSP-GML-2026-0041',
+    prerequisiteAction: 'Pemeriksaan Rangka H+1',
+  },
+  reasons: [
+    {
+      id: 'r1',
+      severity: 'info',
+      refLabel: 'INSP-GML-2026-0041',
+      targetScope: 'Lantai 2 · Ruang Rapat',
+      issueCategory: 'Pemeriksaan Rangka Gypsum',
+      metricSummary: 'Terjadwal H+1',
+      label: '[INSP-GML-2026-0041] Lantai 2: Jadwal Pemeriksaan Partisi Disepakati',
+      to: '/dashboard/inspeksi/wir-jk-0041',
+    },
+    {
+      id: 'r2',
+      severity: 'info',
+      refLabel: 'INSP-GML-2026-0027',
+      targetScope: 'Fasad Depan',
+      issueCategory: 'Review Sampel Kaca Fasad',
+      metricSummary: 'Telaah Konsultan',
+      label: '[INSP-GML-2026-0027] Fasad Depan: Review Sampel Kaca Tempered',
+      to: '/dashboard/inspeksi/wir-jk-0027',
+    },
+  ],
+}
+
+const BL_HEALTH: ProjectHealthState = {
+  healthId: 'archived',
+  headline: '[Gudang Bantan] Proyek Selesai & Diarsipkan (Hanya-Baca)',
+  reasons: [],
+}
+
 export const PROJECT_HEALTH_STATE: Record<string, ProjectHealthState> = {
-  aru: {
-    healthId: 'behind',
-    headline: 'Terlambat ±5 poin dari rencana; siklus cor lantai 8 terblokir hold point.',
-    reasons: [
-      { id: 'r1', severity: 'danger', refLabel: 'HP-AR-02', label: 'Cor pelat L8 tertahan: rilis hold point menunggu 2 kondisi (temuan & verifikasi).', to: '/dashboard/proyek/aru?titik=hp-ar-02' },
-      { id: 'r2', severity: 'warning', refLabel: 'F-AR-021', label: 'Perbaikan cover tulangan sudah diajukan; verifikasi QA/QC menjadi syarat rilis cor.', to: '/dashboard/temuan/f-ar-021' },
-      { id: 'r3', severity: 'warning', refLabel: 'WIR-AR-2026-0142', label: 'Keputusan re-inspeksi menunggu perekaman QA/QC.', to: '/dashboard/inspeksi/wir-ar-0142' },
-      { id: 'r4', severity: 'info', label: 'Selisih vs rencana melebar 4 minggu berturut-turut (1 → 5 poin).' },
-    ],
-  },
-  ks: {
-    healthId: 'at_risk',
-    headline: 'Progres sedikit di bawah rencana; ada tindakan K3 yang terlambat.',
-    reasons: [
-      { id: 'r1', severity: 'danger', refLabel: 'CA-014-1', label: 'Penutupan panel listrik (F-KS-014) lewat jatuh tempo 1 hari: perlu eskalasi.', to: '/dashboard/temuan/f-ks-014' },
-      { id: 'r2', severity: 'warning', refLabel: 'F-KS-012', label: 'Investigasi jalur kabel vs gas medis berjalan; berdampak ke penutupan plafon L2.', to: '/dashboard/temuan/f-ks-012' },
-      { id: 'r3', severity: 'info', refLabel: 'WIR-KS-2026-0088', label: 'Pengajuan MEP L2 dikembalikan untuk kelengkapan referensi revisi.', to: '/dashboard/inspeksi/wir-ks-0088' },
-    ],
-  },
-  jk: {
-    healthId: 'at_risk',
-    headline: 'Progres ±4 poin di bawah rencana; rantai penerimaan bergantung jadwal konsultan.',
-    reasons: [
-      { id: 'r1', severity: 'warning', refLabel: 'WIR-JK-2026-0041', label: 'Witness kepadatan subbase dijadwalkan ulang (konsultan berhalangan): waktu baru H+1 14:00.', to: '/dashboard/inspeksi/wir-jk-0041' },
-      { id: 'r2', severity: 'warning', refLabel: 'WIR-JK-2026-0027', label: 'Keputusan mix design aspal masih di konsultan; mulai aspal lapis 1 menunggu.', to: '/dashboard/inspeksi/wir-jk-0027' },
-      { id: 'r3', severity: 'info', refLabel: 'LW-05-021', label: 'Rework subgrade area A selesai; penerimaan ulang menyusul witness kepadatan.' },
-    ],
-  },
-  bl: {
-    healthId: 'archived',
-    headline: 'Proyek selesai & diarsipkan.',
-    reasons: [],
-  },
+  naw: NAW_HEALTH,
+  rko: RKO_HEALTH,
+  gml: GML_HEALTH,
+  bl: BL_HEALTH,
+  aru: NAW_HEALTH,
+  ks: RKO_HEALTH,
+  jk: GML_HEALTH,
 }
 
 /* ------------------------------------------------------------
@@ -1275,64 +1971,75 @@ export interface ProjectProgress {
   weekly: ProgressPoint[]
 }
 
+const NAW_PROGRESS: ProjectProgress = {
+  projectId: 'naw',
+  planPct: 58,
+  actualPct: 54,
+  asOf: agoH(20),
+  sourceRef: 'LHR-NAW-1030',
+  reporter: 'Rizky Hidayat (Site Manager)',
+  weekly: [
+    { label: 'M1', plan: 42, actual: 41 },
+    { label: 'M2', plan: 46, actual: 44 },
+    { label: 'M3', plan: 49, actual: 47 },
+    { label: 'M4', plan: 52, actual: 50 },
+    { label: 'M5', plan: 55, actual: 52 },
+    { label: 'M6', plan: 58, actual: 54 },
+  ],
+}
+
+const RKO_PROGRESS: ProjectProgress = {
+  projectId: 'rko',
+  planPct: 70,
+  actualPct: 68,
+  asOf: agoH(26),
+  sourceRef: 'LHR-RKO-1030',
+  reporter: 'Dedi Kurniawan (Site Manager)',
+  weekly: [
+    { label: 'M1', plan: 54, actual: 53 },
+    { label: 'M2', plan: 58, actual: 57 },
+    { label: 'M3', plan: 61, actual: 60 },
+    { label: 'M4', plan: 64, actual: 63 },
+    { label: 'M5', plan: 67, actual: 66 },
+    { label: 'M6', plan: 70, actual: 68 },
+  ],
+}
+
+const GML_PROGRESS: ProjectProgress = {
+  projectId: 'gml',
+  planPct: 45,
+  actualPct: 44,
+  asOf: agoH(30),
+  sourceRef: 'LHR-GML-0021',
+  reporter: 'Yusuf Maulana (Site Manager)',
+  weekly: [
+    { label: 'M1', plan: 30, actual: 30 },
+    { label: 'M2', plan: 33, actual: 33 },
+    { label: 'M3', plan: 36, actual: 35 },
+    { label: 'M4', plan: 39, actual: 38 },
+    { label: 'M5', plan: 42, actual: 41 },
+    { label: 'M6', plan: 45, actual: 44 },
+  ],
+}
+
+const BL_PROGRESS: ProjectProgress = {
+  projectId: 'bl',
+  planPct: 100,
+  actualPct: 100,
+  asOf: agoD(30),
+  sourceRef: 'LHR-BL-0018',
+  reporter: 'Dedi Kurniawan (Site Manager)',
+  weekly: [],
+}
+
 export const PROJECT_PROGRESS: Record<string, ProjectProgress> = {
-  aru: {
-    projectId: 'aru',
-    planPct: 61,
-    actualPct: 56,
-    asOf: agoH(20),
-    sourceRef: 'LW-08-116',
-    reporter: 'Hendra Kusuma (Konsultan)',
-    weekly: [
-      { label: 'M1', plan: 46, actual: 45 },
-      { label: 'M2', plan: 50, actual: 48 },
-      { label: 'M3', plan: 53, actual: 51 },
-      { label: 'M4', plan: 56, actual: 53 },
-      { label: 'M5', plan: 59, actual: 55 },
-      { label: 'M6', plan: 61, actual: 56 },
-    ],
-  },
-  ks: {
-    projectId: 'ks',
-    planPct: 64,
-    actualPct: 60,
-    asOf: agoH(26),
-    sourceRef: 'LW-11-038',
-    reporter: 'Hendra Kusuma (Konsultan)',
-    weekly: [
-      { label: 'M1', plan: 50, actual: 49 },
-      { label: 'M2', plan: 54, actual: 53 },
-      { label: 'M3', plan: 57, actual: 56 },
-      { label: 'M4', plan: 60, actual: 58 },
-      { label: 'M5', plan: 62, actual: 59 },
-      { label: 'M6', plan: 64, actual: 60 },
-    ],
-  },
-  jk: {
-    projectId: 'jk',
-    planPct: 42,
-    actualPct: 38,
-    asOf: agoH(30),
-    sourceRef: 'LW-05-021',
-    reporter: 'Firdaus Ramli (Konsultan)',
-    weekly: [
-      { label: 'M1', plan: 28, actual: 27 },
-      { label: 'M2', plan: 31, actual: 30 },
-      { label: 'M3', plan: 34, actual: 32 },
-      { label: 'M4', plan: 37, actual: 34 },
-      { label: 'M5', plan: 40, actual: 36 },
-      { label: 'M6', plan: 42, actual: 38 },
-    ],
-  },
-  bl: {
-    projectId: 'bl',
-    planPct: 100,
-    actualPct: 100,
-    asOf: agoD(30),
-    sourceRef: 'LW-05-018',
-    reporter: 'Dedi Kurniawan (Site Manager)',
-    weekly: [],
-  },
+  naw: NAW_PROGRESS,
+  rko: RKO_PROGRESS,
+  gml: GML_PROGRESS,
+  bl: BL_PROGRESS,
+  aru: NAW_PROGRESS,
+  ks: RKO_PROGRESS,
+  jk: GML_PROGRESS,
 }
 
 /* ------------------------------------------------------------
@@ -1348,12 +2055,31 @@ export interface ReportFlag {
   refId: string
   label: string
   to: string
+  code?: string
+  targetUnit?: string
+  statusNote?: string
 }
 
 export interface ReportDelay {
   id: string
   category: string
   desc: string
+}
+
+export interface WorkProgressItem {
+  unitCode: string
+  trade: string
+  progressPct: number
+  status: 'completed' | 'in_progress' | 'need_inspection' | 'pending_verification'
+  statusLabel: string
+}
+
+export interface StructuredDelay {
+  id: string
+  category: string
+  duration: string
+  affectedUnit: string
+  impact: string
 }
 
 export interface DailyReport {
@@ -1366,157 +2092,187 @@ export interface DailyReport {
   /** Rekapan progres kumulatif yang dilaporkan hari itu. */
   progressNote: string
   workSummary: string[]
+  progressItems?: WorkProgressItem[]
   delays: ReportDelay[]
+  structuredDelays?: StructuredDelay[]
   flags: ReportFlag[]
   photoCount: number
 }
 
 export const DAILY_REPORTS: DailyReport[] = [
-  /* ---------- ARU · LW-08-11x (konsultan pengawas) ---------- */
+  /* ---------- Nawasena · LHR-NAW (Cluster Nawasena Tahap 2) ---------- */
   {
     id: 'lw-08-116',
-    ref: 'LW-08-116',
-    projectId: 'aru',
+    ref: 'LHR-NAW-1030',
+    projectId: 'naw',
     at: agoH(20),
-    author: 'Hendra Kusuma',
-    authorOrg: 'Konsultan · CV Mitra Teknik',
-    progressNote: 'Progres kumulatif pelaksanaan 56% (rencana 61%).',
+    author: 'Rizky Hidayat',
+    authorOrg: 'Site Manager · PT Tri Daya Bangun',
+    progressNote: 'Progres kumulatif pelaksanaan Cluster Nawasena 54% (rencana 58%).',
+    progressItems: [
+      { unitCode: 'Unit A-05', trade: 'Pembesian Balok & Pelat', progressPct: 100, status: 'pending_verification', statusLabel: 'Menunggu Verifikasi' },
+      { unitCode: 'Unit B-02', trade: 'Rangka Atap Baja Ringan', progressPct: 100, status: 'need_inspection', statusLabel: 'Ajukan Pemeriksaan' },
+      { unitCode: 'Blok A', trade: 'Plesteran & Acian (A-03, A-04)', progressPct: 60, status: 'in_progress', statusLabel: 'Sesuai Jadwal' },
+      { unitCode: 'Unit A-01', trade: 'Keramik Lantai Ruang Tamu', progressPct: 85, status: 'in_progress', statusLabel: 'Punch List Siap' },
+    ],
     workSummary: [
-      'Pembesian pelat L8: koreksi cover Grid A/2-3 selesai; menunggu keputusan re-inspeksi QA/QC.',
-      'Bekisting dinding geser L9 berlanjut (Grid C/2-5); witness point telah diajukan.',
-      'Arsitektur L7: pemasangan keramik zona parkir ±80%.',
+      'Pembesian balok & pelat Unit A-05: koreksi penambahan spacer beton 25 mm selesai 100%; menunggu verifikasi pengawas kualitas.',
+      'Rangka atap baja ringan Unit B-02 terpasang kokoh; permohonan pemeriksaan diajukan ke pengawas.',
+      'Pekerjaan plesteran & acian dinding Blok A (Unit A-03 & A-04) berjalan sesuai jadwal.',
+      'Pemasangan keramik lantai Unit A-01 mencapai 85%; persiapan penyusunan punch list serah terima unit.',
     ],
     delays: [
-      { id: 'd1', category: 'cuaca', desc: 'Hujan sore (1 jam): pekerjaan bekisting L9 dihentikan sementara.' },
+      { id: 'd1', category: 'cuaca', desc: 'Hujan deras sore (1 jam): pengecoran sloof pondasi Unit C-04 ditunda ke esok pagi.' },
+    ],
+    structuredDelays: [
+      { id: 'd1', category: 'Cuaca (Hujan Deras)', duration: '1 Jam', affectedUnit: 'Unit C-04 (Cor Sloof)', impact: 'Pengecoran ditunda ke esok pagi' },
     ],
     flags: [
-      { id: 'fl1', kind: 'finding', refId: 'f-ar-021', label: 'F-AR-021 · verifikasi perbaikan cover menunggu QA/QC', to: '/dashboard/temuan/f-ar-021' },
-      { id: 'fl2', kind: 'holdpoint', refId: 'hp-ar-02', label: 'HP-AR-02 · rilis cor L8 menunggu 2 kondisi', to: '/dashboard/proyek/aru?titik=hp-ar-02' },
-      { id: 'fl3', kind: 'inspection', refId: 'wir-ar-0142', label: 'WIR-AR-2026-0142 · keputusan re-inspeksi menunggu perekaman', to: '/dashboard/inspeksi/wir-ar-0142' },
+      { id: 'fl1', kind: 'finding', refId: 'f-ar-021', label: 'F-NW-021 · verifikasi perbaikan spacer Unit A-05 menunggu pengawas', code: 'F-NW-021', targetUnit: 'Unit A-05', statusNote: 'Verifikasi Spacer', to: '/dashboard/temuan/f-ar-021' },
+      { id: 'fl2', kind: 'holdpoint', refId: 'hp-ar-02', label: 'CP-NW-02 · izin cor balok Unit A-05 menunggu verifikasi', code: 'CP-NW-02', targetUnit: 'Unit A-05', statusNote: 'Izin Cor Tertahan', to: '/dashboard/proyek/naw?titik=hp-ar-02' },
+      { id: 'fl3', kind: 'inspection', refId: 'wir-ar-0142', label: 'INSP-NW-2026-0142 · verifikasi fisik di lapangan Unit A-05', code: 'INSP-NW-2026-0142', targetUnit: 'Unit A-05', statusNote: 'Verifikasi Lapangan', to: '/dashboard/inspeksi/wir-ar-0142' },
     ],
     photoCount: 12,
   },
   {
     id: 'lw-08-115',
-    ref: 'LW-08-115',
-    projectId: 'aru',
+    ref: 'LHR-NAW-1029',
+    projectId: 'naw',
     at: agoH(44),
-    author: 'Hendra Kusuma',
-    authorOrg: 'Konsultan · CV Mitra Teknik',
-    progressNote: 'Progres kumulatif pelaksanaan 55% (rencana 59%).',
+    author: 'Rizky Hidayat',
+    authorOrg: 'Site Manager · PT Tri Daya Bangun',
+    progressNote: 'Progres kumulatif pelaksanaan 53% (rencana 56%).',
+    progressItems: [
+      { unitCode: 'Unit A-05', trade: 'Perbaikan Spacer Balok B2', progressPct: 80, status: 'in_progress', statusLabel: 'Pemasangan Spacer 25 mm' },
+      { unitCode: 'Blok B', trade: 'Instalasi Sanitair & Sparing Pipa', progressPct: 45, status: 'in_progress', statusLabel: 'Sesuai Jadwal' },
+    ],
     workSummary: [
-      'Re-inspeksi pembesian pelat L8 dilaksanakan pagi; hasil diverifikasi lapangan.',
-      'Pengecoran pelat L8 tetap tertahan sampai rilis hold point.',
+      'Pekerjaan perbaikan spacer beton balok B2 Unit A-05 dikerjakan oleh mandor struktur CV Mitra Bangun.',
+      'Pemasangan instalasi sanitair dan sparing pipa Blok B berjalan normal.',
     ],
     delays: [],
     flags: [
-      { id: 'fl1', kind: 'inspection', refId: 'wir-ar-0142', label: 'WIR-AR-2026-0142 · re-inspeksi dilaksanakan di lapangan', to: '/dashboard/inspeksi/wir-ar-0142' },
-      { id: 'fl2', kind: 'finding', refId: 'f-ar-021', label: 'F-AR-021 · perbaikan sudah diajukan dengan bukti foto', to: '/dashboard/temuan/f-ar-021' },
+      { id: 'fl1', kind: 'inspection', refId: 'wir-ar-0142', label: 'INSP-NW-2026-0142 · pemeriksaan ulang diajukan ke pengawas', code: 'INSP-NW-2026-0142', targetUnit: 'Unit A-05', statusNote: 'Pemeriksaan Ulang', to: '/dashboard/inspeksi/wir-ar-0142' },
+      { id: 'fl2', kind: 'finding', refId: 'f-ar-021', label: 'F-NW-021 · bukti foto perbaikan spacer 25 mm diunggah', code: 'F-NW-021', targetUnit: 'Unit A-05', statusNote: 'Foto Diunggah', to: '/dashboard/temuan/f-ar-021' },
     ],
     photoCount: 8,
   },
   {
     id: 'lw-08-114',
-    ref: 'LW-08-114',
-    projectId: 'aru',
+    ref: 'LHR-NAW-1028',
+    projectId: 'naw',
     at: agoH(92),
-    author: 'Hendra Kusuma',
-    authorOrg: 'Konsultan · CV Mitra Teknik',
-    progressNote: 'Progres kumulatif pelaksanaan 54% (rencana 56%).',
+    author: 'Rizky Hidayat',
+    authorOrg: 'Site Manager · PT Tri Daya Bangun',
+    progressNote: 'Progres kumulatif pelaksanaan 52% (rencana 55%).',
+    progressItems: [
+      { unitCode: 'Unit A-05', trade: 'Pembesian Balok & Pelat', progressPct: 100, status: 'need_inspection', statusLabel: 'Temuan Selimut Beton' },
+    ],
     workSummary: [
-      'Pemeriksaan pembesian pelat L8 menemukan cover sebagian 20 mm (spesifikasi 25 mm).',
-      'Area Grid A/2-3 dikembalikan untuk perbaikan; pengecoran ditunda.',
+      'Pemeriksaan pembesian balok & pelat Unit A-05 mencatat selimut beton balok B2 terukur 20 mm (kurang dari standar 25 mm).',
+      'Mandor struktur diinstruksikan memasang spacer beton kur standar sebelum izin cor diberikan.',
     ],
     delays: [
-      { id: 'd1', category: 'kualitas', desc: 'Rework cover tulangan: pengecoran pelat L8 ditunda sampai perbaikan diverifikasi.' },
+      { id: 'd1', category: 'kualitas', desc: 'Perbaikan selimut beton balok B2 Unit A-05: jadwal cor pelat lantai 2 digeser 2 hari.' },
+    ],
+    structuredDelays: [
+      { id: 'd1', category: 'Kualitas (Spacer)', duration: '2 Hari', affectedUnit: 'Unit A-05 (Pelat L2)', impact: 'Jadwal cor digeser untuk perbaikan spacer' },
     ],
     flags: [
-      { id: 'fl1', kind: 'finding', refId: 'f-ar-021', label: 'F-AR-021 · cover tulangan di bawah spesifikasi dicatat', to: '/dashboard/temuan/f-ar-021' },
-      { id: 'fl2', kind: 'inspection', refId: 'wir-ar-0142', label: 'WIR-AR-2026-0142 · dikembalikan untuk perbaikan', to: '/dashboard/inspeksi/wir-ar-0142' },
+      { id: 'fl1', kind: 'finding', refId: 'f-ar-021', label: 'F-NW-021 · catatan selimut beton di bawah spesifikasi dicatat', to: '/dashboard/temuan/f-ar-021' },
+      { id: 'fl2', kind: 'inspection', refId: 'wir-ar-0142', label: 'INSP-NW-2026-0142 · hasil pemeriksaan: perlu perbaikan', to: '/dashboard/inspeksi/wir-ar-0142' },
     ],
     photoCount: 6,
   },
 
-  /* ---------- KS · LW-11-03x ---------- */
+  /* ---------- Ruko Grand Harmoni · LHR-RKO ---------- */
   {
     id: 'lw-11-038',
-    ref: 'LW-11-038',
-    projectId: 'ks',
+    ref: 'LHR-RKO-1030',
+    projectId: 'rko',
     at: agoH(26),
-    author: 'Hendra Kusuma',
-    authorOrg: 'Konsultan · CV Mitra Teknik',
-    progressNote: 'Progres kumulatif pelaksanaan 60% (rencana 64%).',
+    author: 'Dedi Kurniawan',
+    authorOrg: 'Site Manager · PT Tri Daya Bangun',
+    progressNote: 'Progres kumulatif pelaksanaan 68% (rencana 70%).',
+    progressItems: [
+      { unitCode: 'Ruko 03', trade: 'Pipa PPR & Kabel Daya Shaft L2', progressPct: 40, status: 'in_progress', statusLabel: 'Penataan Pemisah' },
+      { unitCode: 'Ruko 02', trade: 'Kerokan Cat Fasad', progressPct: 50, status: 'need_inspection', statusLabel: 'Lewat Tempo 1 Hari' },
+      { unitCode: 'Ruko 01', trade: 'Uji Gelontor Pipa Buang L1', progressPct: 100, status: 'completed', statusLabel: 'Lancar & Disetujui' },
+    ],
     workSummary: [
-      'Instalasi MEP plafon L2 berlanjut (Sektor A4-A6).',
-      'Tim MEP menyusun investigasi jalur kabel vs gas medis Sektor A3.',
-      'Instalasi sanitair L1 selesai dan lulus uji tekan.',
+      'Instalasi pipa PPR air bersih dan kabel daya di shaft pipa Ruko 03 Lantai 2 sedang diatur ulang pemisahannya.',
+      'Mandor finishing belum menuntaskan kerokan cat menggelembung fasad Ruko 02 (telah melewati batas waktu 1 hari).',
+      'Uji gelontor instalasi pipa pembuangan lantai 1 Ruko 01 selesai dengan hasil lancar.',
     ],
     delays: [
-      { id: 'd1', category: 'desain/RFI', desc: 'Penutupan plafon menunggu klarifikasi revisi shop drawing MEP-12.' },
+      { id: 'd1', category: 'finishing', desc: 'Perbaikan cat fasad Ruko 02 terlambat: mandor cat diminta menambah 2 tukang hari ini.' },
+    ],
+    structuredDelays: [
+      { id: 'd1', category: 'Finishing (Cat)', duration: '1 Hari', affectedUnit: 'Ruko 02 (Fasad)', impact: 'Penambahan 2 tukang cat' },
     ],
     flags: [
-      { id: 'fl1', kind: 'finding', refId: 'f-ks-014', label: 'F-KS-014 · tindakan penutupan panel listrik lewat jatuh tempo', to: '/dashboard/temuan/f-ks-014' },
-      { id: 'fl2', kind: 'finding', refId: 'f-ks-012', label: 'F-KS-012 · investigasi jalur kabel vs gas medis berjalan', to: '/dashboard/temuan/f-ks-012' },
-      { id: 'fl3', kind: 'inspection', refId: 'wir-ks-0088', label: 'WIR-KS-2026-0088 · perlu kelengkapan referensi revisi', to: '/dashboard/inspeksi/wir-ks-0088' },
+      { id: 'fl1', kind: 'finding', refId: 'f-ks-014', label: 'F-RKO-014 · tindakan perbaikan cat fasad Ruko 02 lewat jatuh tempo', to: '/dashboard/temuan/f-ks-014' },
+      { id: 'fl2', kind: 'finding', refId: 'f-ks-012', label: 'F-RKO-012 · penataan pipa air vs kabel shaft Ruko 03', to: '/dashboard/temuan/f-ks-012' },
+      { id: 'fl3', kind: 'inspection', refId: 'wir-ks-0088', label: 'INSP-RKO-2026-0088 · klarifikasi jarak pemisah pipa Ruko 03', to: '/dashboard/inspeksi/wir-ks-0088' },
     ],
     photoCount: 9,
   },
   {
     id: 'lw-11-037',
-    ref: 'LW-11-037',
-    projectId: 'ks',
+    ref: 'LHR-RKO-1029',
+    projectId: 'rko',
     at: agoH(50),
-    author: 'Hendra Kusuma',
-    authorOrg: 'Konsultan · CV Mitra Teknik',
-    progressNote: 'Progres kumulatif pelaksanaan 59% (rencana 62%).',
+    author: 'Dedi Kurniawan',
+    authorOrg: 'Site Manager · PT Tri Daya Bangun',
+    progressNote: 'Progres kumulatif pelaksanaan 67% (rencana 69%).',
     workSummary: [
-      'Patroli K3 menemukan panel distribusi sementara tanpa penutup di Ruang Panel L1.',
-      'Tindakan penutupan panel ditugaskan ke subkontraktor MEP.',
+      'Pemeriksaan berkala menemukan cat dinding luar Ruko 02 menggelembung sebelum serah terima unit.',
+      'Instruksi perbaikan diterbitkan kepada subkontraktor finishing CV Berkah Finishing.',
     ],
     delays: [],
     flags: [
-      { id: 'fl1', kind: 'finding', refId: 'f-ks-014', label: 'F-KS-014 · panel listrik sementara tidak tertutup', to: '/dashboard/temuan/f-ks-014' },
+      { id: 'fl1', kind: 'finding', refId: 'f-ks-014', label: 'F-RKO-014 · cat dinding luar menggelembung dicatat', to: '/dashboard/temuan/f-ks-014' },
     ],
     photoCount: 4,
   },
 
-  /* ---------- JK · LW-05-02x ---------- */
+  /* ---------- Graha Mulia · LHR-GML ---------- */
   {
     id: 'lw-05-021',
-    ref: 'LW-05-021',
-    projectId: 'jk',
+    ref: 'LHR-GML-0021',
+    projectId: 'gml',
     at: agoH(30),
-    author: 'Firdaus Ramli',
-    authorOrg: 'Konsultan · PT Cipta Karya',
-    progressNote: 'Progres kumulatif pelaksanaan 38% (rencana 42%).',
+    author: 'Yusuf Maulana',
+    authorOrg: 'Site Manager · PT Tri Daya Bangun',
+    progressNote: 'Progres kumulatif pelaksanaan 44% (rencana 45%).',
     workSummary: [
-      'Rework subgrade area A (Sta 1+210-1+225) selesai dipadatkan; menunggu pemeriksaan ulang.',
-      'Penebaran base kelas A mulai parsial Sta 1+250 s.d. 1+270.',
+      'Rangka hollow partisi gypsum Lantai 2 ruang rapat selesai dirakit; jadwal pemeriksaan disepakati esok H+1.',
+      'Pengecatan epoxy primer lantai lobby lantai 1 kering sempurna dan lolos uji daya rekat.',
     ],
     delays: [
-      { id: 'd1', category: 'inspeksi', desc: 'Witness kepadatan subbase dijadwalkan ulang: konsultan berhalangan, waktu baru H+1 14:00.' },
+      { id: 'd1', category: 'jadwal', desc: 'Pemeriksaan partisi disesuaikan ke H+1 pukul 14:00 mengikuti jadwal konsultan pengawas.' },
     ],
     flags: [
-      { id: 'fl1', kind: 'inspection', refId: 'wir-jk-0041', label: 'WIR-JK-2026-0041 · jadwal witness diubah', to: '/dashboard/inspeksi/wir-jk-0041' },
-      { id: 'fl2', kind: 'inspection', refId: 'wir-jk-0027', label: 'WIR-JK-2026-0027 · mix design masih review eksternal', to: '/dashboard/inspeksi/wir-jk-0027' },
+      { id: 'fl1', kind: 'inspection', refId: 'wir-jk-0041', label: 'INSP-GML-2026-0041 · jadwal pemeriksaan disepakati H+1 14:00', to: '/dashboard/inspeksi/wir-jk-0041' },
+      { id: 'fl2', kind: 'inspection', refId: 'wir-jk-0027', label: 'INSP-GML-2026-0027 · review sampel kaca fasad oleh konsultan', to: '/dashboard/inspeksi/wir-jk-0027' },
     ],
     photoCount: 7,
   },
   {
     id: 'lw-05-020',
-    ref: 'LW-05-020',
-    projectId: 'jk',
+    ref: 'LHR-GML-0020',
+    projectId: 'gml',
     at: agoH(54),
-    author: 'Firdaus Ramli',
-    authorOrg: 'Konsultan · PT Cipta Karya',
-    progressNote: 'Progres kumulatif pelaksanaan 37% (rencana 40%).',
+    author: 'Yusuf Maulana',
+    authorOrg: 'Site Manager · PT Tri Daya Bangun',
+    progressNote: 'Progres kumulatif pelaksanaan 43% (rencana 44%).',
     workSummary: [
-      'Proposal mix design aspal (AC-WC/AC-BC) diajukan ke konsultan untuk review.',
-      'Pemadatan subbase berlanjut Sta 0+900 s.d. 1+200.',
+      'Sampel profil kusen aluminium dan kaca tempered 10 mm diajukan ke PT Cipta Karya Desain.',
+      'Pemasangan stop kontak dan instalasi kabel data lantai 2 berlanjut.',
     ],
     delays: [],
     flags: [
-      { id: 'fl1', kind: 'inspection', refId: 'wir-jk-0027', label: 'WIR-JK-2026-0027 · mix design diajukan', to: '/dashboard/inspeksi/wir-jk-0027' },
+      { id: 'fl1', kind: 'inspection', refId: 'wir-jk-0027', label: 'INSP-GML-2026-0027 · sampel spesifikasi material diajukan', to: '/dashboard/inspeksi/wir-jk-0027' },
     ],
     photoCount: 3,
   },
@@ -1537,81 +2293,108 @@ export const MILESTONE_STATUS: Record<MilestoneStatusId, StatusDef> = {
 export interface Milestone {
   id: string
   projectId: string
+  code?: string
+  activityName: string
+  targetScope: string
   title: string
   date: string
   statusId: MilestoneStatusId
   note: string
+  prerequisiteAction?: string
   links: ReportFlag[]
 }
 
 export const MILESTONES: Milestone[] = [
   {
     id: 'ms-aru-1',
-    projectId: 'aru',
-    title: 'Pengecoran pelat lantai 8',
+    projectId: 'naw',
+    code: 'MS-COR-L2',
+    activityName: 'Pengecoran Balok & Pelat L2',
+    targetScope: 'Unit A-05',
+    title: '[Unit A-05] Cor Balok & Pelat L2',
     date: aheadD(2),
     statusId: 'blocked',
-    note: 'Hold point belum dirilis; menunggu verifikasi temuan & keputusan re-inspeksi.',
+    note: 'Menunggu verifikasi spacer beton balok B2.',
+    prerequisiteAction: 'Verifikasi Spacer Balok B2 (25 mm)',
     links: [
-      { id: 'l1', kind: 'holdpoint', refId: 'hp-ar-02', label: 'HP-AR-02', to: '/dashboard/proyek/aru?titik=hp-ar-02' },
-      { id: 'l2', kind: 'finding', refId: 'f-ar-021', label: 'F-AR-021', to: '/dashboard/temuan/f-ar-021' },
+      { id: 'l1', kind: 'holdpoint', refId: 'hp-ar-02', label: 'CP-NW-02', to: '/dashboard/proyek/naw?titik=hp-ar-02' },
+      { id: 'l2', kind: 'finding', refId: 'f-ar-021', label: 'F-NW-021', to: '/dashboard/temuan/f-ar-021' },
     ],
   },
   {
     id: 'ms-aru-2',
-    projectId: 'aru',
-    title: 'Pengecoran dinding geser lantai 9',
-    date: aheadD(9),
+    projectId: 'naw',
+    code: 'MS-ATAP-B2',
+    activityName: 'Pemasangan Genteng Beton',
+    targetScope: 'Unit B-02',
+    title: '[Unit B-02] Penutup Genteng Beton',
+    date: aheadD(5),
     statusId: 'at_risk',
-    note: 'Bergantung pemulihan siklus cor L8; witness bekisting L9 terjadwal H+2.',
+    note: 'Pemeriksaan rangka atap INSP-NW-2026-0151 terjadwal H+2.',
+    prerequisiteAction: 'Inspeksi Rangka Kuda-Kuda Baja',
     links: [
-      { id: 'l1', kind: 'inspection', refId: 'wir-ar-0151', label: 'WIR-AR-2026-0151', to: '/dashboard/inspeksi/wir-ar-0151' },
+      { id: 'l1', kind: 'inspection', refId: 'wir-ar-0151', label: 'INSP-NW-2026-0151', to: '/dashboard/inspeksi/wir-ar-0151' },
     ],
   },
   {
     id: 'ms-ks-1',
-    projectId: 'ks',
-    title: 'Inspeksi fire fighting lantai 2 (uji tekan sprinkler)',
+    projectId: 'rko',
+    code: 'MS-MEP-RK3',
+    activityName: 'Uji Tekan Pipa PPR L2',
+    targetScope: 'Ruko 03',
+    title: '[Ruko 03] Uji Tekan Pipa Air Bersih',
     date: aheadD(3),
-    statusId: 'on_track',
-    note: 'Terjadwal H+3 09:00; pemberitahuan 48 jam terpenuhi.',
+    statusId: 'at_risk',
+    note: 'Witness bersama konsultan dijadwalkan ulang H+1 14:00.',
+    prerequisiteAction: 'Relokasi Pipa vs Kabel Tray L2',
     links: [
-      { id: 'l1', kind: 'inspection', refId: 'wir-ks-0091', label: 'WIR-KS-2026-0091', to: '/dashboard/inspeksi/wir-ks-0091' },
+      { id: 'l1', kind: 'inspection', refId: 'wir-ks-0088', label: 'INSP-RKO-2026-0088', to: '/dashboard/inspeksi/wir-ks-0088' },
     ],
   },
   {
     id: 'ms-ks-2',
-    projectId: 'ks',
-    title: 'Penutupan plafon lantai 2 zona klinik',
+    projectId: 'rko',
+    code: 'MS-STK-RK12',
+    activityName: 'Serah Terima Kunci Unit',
+    targetScope: 'Ruko 01 & 02',
+    title: '[Ruko 01 & 02] Serah Terima Kunci',
     date: aheadD(7),
     statusId: 'at_risk',
-    note: 'Menunggu klarifikasi revisi MEP-12 & investigasi jalur gas medis.',
+    note: 'Menunggu penuntasan perbaikan cat fasad Ruko 02.',
+    prerequisiteAction: 'Penyelesaian Perbaikan Cat Fasad Overdue',
     links: [
-      { id: 'l1', kind: 'inspection', refId: 'wir-ks-0088', label: 'WIR-KS-2026-0088', to: '/dashboard/inspeksi/wir-ks-0088' },
-      { id: 'l2', kind: 'finding', refId: 'f-ks-012', label: 'F-KS-012', to: '/dashboard/temuan/f-ks-012' },
+      { id: 'l1', kind: 'inspection', refId: 'wir-ks-0091', label: 'INSP-RKO-2026-0091', to: '/dashboard/inspeksi/wir-ks-0091' },
+      { id: 'l2', kind: 'finding', refId: 'f-ks-014', label: 'F-RKO-014', to: '/dashboard/temuan/f-ks-014' },
     ],
   },
   {
     id: 'ms-jk-1',
-    projectId: 'jk',
-    title: 'Witness kepadatan subbase (dijadwalkan ulang)',
+    projectId: 'gml',
+    code: 'MS-PAR-L2',
+    activityName: 'Inspeksi Rangka Partisi Gypsum',
+    targetScope: 'Lantai 2',
+    title: '[Lantai 2] Rangka Partisi Gypsum',
     date: aheadH(30),
-    statusId: 'at_risk',
-    note: 'Waktu baru H+1 14:00 setelah konsultan berhalangan; perlu konfirmasi kehadiran.',
+    statusId: 'on_track',
+    note: 'Inspeksi konsultan terkonfirmasi H+1 14:00.',
+    prerequisiteAction: 'Inspeksi Bersama Konsultan H+1',
     links: [
-      { id: 'l1', kind: 'inspection', refId: 'wir-jk-0041', label: 'WIR-JK-2026-0041', to: '/dashboard/inspeksi/wir-jk-0041' },
+      { id: 'l1', kind: 'inspection', refId: 'wir-jk-0041', label: 'INSP-GML-2026-0041', to: '/dashboard/inspeksi/wir-jk-0041' },
     ],
   },
   {
     id: 'ms-jk-2',
-    projectId: 'jk',
-    title: 'Penerimaan layer base sebelum aspal (HP-JK-01)',
+    projectId: 'gml',
+    code: 'MS-EPX-LOB',
+    activityName: 'Lantai Epoxy & Partisi Kaca',
+    targetScope: 'Lobby Utama',
+    title: '[Lobby] Lantai Epoxy & Partisi Kaca',
     date: aheadD(8),
-    statusId: 'at_risk',
-    note: 'Prasyarat: witness kepadatan lulus & keputusan mix design aspal.',
+    statusId: 'on_track',
+    note: 'Uji adhesi disetujui; siap pasang kaca.',
+    prerequisiteAction: 'Uji Adhesi Lolos Disetujui',
     links: [
-      { id: 'l1', kind: 'holdpoint', refId: 'hp-jk-01', label: 'HP-JK-01', to: '/dashboard/proyek/jk?titik=hp-jk-01' },
-      { id: 'l2', kind: 'inspection', refId: 'wir-jk-0027', label: 'WIR-JK-2026-0027', to: '/dashboard/inspeksi/wir-jk-0027' },
+      { id: 'l1', kind: 'inspection', refId: 'wir-jk-0033', label: 'INSP-GML-2026-0033', to: '/dashboard/inspeksi/wir-jk-0033' },
     ],
   },
 ]
@@ -1620,7 +2403,10 @@ export const MILESTONES: Milestone[] = [
  * Selektor & hitungan presentasi
  * ------------------------------------------------------------ */
 
-export const projectById = (id: string) => PROJECTS.find((p) => p.id === id)!
+export const projectById = (id: string) => {
+  const norm = normalizeProjectId(id)
+  return PROJECTS.find((p) => p.id === norm || p.id === id)!
+}
 export const projectName = (id: string) => projectById(id)?.name ?? id
 export const projectCode = (id: string) => projectById(id)?.code ?? id
 export const inspectionById = (id: string) => INSPECTIONS.find((i) => i.id === id)
@@ -1629,9 +2415,18 @@ export const findingById = (id: string) => FINDINGS.find((f) => f.id === id)
 export const controlPointById = (id: string) => CONTROL_POINTS.find((c) => c.id === id)
 export const activityById = (id: string) => WORK_PACKAGES.find((w) => w.id === id)
 
-export const inspectionsOfProject = (projectId: string) => INSPECTIONS.filter((i) => i.projectId === projectId)
-export const findingsOfProject = (projectId: string) => FINDINGS.filter((f) => f.projectId === projectId)
-export const controlPointsOfProject = (projectId: string) => CONTROL_POINTS.filter((c) => c.projectId === projectId)
+export const inspectionsOfProject = (projectId: string) => {
+  const norm = normalizeProjectId(projectId)
+  return INSPECTIONS.filter((i) => i.projectId === norm || i.projectId === projectId)
+}
+export const findingsOfProject = (projectId: string) => {
+  const norm = normalizeProjectId(projectId)
+  return FINDINGS.filter((f) => f.projectId === norm || f.projectId === projectId)
+}
+export const controlPointsOfProject = (projectId: string) => {
+  const norm = normalizeProjectId(projectId)
+  return CONTROL_POINTS.filter((c) => c.projectId === norm || c.projectId === projectId)
+}
 
 /** Hitungan portofolio — logika hitung dipakai juga oleh register (FR-OV-03). */
 export function portfolioCounts() {
@@ -1654,7 +2449,7 @@ export function projectPulse(projectId: string): PulseSegment[] {
   const list = inspectionsOfProject(projectId)
   const g = (ids: InspectionStatusId[]) => list.filter((i) => ids.includes(i.status)).length
   const segments: PulseSegment[] = [
-    { tone: 'success', count: g(['accepted']), label: 'Diterima' },
+    { tone: 'success', count: g(['accepted']), label: 'Sesuai' },
     { tone: 'info', count: g(['submitted', 'scheduled', 'external_review']), label: 'Menunggu/terjadwal' },
     { tone: 'active', count: g(['internal_review', 'in_progress', 'reinspection_requested']), label: 'Berjalan' },
     { tone: 'warning', count: g(['clarification_required', 'correction_required', 'deferred', 'unable_to_inspect']), label: 'Perlu tindakan' },
@@ -1667,15 +2462,24 @@ export function projectPulse(projectId: string): PulseSegment[] {
  * Selektor kendali eksekusi
  * ------------------------------------------------------------ */
 
-export const healthOf = (projectId: string): ProjectHealthState =>
-  PROJECT_HEALTH_STATE[projectId] ?? { healthId: 'on_track', headline: '', reasons: [] }
-export const progressOf = (projectId: string) => PROJECT_PROGRESS[projectId]
+export const healthOf = (projectId: string): ProjectHealthState => {
+  const norm = normalizeProjectId(projectId)
+  return PROJECT_HEALTH_STATE[norm] ?? PROJECT_HEALTH_STATE[projectId] ?? { healthId: 'on_track', headline: '', reasons: [] }
+}
+export const progressOf = (projectId: string) => {
+  const norm = normalizeProjectId(projectId)
+  return PROJECT_PROGRESS[norm] ?? PROJECT_PROGRESS[projectId]
+}
 
-export const reportsOfProject = (projectId: string) =>
-  DAILY_REPORTS.filter((r) => r.projectId === projectId).sort((a, b) => b.at.localeCompare(a.at))
+export const reportsOfProject = (projectId: string) => {
+  const norm = normalizeProjectId(projectId)
+  return DAILY_REPORTS.filter((r) => r.projectId === norm || r.projectId === projectId).sort((a, b) => b.at.localeCompare(a.at))
+}
 export const latestReportOf = (projectId: string) => reportsOfProject(projectId)[0]
-export const milestonesOfProject = (projectId: string) =>
-  MILESTONES.filter((m) => m.projectId === projectId).sort((a, b) => a.date.localeCompare(b.date))
+export const milestonesOfProject = (projectId: string) => {
+  const norm = normalizeProjectId(projectId)
+  return MILESTONES.filter((m) => m.projectId === norm || m.projectId === projectId).sort((a, b) => a.date.localeCompare(b.date))
+}
 
 const HEALTH_RANK: Record<ProjectHealthId, number> = { behind: 0, at_risk: 1, on_track: 2, archived: 3 }
 

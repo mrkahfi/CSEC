@@ -22,7 +22,7 @@ import { useToast } from '@/components/ui/Toast'
  * FO-07 Daftar pekerjaan + FO-08 Detail aktivitas + FO-09 Catat progres
  * ============================================================ */
 
-const DISCIPLINES = ['Semua', 'Struktur', 'MEP', 'Perkerasan'] as const
+const DISCIPLINES = ['Semua', 'Struktur', 'MEP', 'Arsitektur'] as const
 
 export function WorkList() {
   const { projectId, activities } = useField()
@@ -167,8 +167,16 @@ export function WorkDetail() {
                     <Badge size="sm" tone={pst.tone}>{pst.label}</Badge>
                     <span className="tnum shrink-0 text-xs text-ink-disabled">{formatRelative(p.at)}</span>
                   </div>
-                  {p.qty && <p className="tnum mt-1.5 text-sm font-medium text-ink">{p.qty}{p.area ? ` · ${p.area}` : ''}</p>}
-                  <p className="mt-0.5 text-sm leading-5 text-ink-secondary">{p.note}</p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    {p.qty && <span className="tnum font-mono text-xs font-bold text-ink bg-sunken px-1.5 py-0.5 rounded border border-line-subtle">{p.qty}</span>}
+                    {p.area && <span className="text-xs font-semibold text-ink-secondary">{p.area}</span>}
+                  </div>
+                  {p.note && (
+                    <div className="mt-1 flex items-start gap-1.5 text-xs text-ink-secondary">
+                      <span className="font-semibold text-ink-muted">Catatan:</span>
+                      <span>{p.note}</span>
+                    </div>
+                  )}
                   <p className="mt-1 text-xs text-ink-muted">{p.by}</p>
                 </div>
               )
@@ -327,7 +335,7 @@ export function ProgressForm() {
           </Field>
         </div>
 
-        <Field label="Area / lokasi" hint="Contoh: Grid C-D atau Sta 1+200">
+        <Field label="Area / lokasi" hint="Contoh: Blok A — Unit A-05 atau Ruko 03 — Lantai 2">
           <Input value={area} onChange={(e) => setArea(e.target.value)} placeholder={activity.location} />
         </Field>
 
@@ -376,7 +384,10 @@ export function ProgressForm() {
                     <span className="tnum shrink-0 text-xs text-ink-disabled">{formatRelative(p.at)}</span>
                   </div>
                   <p className="mt-1 pl-5.5 text-xs text-ink-muted">
-                    <MapPin {...iconProps(11)} className="mr-1 inline" />{p.area ?? activity.location} · {p.by}
+                    <MapPin {...iconProps(11)} className="mr-1 inline" />
+                    <span className="font-medium text-ink">{p.area ?? activity.location}</span>
+                    <span className="mx-1 text-ink-disabled">/</span>
+                    <span>{p.by}</span>
                   </p>
                 </div>
               ))}

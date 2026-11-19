@@ -99,7 +99,7 @@ export function InspeksiRegister() {
   return (
     <>
       <PageHeader
-        title="Register Inspeksi"
+        title="Register Pemeriksaan"
         meta={<Badge tone="neutral" size="sm" className="tnum">{total} catatan</Badge>}
       />
 
@@ -200,8 +200,8 @@ export function InspeksiRegister() {
                 <TableRow>
                   <TableHeaderCell width="165px">Referensi</TableHeaderCell>
                   <TableHeaderCell width="80px" className="hidden 2xl:table-cell">Proyek</TableHeaderCell>
-                  <TableHeaderCell width="270px">Lingkup & lokasi</TableHeaderCell>
-                  <TableHeaderCell width="140px" className="hidden lg:table-cell">Titik</TableHeaderCell>
+                  <TableHeaderCell width="260px">Lingkup & lokasi</TableHeaderCell>
+                  <TableHeaderCell width="165px" className="hidden lg:table-cell">Acuan / Titik</TableHeaderCell>
                   <TableHeaderCell width="235px">Status</TableHeaderCell>
                   <TableHeaderCell width="160px" className="hidden 2xl:table-cell">Pengirim & peninjau</TableHeaderCell>
                   <TableHeaderCell width="190px">Tindakan berikutnya</TableHeaderCell>
@@ -222,10 +222,25 @@ export function InspeksiRegister() {
                         <span className="text-xs font-medium text-ink-secondary">{projectCode(i.projectId)}</span>
                       </TableCell>
                       <TableCell>
-                        <p className="max-w-72 truncate text-sm font-medium text-ink">{i.title}</p>
-                        <p className="mt-0.5 flex max-w-72 items-center gap-1 text-xs text-ink-muted">
-                          <MapPin {...iconProps(12)} /> <span className="truncate">{i.location}</span>
-                        </p>
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {i.discipline && (
+                              <span className="rounded bg-brand-50 px-1.5 py-0.2 text-[10px] font-semibold text-brand-700 border border-brand-200">
+                                {i.discipline}
+                              </span>
+                            )}
+                            <span className="font-semibold text-xs text-ink max-w-72 truncate">
+                              {i.activityType ?? i.title}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-2xs text-ink-muted">
+                            <span className="rounded bg-sunken px-1.5 py-0.2 font-mono text-[10px] text-ink-secondary border border-line-subtle">
+                              {i.targetScope}
+                            </span>
+                            <span className="text-ink-disabled">·</span>
+                            <span className="flex items-center gap-1 truncate max-w-56"><MapPin {...iconProps(11)} /> {i.location}</span>
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         <div className="flex flex-col items-start gap-1">
@@ -254,9 +269,18 @@ export function InspeksiRegister() {
                       </TableCell>
                       <TableCell>
                         {i.nextAction ? (
-                          <div className="text-xs">
-                            <p className="max-w-44 truncate font-medium text-ink">{i.nextAction.label}</p>
-                            <div className={cn('tnum mt-1 flex flex-wrap items-center gap-1.5', overdue ? 'text-red-700' : 'text-ink-muted')}>
+                          <div className="text-xs space-y-1">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {i.nextAction.actionType && (
+                                <span className="rounded bg-sunken px-1.5 py-0.2 text-[10px] font-bold text-ink border border-line-subtle">
+                                  {i.nextAction.actionType}
+                                </span>
+                              )}
+                              <span className="text-xs font-semibold text-ink-secondary max-w-44 truncate">
+                                {i.nextAction.component ?? i.nextAction.label}
+                              </span>
+                            </div>
+                            <div className={cn('tnum flex flex-wrap items-center gap-1.5 text-2xs', overdue ? 'text-red-700' : 'text-ink-muted')}>
                               {overdue && <OctagonAlert {...iconProps(11)} strokeWidth={2.4} />}
                               <span className="font-medium text-ink-secondary">{i.nextAction.owner.split('(')[0].trim()}</span>
                               {i.nextAction.dueAt && (

@@ -77,7 +77,7 @@ const OUTCOMES: Record<OutcomeId, { label: string; tone: StatusTone; icon: typeo
     label: 'Perlu Perbaikan',
     tone: 'warning',
     icon: FileWarning,
-    note: 'Tidak otomatis membuat NCR, tergantung prosedur proyek.',
+    note: 'Temuan dicatat sebagai Catatan Perbaikan. NCR formal hanya bila prosedur proyek mensyaratkan.',
   },
   clarification: { label: 'Perlu Klarifikasi', tone: 'warning', icon: MessageCircleQuestion, note: 'Kelengkapan informasi, bukan kegagalan teknis.' },
   defer: { label: 'Tunda / Jadwalkan ulang', tone: 'neutral', icon: CalendarX, note: 'Waktu asli, alasan & jadwal baru tercatat.' },
@@ -155,7 +155,7 @@ function DecisionDialog({
             <dd className="flex flex-wrap items-center gap-2 font-medium text-ink">
               <span>{ins.scope}</span>
               <span className="rounded bg-surface px-1.5 py-0.5 text-xs text-ink-secondary border border-line-subtle font-mono">
-                ITP: {ins.itpRef}
+                Acuan: {ins.itpRef}
               </span>
             </dd>
           </div>
@@ -197,7 +197,7 @@ function ReleaseDialog({ cpId, onClose }: { cpId: string; onClose: () => void })
   const [comment, setComment] = useState('')
   const cp = controlPointById(cpId)!
   
-  // Dalam skenario demo: jika WIR diterima, kondisi tercapai untuk simulasi rilis
+  // Demo: jika inspeksi diterima, kondisi tercapai untuk simulasi izin tahap kritis
   const conditionsMet = cp.id === 'hp-ar-02' && scenario.wirStatus === 'accepted'
   const unmet = conditionsMet ? [] : (cp.conditions?.filter((c) => !c.met) ?? [])
   const canRelease = unmet.length === 0 && comment.trim() !== ''
@@ -357,11 +357,16 @@ export function InspeksiDetail() {
           { label: 'Inspeksi', to: `/dashboard/inspeksi?proyek=${project.id}` },
           { label: ins.ref },
         ]}
-        title={ins.title}
-        description={ins.scope}
+        title={ins.activityType ? `[${ins.targetScope}] ${ins.activityType}` : ins.title}
+        description={ins.location}
         meta={
           <>
             <Badge tone="neutral" size="sm" className="font-mono">{ins.ref}</Badge>
+            {ins.discipline && (
+              <span className="rounded bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200">
+                {ins.discipline}
+              </span>
+            )}
             <StatusBadge status={POINT_TYPE[ins.pointType]} size="sm" />
           </>
         }
@@ -400,7 +405,12 @@ export function InspeksiDetail() {
             ins.nextAction ? (
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="text-ink-muted font-medium">Tindakan berikutnya:</span>
-                <span className="font-bold text-ink">{ins.nextAction.label}</span>
+                {ins.nextAction.actionType && (
+                  <span className="rounded bg-surface px-1.5 py-0.5 font-bold text-ink border border-line-subtle">
+                    {ins.nextAction.actionType}
+                  </span>
+                )}
+                <span className="font-semibold text-ink">{ins.nextAction.component ?? ins.nextAction.label}</span>
                 <span className="rounded bg-sunken px-1.5 py-0.2 font-medium text-ink-secondary border border-line-subtle">{ins.nextAction.owner}</span>
                 {ins.nextAction.dueAt && (
                   <span className="rounded bg-amber-50 px-1.5 py-0.2 font-mono text-2xs font-bold text-amber-800 border border-amber-200">
@@ -410,9 +420,7 @@ export function InspeksiDetail() {
               </div>
             ) : undefined
           }
-        >
-          {statusDef.description}
-        </Callout>
+        />
 
         {ins.missingItems && (
           <Callout tone="warning" icon={FileWarning} title="Kelengkapan pengajuan (2 item kurang)">
@@ -442,7 +450,7 @@ export function InspeksiDetail() {
                     <dd className="text-sm font-semibold text-ink">{wp?.name} <span className="font-mono text-xs font-normal text-ink-muted bg-sunken px-1.5 py-0.2 rounded border border-line-subtle">{wp?.code}</span></dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5">Titik inspeksi &amp; ITP</dt>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5">Acuan Pemeriksaan</dt>
                     <dd className="flex items-center gap-2 text-sm font-semibold text-ink">
                       <StatusBadge status={POINT_TYPE[ins.pointType]} size="sm" />
                       <span className="font-mono text-xs font-normal text-ink-muted">{ins.itpRef}</span>
@@ -489,7 +497,12 @@ export function InspeksiDetail() {
                         <div className="min-w-0 flex-1">
                           <p className="text-sm text-ink">{c.label}</p>
                           {c.source && <p className="mt-0.5 font-mono text-xs text-ink-muted">{c.source}</p>}
-                          {c.note && <p className="mt-0.5 text-xs italic text-ink-muted">{c.note}</p>}
+                          {c.note && (
+                            <div className="mt-1 flex items-start gap-1.5 text-xs text-ink-secondary">
+                              <span className="font-semibold text-ink-muted">Catatan:</span>
+                              <span>{c.note}</span>
+                            </div>
+                          )}
                         </div>
                       </li>
                     )
@@ -737,7 +750,7 @@ export function InspeksiDetail() {
                     </div>
                     <p className="tnum text-xs text-ink-muted">{ins.decidedAt ? formatDateTime(ins.decidedAt) : ''}</p>
                     <p className="mt-1.5 text-xs text-ink-muted"><span className="text-ink-secondary">Lingkup:</span> {ins.decision.scope}</p>
-                    <p className="mt-1 border-l-2 border-line-strong pl-2 text-xs italic text-ink-secondary">“{ins.decision.comment}”</p>
+                    <p className="mt-1 border-l-2 border-brand-300 pl-2.5 py-0.5 rounded-r-sm text-xs text-ink-secondary bg-sunken/50">{ins.decision.comment}</p>
                   </div>
                 )}
                 {!ins.decision && (

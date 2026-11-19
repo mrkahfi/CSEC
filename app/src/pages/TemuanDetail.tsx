@@ -61,7 +61,24 @@ function ActionCard({ a }: { a: CorrectiveAction }) {
         <span className="font-mono text-xs text-ink-muted">{a.ref}</span>
         <span className="ml-auto"><StatusBadge status={{ id: a.status, label: st.label, tone: st.tone, icon: st.icon, description: st.description }} size="sm" /></span>
       </div>
-      <p className="mt-2 text-sm text-ink">{a.description}</p>
+      {a.actionPlan ? (
+        <div className="mt-2 rounded-lg border border-line-subtle bg-sunken/40 p-2.5">
+          <div className="flex flex-wrap items-center gap-1.5 text-xs">
+            <span className="rounded bg-brand-50 px-2 py-0.5 font-semibold text-brand-700 border border-brand-200">
+              {a.actionPlan.actionType}
+            </span>
+            <span className="font-bold text-ink">{a.actionPlan.component}</span>
+            <span className="text-2xs text-ink-muted">di {a.actionPlan.location}</span>
+            {a.actionPlan.photoRequired && (
+              <span className="ml-auto inline-flex items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 text-2xs font-semibold text-amber-800 border border-amber-200">
+                <Camera {...iconProps(11)} /> Wajib Foto
+              </span>
+            )}
+          </div>
+        </div>
+      ) : (
+        <p className="mt-2 text-sm text-ink">{a.description}</p>
+      )}
       <dl className="mt-2.5 grid gap-x-6 gap-y-1.5 text-xs sm:grid-cols-3">
         <div>
           <dt className="text-ink-muted">Penanggung jawab</dt>
@@ -80,8 +97,16 @@ function ActionCard({ a }: { a: CorrectiveAction }) {
         </div>
       </dl>
       {a.evidenceNote && (
-        <div className="mt-2 flex items-start gap-2 rounded-md bg-sunken px-2.5 py-1.5 text-xs text-ink-secondary">
-          <span className="flex-1"><span className="font-medium text-ink">Bukti diajukan:</span> {a.evidenceNote}</span>
+        <div className="mt-2 flex items-center justify-between rounded-md bg-sunken px-2.5 py-1.5 text-xs text-ink-secondary border border-line-subtle">
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 rounded bg-surface px-1.5 py-0.5 font-mono text-2xs font-bold text-brand-700 border border-brand-200">
+              <Camera {...iconProps(11)} /> {a.evidenceCount ? `${a.evidenceCount} Foto Terlampir` : 'Bukti'}
+            </span>
+            <span className="text-2xs text-ink-secondary">{a.evidenceNote.replace(/^\d+\s+foto[^;]*;\s*/, '')}</span>
+          </div>
+          {a.actionPlan?.submittedBy && (
+            <span className="text-2xs text-ink-muted shrink-0">Oleh: {a.actionPlan.submittedBy}</span>
+          )}
         </div>
       )}
       {a.rejectionReason && (
@@ -158,11 +183,16 @@ export function TemuanDetail() {
           { label: 'Temuan', to: `/dashboard/temuan?proyek=${project.id}` },
           { label: f.ref },
         ]}
-        title={f.title}
+        title={f.defectType ? `[${f.element ?? f.location}] ${f.defectType}` : f.title}
         description={f.location}
         meta={
           <>
             <Badge tone="neutral" size="sm" className="font-mono">{f.ref}</Badge>
+            {f.trade && (
+              <span className="rounded bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200">
+                {f.trade}
+              </span>
+            )}
             <StatusBadge status={cls} size="sm" />
           </>
         }
@@ -185,46 +215,126 @@ export function TemuanDetail() {
         </Callout>
 
         {f.ncrRequired && (
-          <Callout tone="danger" icon={Flag} title="NCR formal diperlukan">
-            Inkonformitas terkonfirmasi, dicatat pada sistem resmi proyek.
+          <Callout tone="danger" icon={Flag} title="Catatan Ketidaksesuaian (Advanced QC)">
+            Temuan terkonfirmasi memerlukan tindak lanjut formal sesuai prosedur proyek.
           </Callout>
         )}
 
         <div className="grid items-start gap-4 lg:grid-cols-3">
           {/* KOLOM UTAMA */}
           <div className="space-y-4 lg:col-span-2">
-            {/* Fakta ≠ dugaan ≠ disposisi: FR-FA-03 */}
+            {/* Fakta terukur vs standar: Benchmark Metrik */}
             <Card>
-              <CardHeader title="Kondisi teramati" />
+              <CardHeader
+                title="Kondisi Teramati &amp; Pengukuran"
+                actions={
+                  f.benchmark ? (
+                    <Badge tone={f.benchmark.status === 'below' ? 'danger' : 'warning'} size="sm">
+                      {f.benchmark.statusLabel}
+                    </Badge>
+                  ) : undefined
+                }
+              />
               <CardBody className="space-y-3 pt-3">
-                <div className="rounded-lg border border-line-subtle p-3">
-                  <p className="flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-wider text-ink-muted"><Eye {...iconProps(12)} /> Fakta objektif</p>
-                  <p className="mt-1 text-sm leading-relaxed text-ink">{f.facts}</p>
-                </div>
-                {f.suspectedCause && (
+                {f.benchmark ? (
+                  <div className="rounded-xl border border-line-subtle bg-sunken/40 p-3.5 space-y-3">
+                    <div className="flex items-center justify-between border-b border-line-subtle pb-2">
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Parameter Uji</span>
+                        <h3 className="font-bold text-sm text-ink">{f.benchmark.param}</h3>
+                      </div>
+                      <span className="font-mono text-2xs text-ink-muted bg-surface px-2 py-0.5 rounded border border-line-subtle">
+                        {f.benchmark.specRef}
+                      </span>
+                    </div>
+
+                    {/* Meteran Visual: Aktual vs Spesifikasi */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="rounded-lg border border-red-200 bg-red-50/60 p-2.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-red-800 block">Hasil Terukur</span>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <span className="font-mono text-2xl font-black text-red-700 tnum">{f.benchmark.actual}</span>
+                          <span className="font-medium text-xs text-red-800">{f.benchmark.unit}</span>
+                        </div>
+                      </div>
+
+                      <div className="rounded-lg border border-line-subtle bg-surface p-2.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted block">Standar Spesifikasi</span>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <span className="font-mono text-2xl font-bold text-ink tnum">{f.benchmark.spec}</span>
+                          <span className="font-medium text-xs text-ink-muted">{f.benchmark.unit}</span>
+                        </div>
+                      </div>
+
+                      <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-2.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">Deviasi Toleransi</span>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <span className="font-mono text-2xl font-bold text-amber-900 tnum">{f.benchmark.diff}</span>
+                          <span className="text-2xs font-semibold text-amber-800">({f.benchmark.diffPct})</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {f.benchmark.secondaryPoints && f.benchmark.secondaryPoints.length > 0 && (
+                      <div className="flex items-center gap-2 pt-1 text-2xs text-ink-muted border-t border-line-subtle">
+                        <span className="font-semibold text-ink-secondary">Titik pembanding:</span>
+                        {f.benchmark.secondaryPoints.map((pt, i) => (
+                          <span key={i} className="inline-flex items-center gap-1 rounded bg-emerald-50 px-2 py-0.5 text-emerald-800 border border-emerald-200 font-medium">
+                            <CircleCheck {...iconProps(11)} /> {pt.label}: {pt.value} (Sesuai)
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-line-subtle p-3">
+                    <p className="flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-wider text-ink-muted"><Eye {...iconProps(12)} /> Fakta objektif</p>
+                    <p className="mt-1 text-sm leading-snug text-ink">{f.facts}</p>
+                  </div>
+                )}
+
+                {/* Dugaan Penyebab: Tokenized Root Cause */}
+                {f.rootCause ? (
+                  <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50/50 p-3 space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-2xs font-bold uppercase tracking-wider text-amber-800">
+                      <TriangleAlert {...iconProps(13)} className="text-amber-600" />
+                      Dugaan Penyebab (Akar Masalah)
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      <span className="rounded bg-amber-100 px-2 py-0.5 font-bold text-amber-900 border border-amber-300">
+                        {f.rootCause.category}
+                      </span>
+                      <span className="font-semibold text-ink">{f.rootCause.component}</span>
+                      <span className="text-ink-secondary">— {f.rootCause.trigger}</span>
+                    </div>
+                  </div>
+                ) : f.suspectedCause ? (
                   <div className="rounded-lg border border-dashed border-amber-300 bg-amber-50/60 p-3">
                     <p className="flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-wider text-amber-700"><TriangleAlert {...iconProps(12)} /> Dugaan penyebab (belum dikonfirmasi)</p>
                     <p className="mt-1 text-sm text-amber-950">{f.suspectedCause}</p>
                   </div>
-                )}
-                <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                ) : null}
+
+                {/* Grid Metadata Posisi & Pertanggungjawaban */}
+                <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2 pt-1">
                   <div>
-                    <dt className="text-xs text-ink-muted">Luas terdampak</dt>
-                    <dd className="text-sm font-medium text-ink">{f.affectedExtent}</dd>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Elemen &amp; Posisi Terdampak</dt>
+                    <dd className="mt-0.5 text-xs font-semibold text-ink">{f.affectedExtent}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">Dasar persyaratan</dt>
-                    <dd className="font-mono text-xs font-medium text-ink">{f.sourceRequirement}</dd>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Dasar Gambar / Acuan</dt>
+                    <dd className="mt-0.5 font-mono text-xs font-medium text-ink bg-sunken px-1.5 py-0.5 rounded border border-line-subtle inline-block">{f.sourceRequirement}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">Diidentifikasi</dt>
-                    <dd className="tnum text-sm font-medium text-ink">{formatDateTime(f.identifiedAt)}
-                      <span className="block text-xs font-normal text-ink-muted">{f.identifiedBy}</span>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Ditemukan Oleh</dt>
+                    <dd className="mt-0.5 text-xs font-medium text-ink">
+                      <span className="font-semibold">{f.identifiedBy}</span>
+                      <span className="ml-1 text-2xs text-ink-muted">({formatDateTime(f.identifiedAt)})</span>
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">Penanggung jawab</dt>
-                    <dd className="text-sm font-medium text-ink">{f.assignee}</dd>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Penanggung Jawab Perbaikan</dt>
+                    <dd className="mt-0.5 text-xs font-semibold text-ink">{f.assignee}</dd>
                   </div>
                 </dl>
               </CardBody>
@@ -323,10 +433,9 @@ export function TemuanDetail() {
                   <StatusBadge status={status} />
                 </div>
                 <dl className="space-y-2 text-xs">
-                  <div><dt className="text-ink-muted">Klasifikasi</dt><dd className="font-medium text-ink">{cls.description}</dd></div>
                   <div><dt className="text-ink-muted">Penanggung jawab</dt><dd className="font-medium text-ink">{f.assignee}</dd></div>
                   <div><dt className="text-ink-muted">Jatuh tempo</dt><dd className="tnum font-medium text-ink">{f.dueAt ? formatDateTime(f.dueAt) : '-'}</dd></div>
-                  {f.ncrRef && <div><dt className="text-ink-muted">Referensi NCR</dt><dd className="font-mono font-medium text-ink">{f.ncrRef}</dd></div>}
+                  {f.ncrRef && <div><dt className="text-ink-muted">Referensi Formal (NCR/Advanced QC)</dt><dd className="font-mono font-medium text-ink">{f.ncrRef}</dd></div>}
                 </dl>
               </CardBody>
             </Card>

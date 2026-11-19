@@ -38,6 +38,51 @@ const PROFILES: Record<string, {
   escalation: string
   docs: string[]
 }> = {
+  naw: {
+    terminology: 'Ajukan Pemeriksaan (Checklist Operasional Lapangan)',
+    noticeHours: 24,
+    outcomes: [
+      { outcome: 'Keputusan internal (Sesuai / Perlu Perbaikan / Perlu Klarifikasi)', role: 'Pengawas Kualitas', person: 'Rina Maharani' },
+      { outcome: 'Izin tahap kritis pengecoran balok/pelat (opsional)', role: 'Quality Lead / PM', person: 'Budi Santoso' },
+      { outcome: 'Pemeriksaan berkala konsultan pengawas', role: 'Konsultan MK', person: 'PT Cipta Griya' },
+    ],
+    requiredEvidence: ['Foto tulangan & decking/spacer', 'Checklist kesiapan bekisting & kebersihan', 'Laporan harian mandor / subkon'],
+    holdBehavior: [
+      'Izin tahap kritis hanya aktif untuk pekerjaan berisiko tinggi (misal: cor struktur balok/pelat).',
+      'Persetujuan checklist pemeriksaan tidak otomatis menjadi izin lanjut sebelum verifikasi selesai.',
+    ],
+    escalation: 'Target tindak lanjut 1 hari kerja; catatan perbaikan yang tertunda tampil di kotak tindakan.',
+    docs: ['Checklist Struktur & Tulangan Cluster Rev 2', 'Checklist Dinding & Plesteran Rev 1', 'Spesifikasi Teknis Cluster Nawasena', 'Gambar Kerja DED Arsitektur & Struktur'],
+  },
+  rko: {
+    terminology: 'Ajukan Pemeriksaan (Pemeriksaan Unit Ruko)',
+    noticeHours: 24,
+    outcomes: [
+      { outcome: 'Keputusan lapangan (Sesuai / Perlu Perbaikan / Perlu Klarifikasi)', role: 'Pengawas Kualitas', person: 'Rina Maharani' },
+      { outcome: 'Pemeriksaan bersama perwakilan owner', role: 'Perwakilan Owner', person: 'PT Megah Harmoni Properti' },
+    ],
+    requiredEvidence: ['Foto instalasi MEP sebelum plesteran/plafon', 'Checklist kelurusan dinding & acian', 'Checklist punch list serah terima unit'],
+    holdBehavior: [
+      'Titik kendali formal bersifat opsional sesuai kesepakatan kontrak ruko.',
+      'Punch list wajib selesai diverifikasi sebelum serah terima kunci unit.',
+    ],
+    escalation: 'Target review 24 jam; temuan punch list langsung diteruskan ke mandor subkon.',
+    docs: ['Checklist Standar Ruko 3 Lantai Rev 1', 'Checklist Instalasi MEP Ruko', 'Gambar Kerja Shop Drawing Ruko Harmoni'],
+  },
+  gml: {
+    terminology: 'Pemeriksaan Pekerjaan Renovasi & MEP',
+    noticeHours: 48,
+    outcomes: [
+      { outcome: 'Pemeriksaan pembongkaran & struktur retrofit', role: 'Pengawas Kualitas', person: 'Rina Maharani' },
+      { outcome: 'Testing & commissioning sistem MEP', role: 'Site Engineer MEP', person: 'Andi Pratama' },
+    ],
+    requiredEvidence: ['Foto sebelum & sesudah perkuatan', 'BA testing pipa & kelistrikan', 'Laporan harian lapangan'],
+    holdBehavior: [
+      'Pekerjaan pembongkaran struktur lama wajib diverifikasi sebelum pekerjaan arsitektur dimulai.',
+    ],
+    escalation: 'Target review 2 hari kerja.',
+    docs: ['Checklist Retrofit Gedung Rev 1', 'Spesifikasi Renovasi & MEP Gedung'],
+  },
   aru: {
     terminology: 'WIR (Work Inspection Request, istilah kontrak)',
     noticeHours: 48,
@@ -98,7 +143,7 @@ export function Pengaturan() {
   const loading = useSimulatedLoading()
   const { role } = useDemo()
   const toast = useToast()
-  const [projectId, setProjectId] = useState('aru')
+  const [projectId, setProjectId] = useState(PROJECTS[0]?.id ?? 'naw')
   const profile = PROFILES[projectId]
   const pts = controlPointsOfProject(projectId)
   const allowed = CONFIG_VIEWERS.includes(role)

@@ -59,17 +59,17 @@ export function DemoTour({ onOpenGlossary }: { onOpenGlossary?: () => void }) {
 
   if (!isTourOpen) {
     return (
-      <div className="border-b border-line-subtle bg-surface px-5 py-2">
+      <div className="border-b border-line-subtle bg-surface px-4 py-1.5">
         <div className="flex items-center justify-between">
           <button
             type="button"
             onClick={() => setIsTourOpen(true)}
             className="flex items-center gap-2 text-xs font-semibold text-brand-700 hover:text-brand-800 transition-colors cursor-pointer"
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-md bg-brand-50 text-brand-700">
-              <Workflow {...iconProps(13)} />
+            <span className="flex h-5 w-5 items-center justify-center rounded-md bg-brand-50 text-brand-700 border border-brand-200">
+              <Workflow {...iconProps(12)} />
             </span>
-            <span>Buka Modul Demo Terpandu (§15.3 Siklus Mutu)</span>
+            <span>Buka Modul Demo Terpandu (9 Langkah)</span>
           </button>
           {onOpenGlossary && (
             <IconButton
@@ -86,28 +86,28 @@ export function DemoTour({ onOpenGlossary }: { onOpenGlossary?: () => void }) {
 
   return (
     <aside aria-label="Modul Demo Terpandu" className="border-b border-line-subtle bg-surface/95 backdrop-blur-xs transition-all duration-150">
-      <div className="mx-auto px-4 py-2 space-y-2">
-        {/* HUD Ramping: 1 Baris Aksi */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700 border border-brand-200/60 shadow-2xs">
-              <Workflow {...iconProps(15)} />
+      <div className="mx-auto px-4 py-2 space-y-1.5">
+        {/* HUD Ramping: Baris Kontrol Utama */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-brand-50 text-brand-700 border border-brand-200 shadow-2xs">
+              <Workflow {...iconProps(13)} />
             </span>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-bold tracking-tight text-ink uppercase">
-                Demo §15.3
+            <div className="flex items-center gap-2">
+              <span className="text-2xs font-mono font-bold tracking-tight text-ink uppercase">
+                Demo
               </span>
-              <Badge tone="brand" size="sm">
-                Langkah {currentStep}/{DEMO_STEPS.length}
+              <Badge tone="brand" size="sm" className="font-mono">
+                {currentStep}/{DEMO_STEPS.length}
               </Badge>
               {autoPlay && (
                 <Badge tone="warning" size="sm" className="animate-pulse">
                   Otomatis
                 </Badge>
               )}
-              <span className="hidden md:inline-flex items-center gap-1.5 rounded-md bg-sunken px-2 py-0.5 text-2xs font-medium text-ink-secondary">
-                <UserCheck {...iconProps(12)} className="text-ink-muted" />
+              <span className="hidden lg:inline-flex items-center gap-1.5 rounded bg-sunken px-2 py-0.5 text-2xs font-medium text-ink-secondary border border-line-subtle">
+                <UserCheck {...iconProps(11)} className="text-ink-muted" />
                 <span className="font-semibold text-ink">{activeStep.personaName}</span>
                 <span className="text-ink-muted">({activeStep.personaRole})</span>
               </span>
@@ -119,19 +119,19 @@ export function DemoTour({ onOpenGlossary }: { onOpenGlossary?: () => void }) {
             <button
               type="button"
               onClick={() => setAutoPlay(!autoPlay)}
-              title={autoPlay ? 'Jeda otomatisasi' : 'Jalankan otomatis (4.5 detik/langkah)'}
+              title={autoPlay ? 'Jeda otomatisasi' : 'Jalankan otomatis'}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold shadow-2xs transition-colors cursor-pointer',
+                'inline-flex items-center gap-1 rounded-md px-2 py-1 text-2xs font-semibold shadow-2xs transition-colors cursor-pointer',
                 autoPlay
                   ? 'bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-200'
                   : 'bg-brand-600 text-white hover:bg-brand-700',
               )}
             >
-              {autoPlay ? <Pause {...iconProps(13)} /> : <Play {...iconProps(13)} />}
+              {autoPlay ? <Pause {...iconProps(12)} /> : <Play {...iconProps(12)} />}
               <span>{autoPlay ? 'Jeda' : 'Putar'}</span>
             </button>
 
-            <div className="h-4 w-px bg-line-strong mx-0.5" />
+            <div className="h-3.5 w-px bg-line-strong mx-0.5" />
 
             <IconButton
               label="Langkah sebelumnya"
@@ -156,7 +156,7 @@ export function DemoTour({ onOpenGlossary }: { onOpenGlossary?: () => void }) {
               onClick={resetDemo}
             />
 
-            <div className="h-4 w-px bg-line-strong mx-0.5" />
+            <div className="h-3.5 w-px bg-line-strong mx-0.5" />
 
             <IconButton
               label={showDetails ? 'Tutup panduan langkah' : 'Tampilkan panduan langkah'}
@@ -196,18 +196,18 @@ export function DemoTour({ onOpenGlossary }: { onOpenGlossary?: () => void }) {
                 onClick={() => goTo(s.step)}
                 title={`${s.step}. ${s.title}`}
                 className={cn(
-                  'flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 text-2xs font-medium transition-colors cursor-pointer',
+                  'flex shrink-0 items-center gap-1 rounded px-2 py-0.5 text-2xs font-medium transition-colors cursor-pointer',
                   isCurrent
                     ? 'bg-brand-600 text-white shadow-xs font-semibold'
                     : isPassed
-                      ? 'bg-brand-50 text-brand-800 hover:bg-brand-100'
-                      : 'bg-sunken text-ink-muted hover:bg-hover hover:text-ink',
+                      ? 'bg-brand-50 text-brand-800 hover:bg-brand-100 border border-brand-200/60'
+                      : 'bg-sunken text-ink-muted hover:bg-hover hover:text-ink border border-line-subtle',
                 )}
               >
                 {isPassed ? (
-                  <CheckCircle2 {...iconProps(11)} className="text-brand-600" />
+                  <CheckCircle2 {...iconProps(10)} className="text-brand-600" />
                 ) : (
-                  <span className={cn('h-3.5 w-3.5 rounded-full flex items-center justify-center text-[9px] font-bold', isCurrent ? 'bg-white/20' : 'bg-line-strong text-ink-secondary')}>
+                  <span className={cn('h-3 w-3 rounded-full flex items-center justify-center text-[8px] font-bold', isCurrent ? 'bg-white/20' : 'bg-line-strong text-ink-secondary')}>
                     {s.step}
                   </span>
                 )}

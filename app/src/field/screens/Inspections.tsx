@@ -80,8 +80,16 @@ function TimelineList({ events }: { events: TimelineEvent[] }) {
                   <p className="truncate text-sm font-semibold text-ink">{e.title}</p>
                   <span className="tnum shrink-0 text-2xs text-ink-disabled">{formatRelative(e.at)}</span>
                 </div>
-                <p className="mt-0.5 truncate text-xs text-ink-muted">{e.actor} · {e.role}</p>
-                {e.note && <p className="mt-1 text-sm leading-5 text-ink-secondary">{e.note}</p>}
+                <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs">
+                  <span className="font-semibold text-ink">{e.actor}</span>
+                  <span className="rounded bg-sunken px-1.5 py-0.2 text-[10px] text-ink-muted border border-line-subtle">{e.role}</span>
+                </div>
+                {e.note && (
+                  <div className="mt-1 flex items-start gap-1.5 text-xs text-ink-secondary">
+                    <span className="font-semibold text-ink-muted">Catatan:</span>
+                    <span>{e.note}</span>
+                  </div>
+                )}
                 {e.detail && <p className="mt-0.5 truncate text-xs text-ink-muted">{e.detail}</p>}
               </div>
             </li>
@@ -134,8 +142,8 @@ export function InspectionList() {
               <Plus {...iconProps(19)} />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-md font-semibold">Ajukan inspeksi</span>
-              <span className="block text-sm text-white/80">Pilih titik ITP, lampirkan bukti, kirim</span>
+              <span className="block text-md font-semibold">Ajukan Pemeriksaan</span>
+              <span className="block text-sm text-white/80">Pilih checklist pemeriksaan, lampirkan bukti foto, kirim</span>
             </span>
           </button>
         )}
@@ -247,11 +255,11 @@ export function InspectionCreate() {
     navigate(`/field/inspeksi/${wir.id}`)
   }
 
-  const STEPS = ['Titik ITP', 'Lingkup & bukti', 'Kirim']
+  const STEPS = ['Acuan Checklist', 'Lingkup & bukti', 'Kirim']
 
   return (
     <Screen
-      topBar={<TopBar title="Ajukan Inspeksi" subtitle={ref} onBack="/field/inspeksi" />}
+      topBar={<TopBar title="Ajukan Pemeriksaan" subtitle={ref} onBack="/field/inspeksi" />}
       sticky={(
         <StickyBar>
           <div className="flex gap-2">
@@ -286,10 +294,10 @@ export function InspectionCreate() {
       <div className="space-y-5">
         <StepBar steps={STEPS} current={step} />
 
-        {/* Langkah 1: pilih titik ITP */}
+        {/* Langkah 1: pilih acuan checklist */}
         {step === 0 && (
           <section className="space-y-2">
-            <SectionTitle>Titik ITP proyek</SectionTitle>
+            <SectionTitle>Acuan checklist pemeriksaan</SectionTitle>
             {points.map((p) => {
               const pt = POINT_TYPE[p.type]
               return (
@@ -377,7 +385,7 @@ export function InspectionCreate() {
               <SectionTitle>Ringkasan pengajuan</SectionTitle>
               <MCard className="space-y-2.5 p-3.5">
                 <KV label="Nomor">{ref}</KV>
-                <KV label="Titik ITP">{point.name}</KV>
+                <KV label="Acuan Checklist">{point.name}</KV>
                 <KV label="Lingkup">{portion.trim() || 'Sesuai catatan lapangan'}</KV>
                 <KV label="Foto bukti">{photos} lampiran</KV>
               </MCard>
@@ -540,7 +548,7 @@ export function InspectionDetail() {
       topBar={(
         <TopBar
           title={wir.ref}
-          subtitle={wir.title}
+          subtitle={wir.activityType ? `[${wir.targetScope ?? wir.location}] ${wir.activityType}` : wir.title}
           onBack="/field/inspeksi"
           right={<StatusBadge status={status} size="sm" />}
         />
@@ -581,7 +589,7 @@ export function InspectionDetail() {
       <div className="space-y-5">
         {/* Info utama */}
         <MCard className="space-y-2.5 p-3.5">
-          <KV label="Titik ITP">{point ? `${point.name}` : 'Titik ITP'}</KV>
+          <KV label="Acuan Checklist">{point ? `${point.name}` : 'Acuan Pemeriksaan'}</KV>
           {point && <KV label="Jenis titik">{POINT_TYPE[point.type].label}</KV>}
           <KV label="Lokasi">{wir.location}</KV>
           <KV label="Lingkup">{wir.portion}</KV>
@@ -673,7 +681,11 @@ export function InspectionDetail() {
                         <span className="min-w-0 flex-1 text-sm leading-5 text-ink-secondary">
                           {it.label}
                           {it.source && <span className="block text-xs text-ink-muted">Ref: {it.source}</span>}
-                          {it.note && <span className="mt-0.5 block text-xs font-medium text-amber-700">{it.note}</span>}
+                          {it.note && (
+                            <span className="mt-1 flex items-start gap-1 text-xs font-medium text-amber-800">
+                              <span className="font-semibold text-amber-900">Catatan:</span> {it.note}
+                            </span>
+                          )}
                         </span>
                       </li>
                     ))}
@@ -908,7 +920,7 @@ export function Conduct() {
 
   return (
     <Screen
-      topBar={<TopBar title="Pelaksanaan Inspeksi" subtitle={`${wir.ref} · ${wir.title}`} onBack={`/field/inspeksi/${wir.id}`} />}
+      topBar={<TopBar title="Pelaksanaan Inspeksi" subtitle={`${wir.ref} · ${wir.activityType ?? wir.title}`} onBack={`/field/inspeksi/${wir.id}`} />}
       sticky={(
         <StickyBar>
           {step < 2 ? (
@@ -940,7 +952,7 @@ export function Conduct() {
         {step === 0 && (
           <div className="space-y-3">
             <p className="text-xs leading-5 text-ink-muted">
-              {point ? `${point.itpRef} · ${point.item}` : 'Checklist titik ITP'} · tandai tiap butir saat memeriksa.
+              {point ? `${point.itpRef} · ${point.item}` : 'Checklist acuan pemeriksaan'} · tandai tiap butir saat memeriksa.
             </p>
             {checklist.map((sec) => (
               <MCard key={sec.id} className="divide-y divide-line-subtle">

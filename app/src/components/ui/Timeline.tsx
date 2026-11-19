@@ -53,9 +53,10 @@ export function Timeline({ items, className }: { items: TimelineItem[]; classNam
                 <div className="shrink-0 text-xs text-ink-muted">{item.meta}</div>
               </div>
               {item.note && (
-                <p className="mt-1.5 rounded-lg border border-line-subtle bg-sunken/60 px-3 py-2 text-xs text-ink-secondary italic">
-                  “{item.note}”
-                </p>
+                <div className="mt-1.5 flex items-start gap-1.5 rounded-lg border border-line-subtle bg-sunken/40 px-2.5 py-1.5 text-xs text-ink-secondary">
+                  <span className="font-semibold text-ink-muted text-[10px] uppercase tracking-wider shrink-0 mt-0.5">Catatan:</span>
+                  <span className="flex-1">{item.note}</span>
+                </div>
               )}
               {item.detail && <div className="mt-1 text-xs text-ink-muted">{item.detail}</div>}
             </div>

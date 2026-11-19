@@ -61,7 +61,7 @@ function PrintPreview({ insId, onClose }: { insId: string; onClose: () => void }
           {[
             ['Lingkup', ins.title],
             ['Lokasi', ins.location],
-            ['Titik / ITP', `${POINT_TYPE[ins.pointType].label} (${ins.itpRef})`],
+            ['Acuan Pemeriksaan', `${POINT_TYPE[ins.pointType].label} (${ins.itpRef})`],
             ['Status', INSPECTION_STATUS[ins.status].label],
             ['Pengirim', ins.submitter.name],
             ['Reviewer', ins.reviewer],
@@ -227,11 +227,24 @@ export function Laporan() {
                   <li key={i.id} className="flex items-center gap-3 py-2.5 first:pt-0">
                     <ClipboardList {...iconProps(16)} className="shrink-0 text-ink-muted" />
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded bg-brand-50 px-1.5 py-0.5 font-mono text-2xs font-semibold text-brand-700">{i.ref}</span>
-                        <p className="truncate text-sm font-medium text-ink">{i.title}</p>
+                      <div className="space-y-0.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="rounded bg-brand-50 px-1.5 py-0.2 font-mono text-2xs font-semibold text-brand-700">{i.ref}</span>
+                          {i.discipline && (
+                            <span className="rounded bg-sunken px-1.5 py-0.2 text-[10px] font-semibold text-ink-secondary border border-line-subtle">
+                              {i.discipline}
+                            </span>
+                          )}
+                          <span className="truncate text-sm font-semibold text-ink">{i.activityType ?? i.title}</span>
+                        </div>
+                        <p className="text-2xs text-ink-muted">
+                          <span className="font-semibold text-ink-secondary">{projectCode(i.projectId)}</span>
+                          <span className="mx-1 text-ink-disabled">·</span>
+                          <span className="font-mono text-ink-secondary">[{i.targetScope}]</span>
+                          <span className="mx-1 text-ink-disabled">·</span>
+                          <span>{i.location}</span>
+                        </p>
                       </div>
-                      <p className="mt-0.5 text-xs text-ink-muted">{projectCode(i.projectId)}: {i.location}</p>
                     </div>
                     <Button size="xs" variant="secondary" onClick={() => setPrintId(i.id)}>
                       <Printer {...iconProps(13)} /> Pratinjau

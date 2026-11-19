@@ -1,37 +1,46 @@
 # Product Requirements Document (PRD)
 ## Site Operations Dashboard — Web
-**Product concept:** Construction Site Execution Control  
+**Product concept:** Site Operations & Project Quality Control  
 **Document status:** Concept PRD for UI-only sales demo  
-**Version:** 1.0  
-**Date:** 31 October 2026  
-**Primary market hypothesis:** Indonesian medium-sized building and civil contractors managing multiple active projects  
-**Primary users:** Project Manager, Site Manager, QA/QC, Site Engineer, Operations/Admin  
+**Version:** 1.1  
+**Date:** 31 October 2026 (diperbarui 18 November 2026)  
+**Primary market hypothesis:** Kontraktor bangunan skala menengah Indonesia yang mengelola beberapa proyek aktif — mencakup klaster perumahan, ruko/shophouse, dan gedung komersial kecil-menengah  
+**Primary users:** Project Manager, Site Manager, Site Engineer/Supervisor, QA/QC, Field Coordinator, Operations/Admin  
+**Demo company:** PT Tri Daya Bangun  
 **Related interface:** Field Operations App (mobile-first); described here only where it affects the web dashboard
 
 ---
 
 ## 1. Executive summary
 
-Site Operations Dashboard is a web interface for a contractor's project and operations team to monitor the field workflow around work readiness, inspection requests, inspection decisions, findings, corrective actions, re-inspection, and release to the next activity.
+**Site Operations Dashboard** adalah antarmuka web bagi kontraktor bangunan skala menengah Indonesia untuk memantau progres lapangan, pemeriksaan kualitas, dan tindak lanjut perbaikan di berbagai proyek dan unit pekerjaan.
 
-It is **not** a general project-management suite and does not attempt to replace scheduling, budgeting, accounting, procurement, BIM, document control, or an owner's enterprise construction-management platform.
+**Posisi Produk:** *Site Operations & Project Quality Control*  
+**Janji Produk Utama:**
+> *"Pantau progres proyek, dokumentasikan pekerjaan lapangan, lakukan pemeriksaan kualitas, dan tindak lanjuti pekerjaan yang perlu diperbaiki dalam satu alur."*
 
-The product addresses a specific coordination problem: field work may be completed or presented as ready, but the current inspection status, outstanding findings, evidence, decision authority, and permission to proceed can be distributed across chats, spreadsheets, paper forms, calls, and separate project records. The dashboard makes the workflow and its accountable next action visible.
+Produk ini dirancang khusus untuk mengomunikasikan kendali operasional di beberapa proyek dan lokasi kerja (klaster perumahan bertahap, deretan ruko, dan bangunan komersial lokal). Produk ini secara tegas **bukan**:
+- Sistem manajemen proyek generik (project management tool).
+- Enterprise ERP konstruksi.
+- Sistem akuntansi, pengadaan (procurement), inventaris, atau penjadwalan master Gantt penuh.
+- Platform formal enterprise NCR / CAPA.
 
-This PRD describes a **UI-only demonstrator**. Screens, sample data, simulated status transitions, and prototype interactions are in scope. Production authentication, integrations, persistence, offline synchronization, notifications, digital signatures with legal effect, and contractual release automation are not implemented in the demo.
+Produk ini menyelesaikan masalah koordinasi nyata kontraktor: pekerjaan lapangan dilaporkan selesai atau siap, namun status pemeriksaan, catatan perbaikan/punch list, bukti foto perbaikan, dan izin melanjutkan tahap berikutnya sering kali tercecer di grup WhatsApp, spreadsheet, form kertas, atau panggilan telepon. Dashboard ini menyatukan alur tersebut sehingga penanggung jawab dan tindakan berikutnya selalu jelas.
+
+PRD ini mendefinisikan demonstrator UI interaktif dengan data fiktif yang realistis dan konsisten (PT Tri Daya Bangun).
 
 ### Product thesis
 
-If a contractor can see, by project and work location:
-- what is awaiting inspection or decision;
-- what has been rejected or requires correction;
-- who owns the next action and by when;
-- what evidence and project requirement support the decision; and
-- whether a defined hold point has actually been released,
+Jika kontraktor dapat melihat langsung per proyek, blok, dan unit kerja:
+- Proyek aktif dan unit/area dalam pengerjaan;
+- Progres pekerjaan yang dilaporkan dari lapangan;
+- Pemeriksaan yang menunggu tindak lanjut;
+- Temuan pekerjaan terbuka (punch list / catatan perbaikan);
+- Bukti perbaikan yang menunggu verifikasi pengawas;
+- Pekerjaan yang terlambat atau tertunda; dan
+- Unit-unit yang mendekati serah terima (handover),
 
-then project teams can reduce coordination latency, make outstanding work visible earlier, and improve the traceability of quality decisions.
-
-These are **intended outcomes**, not guaranteed savings. A customer discovery process must validate whether this workflow is a meaningful bottleneck for a specific contractor.
+maka tim operasional dan manajemen kontraktor dapat mempercepat siklus kerja, mendeteksi cacat lebih dini sebelum serah terima, dan memastikan perbaikan benar-benar diselesaikan di lapangan.
 
 ---
 
@@ -68,26 +77,39 @@ The product does not:
 
 ## 3. Target customer and operating context
 
-### 3.1 Ideal customer profile (ICP)
+### 3.1 Target Customer Segment (ICP)
 
-A medium-sized contractor that:
-- has several active projects or multiple work fronts;
-- employs project managers/site managers, site engineers, and QA/QC personnel;
-- coordinates with subcontractors, consultants, owners, and/or third-party inspectors;
-- has inspection/approval events that can block subsequent work;
-- currently uses a mixture of chat, spreadsheets, paper forms, shared folders, or an existing system with workflow visibility gaps;
-- can identify a project or process owner willing to validate the concept.
+Target audiens utama adalah **kontraktor bangunan skala kecil-menengah mapan dan kontraktor menengah di Indonesia** yang mengerjakan:
+- **Klaster perumahan (residential housing clusters)** dan proyek perumahan multi-unit bertahap (multi-unit housing developments).
+- **Pembangunan ruko (shophouse developments)** dan rukan.
+- **Gedung komersial kecil-menengah** (kantor lokal, klinik, ruko perbankan, minimarket bertingkat).
+- **Proyek renovasi dan fit-out bangunan** yang memiliki struktur tim lapangan terorganisir.
 
-### 3.2 Initial project types
+Perusahaan ini memiliki karakteristik:
+- Menjalankan beberapa proyek aktif atau beberapa front kerja secara paralel (multi-front).
+- Memiliki tim lapangan terstruktur: Project Manager, Site Manager, Site Supervisor, Site Engineer, Pengawas Kualitas (QC), atau Field Coordinator.
+- Bekerja sama dengan mandor, subkontraktor, dan tim tukang spesialis.
+- Memiliki kewajiban pelaporan progres harian (laporan harian mandor/engineer).
+- Melakukan pemeriksaan kualitas dan checklist pekerjaan per tahapan konstruksi.
+- Memiliki daftar pekerjaan yang perlu diperbaiki (catatan cacat, rework, atau punch list).
+- Memiliki kewajiban pelaporan progres dan serah terima (handover) kunci ke pemilik properti / developer.
 
-The demo scenario is a building project with a structural reinforcement inspection before concrete placement. The underlying product model should be configurable for:
-- building construction;
-- civil/road/bridge work;
-- MEP installation;
-- finishing and waterproofing;
-- subcontractor work packages.
+**Bukan Target Demo:**
+- *Tukang perorangan / individual builder.*
+- *Usaha renovasi mikro rumah tinggal 1 unit tanpa tim lapangan.*
+- *Kontraktor EPC megaproyek, kontraktor infrastruktur jalan tol nasional, atau korporasi industri migas/tambang.*
 
-The demo must not imply that one checklist or approval path applies to every discipline or project.
+### 3.2 Demo Scenarios & Sample Projects
+
+1. **Skenario Utama: Project Cluster Perumahan — Cluster Nawasena (Tahap 2) — 24 Unit**
+   - Struktur proyek: Proyek Cluster Nawasena, Tahap 2, Blok A (8 unit), Blok B (8 unit), Blok C (8 unit).
+   - Tipe unit: Type 70/105, Type 60/90, Type 45/72.
+   - Tahapan pekerjaan: Pondasi & sloof, struktur beton, dinding & plesteran, atap baja ringan, instalasi MEP, lantai & keramik, pengecatan, finishing, dan serah terima (punch list).
+   - Contoh kasus demo: Unit A-05 pada pekerjaan pembesian balok & pelat lantai 2 yang memerlukan pemeriksaan, ditemukan kekurangan spacer/decking beton (F-NW-021), diperbaiki oleh tim subkon, diverifikasi oleh pengawas kualitas, hingga izin pengecoran dirilis.
+
+2. **Skenario Sekunder: Pembangunan Ruko Grand Harmoni — 6 Unit (3 Lantai)**
+   - Struktur: 6 unit ruko bertingkat 3 lantai di kawasan komersial.
+   - Lingkup: Pekerjaan struktur, arsitektur, instalasi jalur pipa air & kabel daya (MEP), finishing rolling door, cat, dan punch list serah terima.
 
 ### 3.3 Roles and parties
 
@@ -310,71 +332,66 @@ The demo should use consistent terminology. Labels may be localized to Indonesia
 **Activity history**
 - actor, role, timestamp, action, old/new value where relevant, comment, linked object
 
-### 7.2 Terms and distinctions
+### 7.2 Terminology Mapping: Formal QA/QC to Default Operational Indonesian
 
-- **Inspection request:** request to inspect a defined work scope.
-- **Inspection outcome:** result of an inspection event.
-- **Finding:** issue or observation recorded during review.
-- **NCR:** formal nonconformance record, only when required by the project's quality procedure and authorized classification.
-- **Corrective action:** action to address a confirmed issue; closure requires verification where project rules require it.
-- **Hold point:** project-defined point beyond which work must not proceed until the required release is recorded by the authorized party.
-- **Witness point:** project-defined notification/attendance point. The effect of a missed attendance or waiver is governed by the project procedure.
-- **Review point:** document or record review point; it is not automatically a physical hold point.
-- **Approved / accepted:** decision outcome within a specified scope; does not imply broader contractual acceptance.
-- **Ready for next activity:** system display derived from project-defined prerequisites; must not imply release where required authority is missing.
+Audiens utama (kontraktor menengah Indonesia) umumnya tidak menggunakan istilah formal seperti ITP, WIR, atau NCR dalam komunikasi harian di proyek residensial atau ruko. Oleh karena itu, antarmuka default menggunakan bahasa operasional yang akrab bagi tim lapangan:
 
-A rejected inspection request is not automatically an NCR. It may be incomplete, submitted too early, incorrectly located, or missing required evidence. A technical nonconformance may require a separate NCR process. [Source: HAL's discussion of WIR and NCR distinction](https://www.halsimplify.com/knowledge-center/work-inspection-request-construction)
+| Istilah Formal / EPC | Istilah UI Default (Operasional) | Makna & Penggunaan |
+|---|---|---|
+| **Inspection Request / WIR** | **Ajukan Pemeriksaan** | Pengajuan pemeriksaan kesiapan pekerjaan oleh Site Supervisor / Engineer. |
+| **ITP (Inspection & Test Plan)** | **Checklist Pemeriksaan / Acuan Pemeriksaan** | Checklist acuan mutu pekerjaan per tahapan (misal: checklist pembesian balok, checklist plesteran). |
+| **NCR (Non-Conformance Report)** | **Temuan Pekerjaan** | Catatan cacat, defect, atau punch list perbaikan. Formal NCR hanya dibuka pada kasus struktural berat melalui modul Advanced QC. |
+| **Corrective Action** | **Tindak Lanjut Perbaikan** | Tugas perbaikan yang didelegasikan ke mandor / subkontraktor pelaksana. |
+| **Re-inspection** | **Verifikasi Perbaikan** | Pemeriksaan ulang oleh pengawas mutu setelah foto bukti perbaikan dikirimkan. |
+| **Hold Point** | **Menunggu Pemeriksaan / Persetujuan (Izin Tahap Kritis)** | Penanda tahapan berisiko tinggi (misal: izin cor beton). Berada pada modul *Advanced QC (Opsional)*. |
+| **Inspection Outcome** | **Hasil Pemeriksaan** | Keputusan hasil: *Sesuai*, *Perlu Perbaikan*, *Perlu Klarifikasi*, atau *Belum Diperiksa*. |
+| **Quality Control** | **Pemeriksaan Kualitas** | Pengawasan mutu lapangan tanpa beban birokrasi berlebih. |
+
+> [!IMPORTANT]
+> **Pembedaan Kritis Alur Kerja:**
+> - Checklist pemeriksaan standar **tidak sama dengan** dokumen ITP formal kontraktual berat.
+> - Cacat minor atau perbaikan checklist **tidak otomatis diklasifikasikan sebagai NCR formal**. NCR formal tetap tersedia sebagai kapabilitas lanjutan (*Advanced QC*).
+> - Status "Sesuai / Diterima" **tidak otomatis diartikan sebagai persetujuan kontraktual** pelepasan tanggung jawab.
+> - Logika titik kendali (Hold Point) hanya aktif pada pekerjaan yang secara eksplisit dikonfigurasi berisiko tinggi (misal: izin cor struktur balok/pelat).
 
 ---
 
 ## 8. Information architecture
 
-Primary navigation:
-1. Overview
-2. Projects
-3. Inspections
-4. Findings & Actions
-5. Activity / Notifications
-6. Reports (P1)
-7. Project Settings (authorized roles only)
-
-Global UI:
-- company/project context selector;
-- universal search;
-- notification/action count;
-- current user and simulated role;
-- help/terminology access;
-- clear environment label: “Demo data”.
-
-### 8.1 Dashboard landing behavior
-
-- Management roles land on portfolio overview.
-- Project roles land on their assigned project overview.
-- QA/QC roles land on their action inbox or inspection register.
-- Demo role switcher allows the presenter to switch personas without implying real access control.
+Navigasi primer web dashboard:
+1. **Ringkasan (Overview):** Portofolio metrik, proyek perlu perhatian, status operasional unit & blok, isu terbuka, laporan harian, tren mutu.
+2. **Proyek:** Direktori proyek aktif & arsip, detail proyek per unit, progres rencana vs realisasi, dan modul Advanced QC (Titik Kendali).
+3. **Pemeriksaan (Inspections):** Register pengajuan pemeriksaan kualitas lapangan, filter status, checklist review, dan riwayat keputusan.
+4. **Temuan & Perbaikan (Findings & Punch List):** Register catatan temuan, punch list serah terima unit, bukti foto perbaikan, dan verifikasi.
+5. **Kotak Tindakan:** Inbox aksi personal sesuai peran pengguna (review pengajuan, tindak lanjut temuan, verifikasi perbaikan).
+6. **Aktivitas:** Jejak audit kronologis seluruh peristiwa lapangan.
+7. **Laporan & Pengaturan Proyek:** Konfigurasi profil alur mutu dan dokumen acuan proyek (Advanced QC).
 
 ---
 
 ## 9. Functional requirements
 
-Priority convention:
-- **P0:** required for the demo's core narrative.
-- **P1:** valuable enhancement.
-- **P2:** future product consideration.
+### 9.1 Dashboard Metrics & Operational Visibility (FR-OV)
 
-### 9.1 Portfolio overview
+Web dashboard mengutamakan visibilitas operasional pada tingkat proyek dan unit/blok:
 
-**FR-OV-01 (P0):** Display active projects accessible in the demo dataset.
-- Each project card/row shows project name/code, location, project manager, overall workflow pulse, open inspections, overdue actions, and critical hold points.
-- “Workflow pulse” is explicitly defined as a summary of inspection/action workflow, not overall construction completion.
+**FR-OV-01 (P0): 7 Metrik Operasional Utama Portofolio**
+Dashboard menampilkan 7 metrik ringkasan teratas:
+1. **Proyek aktif:** Jumlah proyek konstruksi yang sedang berjalan (Cluster Nawasena, Ruko Grand Harmoni, Renovasi Gedung Graha Mulia).
+2. **Unit / area dalam pengerjaan:** Jumlah total kavling/unit/lantai yang sedang dalam masa konstruksi aktif.
+3. **Progres pekerjaan yang dilaporkan:** Rata-rata capaian progres fisik lapangan dari laporan harian.
+4. **Pemeriksaan menunggu tindak lanjut:** Pengajuan pemeriksaan kualitas yang menunggu jadwal, review, atau klarifikasi.
+5. **Temuan pekerjaan terbuka:** Total catatan ketidaksesuaian atau punch list yang belum selesai diperbaiki.
+6. **Perbaikan menunggu verifikasi:** Bukti perbaikan yang telah dikirim tim lapangan dan menunggu verifikasi pengawas.
+7. **Pekerjaan yang terlambat atau tertunda:** Pekerjaan, unit, atau tindakan perbaikan yang telah melewati target jatuh tempo.
 
-**FR-OV-02 (P0):** Display portfolio-level counts:
-- inspection requests awaiting review;
-- inspections scheduled/upcoming;
-- submissions requiring correction;
-- open findings/corrective actions;
-- overdue items;
-- hold points awaiting authorized release.
+**FR-OV-02 (P0): Status Operasional Unit & Blok**
+Ringkasan portofolio menyediakan komponen visual status unit & blok untuk klaster perumahan (Blok A, B, C pada Cluster Nawasena) dan deretan ruko:
+- Menampilkan identitas unit (misal: *Unit A-05*, *Unit B-12*, *Ruko 03*).
+- Menampilkan tahapan pekerjaan aktif (*Pondasi & Sloof*, *Struktur Beton*, *Dinding & Plesteran*, *Atap Baja Ringan*, *MEP*, *Lantai & Keramik*, *Finishing & Punch List*).
+- Menampilkan progres fisik per unit (persentase).
+- Menampilkan badge status operasional: *Perlu Pemeriksaan*, *Ada Temuan*, *Tertunda*, *Punch List / Menuju Serah Terima*, atau *Sesuai Jadwal*.
+- Akses cepat langsung ke pengajuan pemeriksaan aktif atau catatan temuan unit tersebut.
 
 **FR-OV-03 (P0):** Clicking any metric opens a filtered register with the same count logic.
 

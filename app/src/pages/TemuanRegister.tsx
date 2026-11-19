@@ -61,7 +61,7 @@ export function TemuanRegister() {
   return (
     <>
       <PageHeader
-        title="Temuan & Tindakan"
+        title="Temuan & Perbaikan"
         meta={<Badge tone="neutral" size="sm" className="tnum">{FINDINGS.length} temuan</Badge>}
       />
 
@@ -136,7 +136,19 @@ export function TemuanRegister() {
                     <TableRow key={f.id} clickable onClick={() => navigate(`/dashboard/temuan/${f.id}`)}>
                       <MonoCell>{f.ref}</MonoCell>
                       <TableCell>
-                        <p className="max-w-80 truncate text-sm font-medium text-ink">{f.title}</p>
+                        <div className="flex flex-wrap items-center gap-1.5 max-w-md">
+                          {f.trade && (
+                            <span className="rounded bg-brand-50 px-1.5 py-0.2 text-[10px] font-semibold text-brand-700 border border-brand-200">
+                              {f.trade}
+                            </span>
+                          )}
+                          <span className="truncate text-sm font-semibold text-ink">{f.defectType ?? f.title}</span>
+                          {f.element && (
+                            <span className="rounded bg-sunken px-1.5 py-0.2 font-mono text-[10px] text-ink-secondary border border-line-subtle">
+                              {f.element}
+                            </span>
+                          )}
+                        </div>
                         <div className="mt-1 flex max-w-80 items-center gap-1.5 text-xs text-ink-muted">
                           <span className="shrink-0 rounded bg-sunken px-1.5 py-0.2 font-mono text-2xs font-semibold text-ink-secondary border border-line-subtle">
                             {projectCode(f.projectId)}
@@ -151,7 +163,7 @@ export function TemuanRegister() {
                         <StatusBadge status={FINDING_CLASSIFICATION[f.classification]} size="sm" />
                         {f.ncrRequired && (
                           <span className="mt-1 block">
-                            <Badge tone="danger" size="sm" icon={Flag}>NCR diperlukan</Badge>
+                            <Badge tone="danger" size="sm" icon={Flag}>Tindak Lanjut Formal</Badge>
                           </span>
                         )}
                         {f.ncrRef && <Badge tone="neutral" size="sm" className="mt-1 font-mono">{f.ncrRef}</Badge>}

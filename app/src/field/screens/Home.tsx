@@ -46,11 +46,11 @@ function EngineerHome() {
   const todayReport = reports.find((r) => r.isToday && r.projectId === projectId)
   const attention: { id: string; title: string; meta: string; to: string; icon: LucideIcon }[] = [
     ...wirs.filter((w) => w.projectId === projectId && ['correction_required', 'clarification_required'].includes(w.status))
-      .map((w) => ({ id: w.id, title: `${w.ref} perlu tindak lanjut`, meta: INSPECTION_STATUS[w.status].label, to: `/field/inspeksi/${w.id}`, icon: FileWarning })),
+      .map((w) => ({ id: w.id, title: `[${w.targetScope ?? w.ref}] ${w.activityType ?? w.title}`, meta: INSPECTION_STATUS[w.status].label, to: `/field/inspeksi/${w.id}`, icon: FileWarning })),
     ...findings.filter((f) => f.projectId === projectId && ['assigned', 'open', 'action_in_progress'].includes(f.status))
-      .map((f) => ({ id: f.id, title: `${f.ref} ditugaskan ke tim Anda`, meta: f.responsible, to: `/field/temuan/${f.id}`, icon: MessageSquareWarning })),
+      .map((f) => ({ id: f.id, title: `[${f.element ?? f.ref}] ${f.defectType ?? f.title}`, meta: f.responsible, to: `/field/temuan/${f.id}`, icon: MessageSquareWarning })),
     ...reports.filter((r) => r.projectId === projectId && r.status === 'returned')
-      .map((r) => ({ id: r.id, title: `Laporan ${r.dateLabel} dikembalikan`, meta: 'Perlu pembaruan', to: `/field/laporan/${r.id}`, icon: FilePenLine })),
+      .map((r) => ({ id: r.id, title: `[${r.ref}] Laporan ${r.dateLabel} Perlu Revisi`, meta: 'Perlu Revisi', to: `/field/laporan/${r.id}`, icon: FilePenLine })),
   ].slice(0, 3)
 
   const active = activities.filter((a) => a.projectId === projectId && ['berlangsung', 'tertahan'].includes(a.status))
@@ -116,8 +116,8 @@ function EngineerHome() {
             to={todayReport ? `/field/laporan/${todayReport.id}` : '/field/laporan/baru'}
             className="mt-3 flex h-11 w-full items-center justify-center gap-1.5 rounded-lg bg-brand-600 text-sm font-semibold text-white transition-colors active:bg-brand-800"
           >
-            {todayReport ? 'Lihat laporan' : 'Buat Laporan Harian'}
-            <ArrowRight {...iconProps(15)} strokeWidth={2.2} />
+            <FilePenLine {...iconProps(15)} strokeWidth={2.2} />
+            <span>{todayReport ? 'Lihat Laporan' : 'Buat Laporan Harian'}</span>
           </Link>
         </MCard>
 
@@ -156,10 +156,10 @@ function EngineerHome() {
             : active.slice(0, 2).map((a) => <ActivityRow key={a.id} a={a} />)}
         </section>
 
-        {/* Inspeksi */}
+        {/* Pemeriksaan */}
         <section className="space-y-2">
           <SectionTitle action={<SeeAll to="/field/inspeksi">Semua</SeeAll>}>
-            Inspeksi
+            Pemeriksaan
           </SectionTitle>
           {myWirs.length === 0
             ? <EmptyState size="sm" icon={ClipboardCheck} title="Belum ada pengajuan berjalan" />
@@ -182,7 +182,7 @@ function EngineerHome() {
           <SectionTitle>Aksi cepat</SectionTitle>
           <div className="grid grid-cols-2 gap-2">
             <QuickTile icon={FilePenLine} label="Update Progres" onClick={pickActivity} />
-            <QuickTile icon={ClipboardCheck} label="Ajukan Inspeksi" onClick={() => navigate('/field/inspeksi/baru')} />
+            <QuickTile icon={ClipboardCheck} label="Ajukan Pemeriksaan" onClick={() => navigate('/field/inspeksi/baru')} />
             <QuickTile icon={TriangleAlert} label="Catat Kendala" onClick={() => navigate('/field/kendala/baru')} />
             <QuickTile icon={Truck} label="Material Datang" onClick={() => navigate('/field/material/baru')} />
           </div>
@@ -215,7 +215,7 @@ function QcHome() {
         <section className="space-y-2">
           <SectionTitle>Terjadwal hari ini</SectionTitle>
           {scheduledToday.length === 0
-            ? <EmptyState size="sm" icon={AlarmClock} title="Tidak ada inspeksi terjadwal" description="Pengajuan baru akan muncul di antrian." />
+            ? <EmptyState size="sm" icon={AlarmClock} title="Tidak ada pemeriksaan terjadwal" description="Pengajuan baru akan muncul di antrian." />
             : scheduledToday.map((w) => (
               <WirCard key={w.id} wir={w} meta={w.scheduledAt ? `Hari ini · ${new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' }).format(new Date(w.scheduledAt)).replace('.', ':')} WIB` : undefined} />
             ))}
@@ -233,10 +233,10 @@ function QcHome() {
             ))}
         </section>
 
-        {/* Re-inspeksi */}
+        {/* Verifikasi Pemeriksaan */}
         {reinspections.length > 0 && (
           <section className="space-y-2">
-            <SectionTitle>Re-inspeksi</SectionTitle>
+            <SectionTitle>Verifikasi Pemeriksaan</SectionTitle>
             {reinspections.map((w) => (
               <WirCard key={w.id} wir={w} meta={w.scheduledAt ? `Ronde berikutnya ${formatRelative(w.scheduledAt)}` : 'Menunggu penjadwalan'} />
             ))}
@@ -261,7 +261,7 @@ function QcHome() {
             onClick={() => navigate(scheduledToday[0] ? `/field/inspeksi/${scheduledToday[0].id}` : '/field/inspeksi')}
             className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-brand-600 text-md font-semibold text-white shadow-xs transition-colors active:bg-brand-800"
           >
-            <Play {...iconProps(16)} /> Mulai Inspeksi
+            <Play {...iconProps(16)} /> Mulai Pemeriksaan
           </button>
           <div className="grid grid-cols-2 gap-2">
             <QuickTile icon={ListChecks} label="Lihat Antrian" onClick={() => navigate('/field/inspeksi')} />

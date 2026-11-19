@@ -24,7 +24,11 @@ When building a product or feature, always use the **Workstation / Tool** mental
 | Architecture Dimension | ❌ Article Website Trap (Slop) | ✅ Professional Web App (Required) |
 | :--- | :--- | :--- |
 | **Header Pattern** | H1 title followed by 2-3 long paragraphs explaining what the page does | Compact title + entity/status badge + direct action toolbar (filter, search, view switcher) |
+| **Narrative vs. Values** | Domain facts, measurements, and logs written as long narrative sentences or paragraphs (*"Field measurement at beam B2 showed 20mm; spec requires 25mm..."*) | Structured data models rendered as atomic visual tokens: 3-column benchmark diff cards (Actual \| Target \| Delta), categorical pills, and quantitative chips |
+| **Status & Definitions** | Printing dictionary definitions inline beneath badges or callout headers (*"Work does not meet checklist/specs, requires rectification."*) | Crisp semantic badge only. Explanations relegated to hover tooltips or on-demand glossary modals (`?`). Callout body reserved strictly for actionable next steps and owners |
 | **Data Differentiation** | Same-size monotonous text concatenated with dot chains (`A · B · C · D`) | Visual token structure: *stacked layout*, *micro-icon chips*, semantic badges, separate grids |
+| **Density & Disclosure** | Forcing dozens of text labels, descriptions, and timestamps into cramped list items or cards, causing visual fatigue | Progressive disclosure: Primary operational signals (ID + Status + Key Delta) on card; secondary details accessible via clean Modal, Drawer, or Popover |
+| **Input Architecture** | Lazy single `<Textarea>` expecting users to type 50-word prose paragraphs describing an incident or task | Structured input blocks: category selector, scoped entity picker, quantitative duration input, and concise impact/action field |
 | **Context & Evidence** | No visual elements; just label rows, raw numbers, and plain filename links | *Domain reality*: document thumbnails, photo previews with metadata overlays, visual report cards |
 | **Buttons & Actions** | Long repetitive text buttons ("Add Row", "Delete Item") & decorative arrows (`→`) | *Icon-first buttons* (`IconButton`) with accessible tooltips & semantic affordance (`ExternalLink`) |
 | **Quantitative / KPI** | Small numbers mixed into paragraphs or flat tables | Massive monospaced numbers (`text-2xl font-mono font-bold`) + *micro-labels* + semantically colored icon containers |
@@ -164,6 +168,172 @@ Use bracket notation for entity codes to give the system an enterprise feel:
 <option value={item.id}>[{item.code}] {item.name}</option>
 ```
 
+#### Pattern 5: Measurement & Benchmark Diff Cards (Actual vs. Expected)
+Discrepancies, quality assurance checks, system benchmarks, financial reconciliations, and SLA variances must **NEVER** be rendered as narrative sentences like *"Inspection on node B2 showed memory 20GB; spec requires 25GB (SPEC-01 §5.3)."*
+Model them as structured comparison objects:
+```ts
+interface MeasurementBenchmark {
+  actual: string
+  standard: string
+  tolerance: string
+  deviation: string
+  referenceDoc: string
+  secondaryPoints?: string
+}
+```
+Render them as high-contrast 3-column benchmark diff cards:
+```tsx
+// ❌ SLOP (Raw narrative text block):
+<p>Field measurement at beam B2 showed cover 20 mm; specification requires 25 mm (SPEC-NW-01 §5.3). Other points compliant.</p>
+
+// ✅ REQUIRED — BENCHMARK DIFF CARD:
+<div className="space-y-2.5 rounded-xl border border-line-subtle bg-sunken/40 p-3">
+  <div className="grid grid-cols-3 gap-2 text-center">
+    <div className="rounded-lg border border-red-200 bg-red-50/70 p-2">
+      <span className="block text-[10px] font-bold uppercase tracking-wider text-red-800">Actual Measured</span>
+      <span className="font-mono text-base font-bold text-red-950 tnum">{benchmark.actual}</span>
+    </div>
+    <div className="rounded-lg border border-line-subtle bg-surface p-2">
+      <span className="block text-[10px] font-bold uppercase tracking-wider text-ink-muted">Standard Spec</span>
+      <span className="font-mono text-base font-bold text-ink tnum">{benchmark.standard}</span>
+    </div>
+    <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-2">
+      <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-800">Deviation</span>
+      <span className="font-mono text-base font-bold text-amber-950 tnum">{benchmark.deviation}</span>
+    </div>
+  </div>
+  <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line-subtle pt-2 text-2xs">
+    <span className="text-ink-muted">Reference: <span className="font-mono font-semibold text-ink">{benchmark.referenceDoc}</span></span>
+    {benchmark.secondaryPoints && (
+      <span className="font-medium text-emerald-700">✓ {benchmark.secondaryPoints}</span>
+    )}
+  </div>
+</div>
+```
+
+#### Pattern 6: Action Plan & Remediation Tokens
+Remediation instructions, dispatch commands, and maintenance plans must not be free-form text paragraphs.
+Model them as structured action tokens:
+```ts
+interface StructuredActionPlan {
+  actionType: string // e.g. 'Replace & Reinstall', 'Patch & Recalibrate', 'Re-route'
+  component: string
+  targetLocation: string
+  requirePhotoEvidence: boolean
+  standardSpec?: string
+}
+```
+Render as actionable token chips:
+```tsx
+// ❌ SLOP:
+<p>Replace and reinstall 25 mm spacer on beam B2; attach 8 photo documentation points.</p>
+
+// ✅ REQUIRED — ACTION TOKEN ROW:
+<div className="space-y-1.5">
+  <div className="flex flex-wrap items-center gap-1.5">
+    <span className="rounded bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700 border border-brand-200">
+      {actionPlan.actionType}
+    </span>
+    {actionPlan.requirePhotoEvidence && (
+      <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800 border border-emerald-200">
+        Mandatory Photo Proof
+      </span>
+    )}
+    {evidenceCount && (
+      <span className="inline-flex items-center gap-1 rounded bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-brand-700 border border-brand-200">
+        <Camera size={11} /> {evidenceCount} Photos Attached
+      </span>
+    )}
+  </div>
+  <div className="rounded-md border border-line-subtle bg-sunken/40 p-2 text-xs">
+    <span className="font-semibold text-ink">{actionPlan.component}</span>
+    <span className="block text-ink-muted text-2xs mt-0.5">{actionPlan.targetLocation}</span>
+  </div>
+</div>
+```
+
+#### Pattern 7: Operational Bottlenecks & Delay Chips
+Operational blockers, incident reports, and delays must never be unstructured text like *"Rain stopped high-altitude work for 1 hour at Unit C."*
+```tsx
+// ❌ SLOP:
+<p>{delay.category}: {delay.desc}</p>
+
+// ✅ REQUIRED — STRUCTURED DELAY TOKEN:
+<div className="flex flex-wrap items-center gap-2 rounded-md border border-dashed border-amber-300 bg-amber-50/60 px-2.5 py-1.5 text-xs">
+  <TriangleAlert size={12} className="shrink-0 text-amber-600" />
+  <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-900">
+    {delay.category}
+  </span>
+  <span className="font-mono text-2xs font-bold text-amber-800 bg-white/70 px-1.5 py-0.5 rounded border border-amber-200">
+    {delay.duration}
+  </span>
+  <span className="font-semibold text-ink text-2xs">{delay.affectedUnit}</span>
+  <span className="text-ink-muted text-2xs">{delay.impact}</span>
+</div>
+```
+
+#### Pattern 8: Structured Work Item & Inspection Records (Table & Card Rows)
+Work orders, QA/QC inspections, maintenance jobs, and checklist requests must **NEVER** be rendered as unstructured sentence strings like *"Inspection of beam and slab rebar at Unit A-05"* or next actions like *"Verify concrete cover repair results"*.
+Decompose them into atomic data models:
+```ts
+interface WorkItemHeader {
+  discipline: string    // e.g. 'Structural Concrete', 'MEP', 'Roof Trusses'
+  activityType: string  // e.g. 'Rebar Inspection', 'Pressure Test', 'Coating Verification'
+  targetScope: string   // e.g. 'Unit A-05 · Level 2', 'Block B · Main Shaft'
+  nextAction?: {
+    actionType: string  // e.g. 'Field Verification', 'Drawing Review', 'Reschedule'
+    component: string   // e.g. '25 mm Rebar Spacers', 'Pressure Gauge Test'
+    owner: string
+    dueAt?: string
+  }
+}
+```
+Render as clean atomic tokens in both table rows and card lists:
+```tsx
+// ❌ SLOP: Raw sentence strings
+<p className="text-sm">{item.title}</p>
+<p className="text-xs text-muted">{item.nextAction.label}</p>
+
+// ✅ REQUIRED — STRUCTURED WORK ITEM ROW:
+<div className="space-y-1">
+  <div className="flex flex-wrap items-center gap-1.5">
+    <span className="rounded bg-brand-50 px-1.5 py-0.2 text-[10px] font-semibold text-brand-700 border border-brand-200">
+      {item.discipline}
+    </span>
+    <span className="text-sm font-semibold text-ink">
+      {item.activityType}
+    </span>
+  </div>
+  <div className="flex items-center gap-1.5 text-xs text-ink-muted">
+    <span className="rounded bg-sunken px-1.5 py-0.2 font-mono text-[10px] text-ink-secondary border border-line-subtle">
+      {item.targetScope}
+    </span>
+    <span>·</span>
+    <span className="flex items-center gap-1"><MapPin size={11} /> {item.location}</span>
+  </div>
+</div>
+
+// NEXT ACTION CELL:
+<div className="text-xs space-y-1">
+  <div className="flex flex-wrap items-center gap-1.5">
+    <span className="rounded bg-sunken px-1.5 py-0.2 text-[10px] font-bold text-ink border border-line-subtle">
+      {item.nextAction.actionType}
+    </span>
+    <span className="text-xs font-semibold text-ink-secondary">
+      {item.nextAction.component}
+    </span>
+  </div>
+  <p className="text-ink-muted text-2xs">
+    {item.nextAction.owner}
+    {item.nextAction.dueAt && (
+      <span className="ml-1.5 rounded bg-sunken px-1.5 py-0.5 font-mono text-2xs">
+        target {formatRelative(item.nextAction.dueAt)}
+      </span>
+    )}
+  </p>
+</div>
+```
+
 ---
 
 ### PHASE 3: Visual Domain Asset Integration (*Domain Reality*)
@@ -190,7 +360,81 @@ When a thumbnail is clicked, open a wide modal:
 
 ---
 
-### PHASE 4: Icon-First Actions & HUD Overlays
+### PHASE 4: Progressive Disclosure & Density Management (Anti-Overcrowding)
+
+#### 1. The Core Principle: Never Force All Values into One Component
+If a card, list item, or table row feels visually crowded, cramped, or heavy with text:
+> [!CAUTION]
+> **DO NOT** attempt to squeeze every field, attribute, timestamp, and remark into the primary surface. Doing so transforms your application into a wall of text that causes severe user cognitive fatigue.
+
+Apply **Progressive Disclosure**:
+- **Primary Surface (Card / Row / Tile)**: Render ONLY the immediate operational signals:
+  1. Primary Identifier / Code (`font-mono font-bold`)
+  2. High-contrast Status Badge / Pill
+  3. Single Key Quantitative Metric or Delta (`%`, KPI, or Variance)
+  4. Immediate Blocker Indicator (if blocking downstream workflow)
+- **Secondary Details (Progressive Layers)**:
+  - **Dialog / Modal (`size="xl"` / `size="2xl"`)**: Click to inspect comprehensive details, breakdowns, and attachments (e.g. `UnitDetailModal`, `InspectionReportModal`).
+  - **Slide-out Inspector Drawer**: For multi-step workflows, audit trails, and version history.
+  - **Popover / Tooltip**: For supplementary metrics, breakdown math, and definitions.
+  - **Dedicated Navigation**: Deep link to full entity detail view.
+
+#### 2. Zero Inline Dictionary / Glossary Slop
+Never print dictionary definitions or status explanations inline in live working spaces:
+- ❌ **SLOP**: Displaying `{status.description}` (*"Work does not comply with checklist/spec, requires rectification."*) directly under a badge that already reads `Needs Rectification`.
+- ❌ **SLOP**: Adding glossary definitions inside notification or status banners (*"This status means that the work has not yet been verified by the supervisor."*).
+- ✅ **REQUIRED**:
+  - The badge itself conveys status: `<StatusBadge status={status} />`.
+  - Explanations belong strictly in hover tooltips or a dedicated Glossary modal (`?` Help button).
+  - Status Callouts / Banners must be reserved exclusively for the **immediate next action bar** (Next Action Label, Owner Pill, Target Deadline, and Action Button).
+
+---
+
+### PHASE 5: Input Architecture: Atomic Fields vs. Essay Textareas
+
+#### 1. The "User Fatigue" Principle (No Essay Fields)
+In operational tools, field workers, managers, and operators do NOT write prose paragraphs.
+Expecting users to type 50-word essays in a giant `<Textarea>` is a massive UX anti-pattern:
+1. Users get fatigued and enter incomplete, vague notes.
+2. Downstream users cannot filter, search, aggregate, or sort by individual attributes.
+3. The UI is forced to render the resulting data as messy raw text paragraphs.
+
+#### 2. Form Field Decomposition Pattern
+Whenever capturing domain events (delays, defects, incident reports, shift logs, handovers):
+Deconstruct the event into discrete atomic inputs:
+```tsx
+// ❌ SLOP — Lazy Essay Textarea:
+<Field label="Delay Description">
+  <Textarea placeholder="Explain what happened, which unit was affected, how long it took, and what was postponed..." />
+</Field>
+
+// ✅ REQUIRED — ATOMIC DECOMPOSED INPUTS:
+<div className="space-y-3">
+  <Field label="Category">
+    <SegmentedControl
+      value={category}
+      options={['Weather', 'Material', 'Equipment', 'Labor', 'Subcontractor']}
+    />
+  </Field>
+  <div className="grid grid-cols-2 gap-2">
+    <Field label="Affected Area / Scope">
+      <Input value={affectedScope} placeholder="e.g. Unit C-04 / Zone 2" />
+    </Field>
+    <Field label="Duration">
+      <Input value={duration} placeholder="e.g. 1.5 Hours / 2 Days" />
+    </Field>
+  </div>
+  <Field label="Operational Impact / Direct Action">
+    <Input value={impact} placeholder="e.g. Pouring rescheduled to tomorrow morning" />
+  </Field>
+</div>
+```
+> [!TIP]
+> Keep `<Textarea>` strictly for truly optional, unstructured reviewer commentary or freehand remarks. When rendering these remarks, prefix with an explicit label (`Note:` or `Reviewer Comment:`) and avoid literary italicized quotes.
+
+---
+
+### PHASE 6: Icon-First Actions & HUD Overlays
 
 #### 1. Row Action Buttons & Toolbars
 For high-frequency operational actions, prefer `IconButton` over text buttons:
@@ -223,7 +467,7 @@ If a feature requires a guided tour (onboarding or demo):
 
 ---
 
-### PHASE 5: Copywriting Hygiene & Anti-Slop
+### PHASE 7: Copywriting Hygiene & Anti-Slop
 
 #### 1. Zero Em-Dash Tolerance (`—`)
 Never use em-dash (`—`) in UI strings.
@@ -269,6 +513,10 @@ Every KPI or primary metric number must use typography treatment that distinguis
 Before marking a new feature as done (or before opening a pull request), verify every item below:
 
 - [ ] **Workspace Character**: Are there any long article paragraphs below the page title? If so, remove them and replace with a *count badge* or control toolbar.
+- [ ] **No Narrative Data Blobs**: Are measurements, quality checks, action plans, and delays modeled as structured objects and rendered as atomic visual tokens (diff cards, chips, badges) rather than raw sentences or prose paragraphs?
+- [ ] **Zero Dictionary / Definition Slop**: Are status badges free of redundant glossary definitions underneath? Are banner/callout bodies reserved strictly for immediate next actions, owners, and deadlines?
+- [ ] **Density Managed via Progressive Disclosure**: Is information density comfortable? Are secondary details, breakdowns, and audit trails offloaded to Modals, Drawers, or Tooltips rather than crowded into the primary card?
+- [ ] **Atomic Form Inputs**: Do input forms decompose domain events into structured atomic fields (category, scope, duration, impact) rather than relying on lazy essay `<Textarea>`s?
 - [ ] **Dot-Separator Free**: Is every data display free of ` · ` string concatenation? Does all metadata use stacked meta, micro-icons, or status chips?
 - [ ] **Visual Domain Assets Present**: Does the feature display a real visual representation of its domain (document preview, photo thumbnail, certificate card, report simulation)?
 - [ ] **Proportional Modal Size**: Does any content viewer dialog use a wide size (`size="2xl"`) so it's comfortable to read without feeling cramped?
